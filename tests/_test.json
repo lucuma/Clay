@@ -1,0 +1,7 @@
+// Project settings
+{
+    "host": "0.0.0.0",
+    // Another comment
+    "views_list": "_index.html", 
+    "port": 5000
+}

@@ -1,0 +1,2 @@
+Hello (again).
+This is test file with a non-ASCII filename
