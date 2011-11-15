@@ -139,7 +139,7 @@ class Clay(object):
         ignore.append(tmpl_name)
         views = [v for v in views if v not in ignore]
         context_make['views'] = views
-        
+
         content = self.render.to_string(tmpl_name, context_make)
         
         content = content.encode('utf8')
@@ -148,8 +148,16 @@ class Clay(object):
             f.write(content)
     
     def _make_static(self):
-        #print '\nProcessing static files...\n', '-' * 20
+        print '\nProcessing static files...\n', '-' * 20
         pass
+        if os.symlink:
+            _old = os.getcwd()
+            os.chdir(self.build_dir)
+            try:
+                os.symlink(self.static_dir, STATIC_DIR)
+            except (OSError), e:
+                pass
+            os.chdir(_old)
     
     def _make_dirs(self, *lpath):
         path = os.path.join(*lpath)
