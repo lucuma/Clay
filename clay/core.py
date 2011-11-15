@@ -27,6 +27,7 @@ BUILD_DIR = 'build'
 
 default_settings = {
     'views_list': '_index.html',
+    'views_list_ignore': [],
     'host': '0.0.0.0',
     'port': 5000,
 }
@@ -42,8 +43,10 @@ context_make = {
 
 class Clay(object):
 
-    def __init__(self, base_path, settings=None):
-        self.base_dir = base_dir = os.path.dirname(os.path.realpath(base_path))
+    def __init__(self, base_dir, settings=None):
+        if os.path.isfile(base_dir):
+            base_dir = os.path.dirname(base_dir)
+        self.base_dir = base_dir
         self.static_dir = os.path.join(base_dir, STATIC_DIR)
         self.views_dir = os.path.join(base_dir, VIEWS_DIR)
         self.build_dir = os.path.join(base_dir, BUILD_DIR)
@@ -57,7 +60,7 @@ class Clay(object):
 
         loader = ChoiceLoader([
             FileSystemLoader(self.views_dir),
-            PackageLoader('clay', 'views')
+            PackageLoader('clay', 'views'),
         ])
         self.render = Render(loader=loader)
     
@@ -131,7 +134,12 @@ class Clay(object):
     def _make_views_list(self, views):
         print '\nMaking views list...\n', '-' * 20
         tmpl_name = self.settings.views_list
+
+        ignore = self.settings.views_list_ignore
+        ignore.append(tmpl_name)
+        views = [v for v in views if v not in ignore]
         context_make['views'] = views
+        
         content = self.render.to_string(tmpl_name, context_make)
         
         content = content.encode('utf8')
@@ -157,8 +165,8 @@ class Clay(object):
 
     def _get_urls(self):
         return [
-            Rule('/favicon.ico', redirect_to='/static/favicon.ico'),
             Rule('/', self.render_view),
+            Rule('/favicon.ico', redirect_to='/static/favicon.ico'),
             Rule('/static/<path:static_path>', self.render_static),
             Rule('/<path:view_path>', self.render_view),
         ]

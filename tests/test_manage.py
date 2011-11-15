@@ -2,7 +2,7 @@
 import io
 import os
 
-from clay.manage import new, make, run, get_settings
+from clay.manage import new, make, run, get_settings, get_current
 import pytest
 from shake import execute
 
@@ -13,6 +13,15 @@ def test_get_settings():
 
     assert settings
     assert 'views_list' in settings
+
+
+def test_get_current():
+    expected = os.path.normpath(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), '..'))
+    proto = get_current()
+
+    print os.getcwd()
+    assert proto.base_dir == expected
 
 
 def test_make():

@@ -10,12 +10,15 @@ import voodoo
 from .core import Clay
 
 
+WELCOME = """
+\033[1m Clay \033[0m - A rapid prototyping tool by Lucuma labs"""
+
 SKELETON = os.path.join(os.path.dirname(os.path.realpath(__file__)),
     'skeleton')
 
 SKELETON_HELP = """
     Done!
-    Now go to %(new_app_path)s, and run `python run.py` to start the server.
+    Now go to %(new_app_path)s, and run `clay run` to start the server.
     Don't forget to read the README.md
     """
 
@@ -40,8 +43,8 @@ def make(cwd=None):
 
     Generates a static version of the site
     """
-    clay = get_current(cwd)
-    clay.make()
+    proto = get_current(cwd)
+    proto.make()
 
 
 @manager.command
@@ -50,16 +53,16 @@ def run(cwd=None):
 
     Run the development server
     """
-    clay = get_current(cwd)
-    clay.run()
+    proto = get_current(cwd)
+    proto.run()
 
 
 def get_current(cwd=None):
     cwd = os.getcwd() if cwd is None else cwd
-    cwd = os.path.dirname(os.path.realpath(cwd))
+    cwd = os.path.realpath(cwd)
     settings = get_settings(cwd)
-    clay = Clay(cwd, settings)
-    return clay
+    proto = Clay(cwd, settings)
+    return proto
 
 
 def get_settings(cwd, filename='settings.json'):
@@ -77,9 +80,9 @@ def get_settings(cwd, filename='settings.json'):
 
 
 def main():
-    manager.run()
+    manager.run(prefix=WELCOME)
 
 
 if __name__ == "__main__":
-    manager.run(default='run')
+    main()
 

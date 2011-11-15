@@ -7,7 +7,7 @@ README = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 setup(
     name='Clay',
-    version='0.3',
+    version='0.5',
     author='Juan-Pablo Scaletti',
     author_email='juanpablo@lucumalabs.com',
     packages=['clay'],
@@ -28,7 +28,7 @@ setup(
     description='A rapid prototyping tool',
     long_description=open(README).read(),
     install_requires=[
-        'Shake>=0.11',
+        'Shake>=0.12',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
