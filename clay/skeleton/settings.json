@@ -1,8 +1,6 @@
 // Project settings
 {
-    // Name/Filename of the views list
-    "views_list": "_index.html",
-    // When generating the views list, ignore this views
+    // Ignore this views in the views list
     "views_list_ignore": ["base.html"],
 
     "host": "0.0.0.0",

@@ -7,7 +7,7 @@ README = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 setup(
     name='Clay',
-    version='0.5',
+    version='0.6',
     author='Juan-Pablo Scaletti',
     author_email='juanpablo@lucumalabs.com',
     packages=['clay'],

@@ -10,23 +10,23 @@ Copyright © 2011 by Lúcuma labs (http://lucumalabs.com).
 Coded by Juan-Pablo Scaletti <juanpablo@lucumalabs.com>.
 MIT License. (http://www.opensource.org/licenses/mit-license.php).
 """
-import errno
-import io
 import mimetypes
 import os
-import sys
 
 from jinja2 import PackageLoader, ChoiceLoader, FileSystemLoader
-from shake import (Shake, Settings, Render, Rule, send_file,
-    NotFound, TemplateNotFound)
+from shake import Shake, Settings, Render, Rule, NotFound, TemplateNotFound
+
+from .static import render_static_file, make_static_file
+from .utils import (walk_dir, make_dirs, make_file,
+    get_processed_regex, replace_processed_names)
 
 
 STATIC_DIR = 'static'
 VIEWS_DIR = 'views'
 BUILD_DIR = 'build'
+VIEWS_INDEX = '_index.html'
 
 default_settings = {
-    'views_list': '_index.html',
     'views_list_ignore': [],
     'host': '0.0.0.0',
     'port': 5000,
@@ -47,12 +47,9 @@ class Clay(object):
         if os.path.isfile(base_dir):
             base_dir = os.path.dirname(base_dir)
         self.base_dir = base_dir
-        self.static_dir = os.path.join(base_dir, STATIC_DIR)
-        self.views_dir = os.path.join(base_dir, VIEWS_DIR)
+        self.static_dir = make_dirs(base_dir, STATIC_DIR)
+        self.views_dir = make_dirs(base_dir, VIEWS_DIR)
         self.build_dir = os.path.join(base_dir, BUILD_DIR)
-
-        self._make_dirs(self.static_dir)
-        self._make_dirs(self.views_dir)
         
         self.settings = Settings(default_settings, settings,
             case_insensitive=True)
@@ -93,8 +90,8 @@ class Clay(object):
         static_abspath = os.path.join(self.static_dir, static_path)
         if not os.path.isfile(static_abspath):
             return self.not_found()
-        #TODO: Static file processing
-        return send_file(request, static_abspath)
+        
+        return render_static_file(request, static_abspath)
     
     def run(self, host=None, port=None):
         host = host or self.settings.host
@@ -104,52 +101,56 @@ class Clay(object):
     def make(self):
         """Generates a static version of the site.
         """
-        self._make_views()
-        self._make_static()
+        processed_files = self._make_static()
+        self._make_views(processed_files)
         print '\nDone!\n'
     
-    def _make_views(self):
+    def _make_views(self, processed_files):
         print '\nGenerating views...\n', '-' * 20
+        rx_processed = get_processed_regex(processed_files)
         views_list = []
 
-        for folder, subs, files in os.walk(self.views_dir):
-            ffolder = os.path.relpath(folder, self.views_dir)
-            for filename in files:
-                if filename.startswith('.'):
-                    continue
-                filepath = os.path.join(ffolder, filename) \
-                    .lstrip('.').lstrip('/')
-                vn = filepath.decode('utf8')
-                print vn
-                views_list.append(vn)
+        def callback(relpath):
+            vn = relpath.decode('utf8')
+            # print vn
+            views_list.append(vn)
 
-                content = self.render.to_string(filepath, context_make)
-                content = content.encode('utf8')
-                final_path = self._make_dirs(self.build_dir, filepath)
-                with io.open(final_path, 'w+b') as f:
-                    f.write(content)
+            content = self.render.to_string(relpath, context_make)
+            content = replace_processed_names(content, rx_processed)
+            filepath = make_dirs(self.build_dir, relpath)
+            make_file(filepath, content)
         
+        walk_dir(self.views_dir, callback)
         self._make_views_list(views_list)
     
     def _make_views_list(self, views):
         print '\nMaking views list...\n', '-' * 20
-        tmpl_name = self.settings.views_list
 
         ignore = self.settings.views_list_ignore
-        ignore.append(tmpl_name)
+        ignore.append(VIEWS_INDEX)
         views = [v for v in views if v not in ignore]
         context_make['views'] = views
 
-        content = self.render.to_string(tmpl_name, context_make)
-        
-        content = content.encode('utf8')
-        final_path = self._make_dirs(self.build_dir, tmpl_name)
-        with io.open(final_path, 'w+b') as f:
-            f.write(content)
+        content = self.render.to_string(VIEWS_INDEX, context_make)
+        final_path = make_dirs(self.build_dir, VIEWS_INDEX)
+        make_file(final_path, content)
     
     def _make_static(self):
         print '\nProcessing static files...\n', '-' * 20
-        pass
+        processed_files = []
+
+        def callback(relpath):
+            filepath = make_dirs(self.static_dir, relpath)
+            file_tuple = make_static_file(filepath)
+            if file_tuple:
+                processed_files.append(file_tuple)
+        
+        walk_dir(self.static_dir, callback)
+        self._make_static_symlink()
+        return processed_files
+    
+    def _make_static_symlink(self):
+        make_dirs(self.build_dir, '')
         if os.symlink:
             _old = os.getcwd()
             os.chdir(self.build_dir)
@@ -158,15 +159,6 @@ class Clay(object):
             except (OSError), e:
                 pass
             os.chdir(_old)
-    
-    def _make_dirs(self, *lpath):
-        path = os.path.join(*lpath)
-        try:
-            os.makedirs(os.path.dirname(path))
-        except (OSError), e:
-            if e.errno != errno.EEXIST:
-                raise
-        return path
     
     def not_found(self):
         raise NotFound

@@ -39,8 +39,7 @@ def new(new_app_path):
 
 @manager.command
 def make(cwd=None):
-    """DIR_PATH
-
+    """
     Generates a static version of the site
     """
     proto = get_current(cwd)
@@ -48,9 +47,16 @@ def make(cwd=None):
 
 
 @manager.command
-def run(cwd=None):
-    """DIR_PATH
+def build(cwd=None):
+    """
+    An alias for 'clay make'
+    """
+    return make(cwd)
 
+
+@manager.command
+def run(cwd=None):
+    """
     Run the development server
     """
     proto = get_current(cwd)
@@ -58,8 +64,9 @@ def run(cwd=None):
 
 
 def get_current(cwd=None):
-    cwd = os.getcwd() if cwd is None else cwd
-    cwd = os.path.realpath(cwd)
+    cwd = '.' if cwd is None else cwd
+    cwd = os.path.abspath(cwd)
+    # print cwd
     settings = get_settings(cwd)
     proto = Clay(cwd, settings)
     return proto
