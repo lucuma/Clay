@@ -10,11 +10,7 @@ You can also use it to prototype your AJAX-driven application or the responses o
 
 ## Instructions
 
-New project:
-
-    $ clay new myprojectname
-
-Inside `myprojectname`, run the development server with
+Run the development server with
 
     $ clay run
 
@@ -25,16 +21,8 @@ or generate a static version of the site
 
 ## Quickstart
 
-    $ clay new myprojectname
 
-Will generate a new app container with the following structure
-
-    myprojectname
-      ├── static/
-      ├── views/
-      └── settings.json
-
-Inside that folder, run the development server with:
+Inside this folder, run the development server with:
     
     $ clay run
 
@@ -49,6 +37,12 @@ To generate a static version of your site, stop the server (with `Control + C`) 
     $ clay build
 
 and all the templates will be processed and the result stored inside the `build` folder.
+
+
+## Not just for HTML
+
+Clay can automatically compiles Less, Sass, CleverCSS & CoffeeScript files.
+(Less and CoffeeScript has to be installed in node first).
 
 
 ## How to install
@@ -81,11 +75,7 @@ You can use more than just HTML: JSON, csv, plain text, etc. Any text-based form
 Jinja2 templates are much more than just template inheritance. For more advaced features check the [official documentation] (http://jinja.pocoo.org/docs/templates/).
 
 
-## Not just for HTML
-
-Clay can automatically compiles Less, Sass & CoffeeScript files.
-(Less and CoffeeScript has to be installed in node first).
-
+***Happy coding!***
 
 ---------------------------------------
 Copyright © 2011 by [Lúcuma labs] (http://lucumalabs.com).<br />
