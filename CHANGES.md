@@ -32,3 +32,4 @@ update Clay whitout having to recreate your projects.
 
 * A really nice default style for the list of views and "not found" pages.
 
+
