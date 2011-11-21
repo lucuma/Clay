@@ -39,6 +39,12 @@ To generate a static version of your site, stop the server (with `Control + C`) 
 and all the templates will be processed and the result stored inside the `build` folder.
 
 
+## Not just for HTML
+
+Clay can automatically compiles Less, Sass, CleverCSS & CoffeeScript files.
+(Less and CoffeeScript has to be installed in node first).
+
+
 ## Templates
 
 The real power of Clay comes by using the Jinja2 template syntax. 
@@ -60,13 +66,7 @@ You can use more than just HTML: JSON, csv, plain text, etc. Any text-based form
 Jinja2 templates are much more than just template inheritance. For more advaced features check the [official documentation] (http://jinja.pocoo.org/docs/templates/).
 
 
-## Not just for HTML
-
-Clay can automatically compiles Less, Sass, CleverCSS & CoffeeScript files.
-(Less and CoffeeScript has to be installed in node first).
-
-
-Happy coding!
+***Happy coding!***
 
 ---------------------------------------
 Copyright © 2011 by [Lúcuma labs] (http://lucumalabs.com).<br />

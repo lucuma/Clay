@@ -30,6 +30,5 @@ update Clay whitout having to recreate your projects.
 
 * A default "not found" page.
 
-* A really nice style for the "_index.html" page.
-
+* A really nice default style for the list of views and "not found" pages.
 
