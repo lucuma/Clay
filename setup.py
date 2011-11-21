@@ -7,12 +7,14 @@ README = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 setup(
     name='Clay',
-    version='0.6',
+    version='0.7',
     author='Juan-Pablo Scaletti',
     author_email='juanpablo@lucumalabs.com',
     packages=['clay'],
     package_data={'clay': [
             '*.*',
+            'processors/*.*',
+            'libs/*.*',
             'skeleton/.gitignore',
             'skeleton/*.*',
             'skeleton/static/*.*',

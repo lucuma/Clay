@@ -1,29 +1,31 @@
+# -*- coding: utf-8 -*-
+""" """
 import markdown
 import re
+
 
 def isString(s):
     """ Check if it's string """
     return isinstance(s, unicode) or isinstance(s, str)
+
 
 class Processor:
     def __init__(self, markdown_instance=None):
         if markdown_instance:
             self.markdown = markdown_instance
 
+
 class Treeprocessor(Processor):
-    """
-    Treeprocessors are run on the ElementTree object before serialization.
+    """Treeprocessors are run on the ElementTree object before serialization.
 
     Each Treeprocessor implements a "run" method that takes a pointer to an
     ElementTree, modifies it as necessary and returns an ElementTree
     object.
 
     Treeprocessors must extend markdown.Treeprocessor.
-
     """
     def run(self, root):
-        """
-        Subclasses of Treeprocessor should implement a `run` method, which
+        """Subclasses of Treeprocessor should implement a `run` method, which
         takes a root ElementTree. This method can return another ElementTree 
         object, and the existing root ElementTree will be replaced, or it can 
         modify the current tree and return None.
@@ -32,8 +34,7 @@ class Treeprocessor(Processor):
 
 
 class InlineProcessor(Treeprocessor):
-    """
-    A Treeprocessor that traverses a tree, applying inline patterns.
+    """A Treeprocessor that traverses a tree, applying inline patterns.
     """
 
     def __init__ (self, md):
@@ -45,14 +46,13 @@ class InlineProcessor(Treeprocessor):
         self.markdown = md
 
     def __makePlaceholder(self, type):
-        """ Generate a placeholder """
+        """Generate a placeholder """
         id = "%04d" % len(self.stashed_nodes)
         hash = markdown.INLINE_PLACEHOLDER % id
         return hash, id
 
     def __findPlaceholder(self, data, index):
-        """
-        Extract id from data string, start from index
+        """Extract id from data string, start from index
 
         Keyword arguments:
 
@@ -69,14 +69,13 @@ class InlineProcessor(Treeprocessor):
             return None, index + 1
 
     def __stashNode(self, node, type):
-        """ Add node to stash """
+        """Add node to stash """
         placeholder, id = self.__makePlaceholder(type)
         self.stashed_nodes[id] = node
         return placeholder
 
     def __handleInline(self, data, patternIndex=0):
-        """
-        Process string with inline patterns and replace it
+        """Process string with inline patterns and replace it
         with placeholders
 
         Keyword arguments:
@@ -85,7 +84,6 @@ class InlineProcessor(Treeprocessor):
         * patternIndex: The index of the inlinePattern to start with
 
         Returns: String with placeholders.
-
         """
         if not isinstance(data, markdown.AtomicString):
             startIndex = 0
@@ -98,8 +96,7 @@ class InlineProcessor(Treeprocessor):
         return data
 
     def __processElementText(self, node, subnode, isText=True):
-        """
-        Process placeholders in Element.text or Element.tail
+        """Process placeholders in Element.text or Element.tail
         of Elements popped from self.stashed_nodes.
 
         Keywords arguments:
@@ -109,7 +106,6 @@ class InlineProcessor(Treeprocessor):
         * isText: bool variable, True - it's text, False - it's tail
 
         Returns: None
-
         """
         if isText:
             text = subnode.text
@@ -131,8 +127,7 @@ class InlineProcessor(Treeprocessor):
             node.insert(pos, newChild)
 
     def __processPlaceholders(self, data, parent):
-        """
-        Process string with placeholders and generate ElementTree tree.
+        """Process string with placeholders and generate ElementTree tree.
 
         Keyword arguments:
 
@@ -196,8 +191,7 @@ class InlineProcessor(Treeprocessor):
         return result
 
     def __applyPattern(self, pattern, data, patternIndex, startIndex=0):
-        """
-        Check if the line fits the pattern, create the necessary
+        """Check if the line fits the pattern, create the necessary
         elements, add it to stashed_nodes.
 
         Keyword arguments:
@@ -208,7 +202,6 @@ class InlineProcessor(Treeprocessor):
         * startIndex: string index, from which we starting search
 
         Returns: String with placeholders instead of ElementTree elements.
-
         """
         match = pattern.getCompiledRegExp().match(data[startIndex:])
         leftData = data[:startIndex]
@@ -297,10 +290,10 @@ class InlineProcessor(Treeprocessor):
 
 
 class PrettifyTreeprocessor(Treeprocessor):
-    """ Add linebreaks to the html document. """
+    """Add linebreaks to the html document."""
 
     def _prettifyETree(self, elem):
-        """ Recursively add linebreaks to ElementTree children. """
+        """Recursively add linebreaks to ElementTree children."""
 
         i = "\n"
         if markdown.isBlockLevel(elem.tag) and elem.tag not in ['code', 'pre']:
@@ -316,7 +309,7 @@ class PrettifyTreeprocessor(Treeprocessor):
             elem.tail = i
 
     def run(self, root):
-        """ Add linebreaks to ElementTree root object. """
+        """Add linebreaks to ElementTree root object."""
 
         self._prettifyETree(root)
         # Do <br />'s seperately as they are often in the middle of
@@ -327,3 +320,4 @@ class PrettifyTreeprocessor(Treeprocessor):
                 br.tail = '\n'
             else:
                 br.tail = '\n%s' % br.tail
+

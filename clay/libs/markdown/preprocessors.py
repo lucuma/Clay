@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 """
 PRE-PROCESSORS
 =============================================================================
@@ -6,17 +6,19 @@ PRE-PROCESSORS
 Preprocessors work on source text before we start doing anything too
 complicated. 
 """
-
 import re
 import markdown
 
+
 HTML_PLACEHOLDER_PREFIX = markdown.STX+"wzxhzdk:"
 HTML_PLACEHOLDER = HTML_PLACEHOLDER_PREFIX + "%d" + markdown.ETX
+
 
 class Processor:
     def __init__(self, markdown_instance=None):
         if markdown_instance:
             self.markdown = markdown_instance
+
 
 class Preprocessor (Processor):
     """

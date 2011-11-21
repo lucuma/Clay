@@ -1,6 +1,6 @@
+# -*- coding: utf-8 -*-
 """
-Python Markdown
-===============
+# Python Markdown
 
 Python Markdown converts Markdown to HTML and can be used as a library or
 called from the command line.
@@ -25,53 +25,58 @@ Python Markdown.  Read that before you try modifying this file.
 
 ## Authors and License
 
-Started by [Manfred Stienstra](http://www.dwerg.net/).  Continued and
-maintained  by [Yuri Takhteyev](http://www.freewisdom.org), [Waylan
-Limberg](http://achinghead.com/) and [Artem Yunusov](http://blog.splyer.com).
-
-Contact: markdown@freewisdom.org
+Started by [Manfred Stienstra](http://www.dwerg.net/). 
+ Continued and maintained by [Yuri Takhteyev](http://www.freewisdom.org),
+ [Waylan Limberg](http://achinghead.com/) and
+ [Artem Yunusov](http://blog.splyer.com).
 
 Copyright 2007, 2008 The Python Markdown Project (v. 1.7 and later)
 Copyright 200? Django Software Foundation (OrderedDict implementation)
 Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
 Copyright 2004 Manfred Stienstra (the original version)
 
-License: BSD (see docs/LICENSE for details).
+license: BSD.
+version: 2.0-j
 """
-
-version = "2.0"
-version_info = (2,0,0, "Final")
-
-import re
 import codecs
-import sys
-import warnings
 import logging
 from logging import DEBUG, INFO, WARN, ERROR, CRITICAL
+import re
+import sys
+import warnings
+
+from . import (preprocessors, blockprocessors, treeprocessors, inlinepatterns,
+    postprocessors, blockparser, etree_loader, odict)
+
+# Extensions should use "markdown.etree" instead of "etree" (or do `from
+# markdown import etree`).  Do not import it by yourself.
+etree = etree_loader.importETree()
+
+# Adds the ability to output html4
+from . import html4
 
 
-"""
-CONSTANTS
-=============================================================================
-"""
-
-"""
-Constants you might want to modify
------------------------------------------------------------------------------
-"""
+## Constants you might want to modify
+## ---------------------------------------------------------------------------
 
 # default logging level for command-line use
 COMMAND_LINE_LOGGING_LEVEL = CRITICAL
-TAB_LENGTH = 4               # expand tabs to this many spaces
-ENABLE_ATTRIBUTES = True     # @id = xyz -> <... id="xyz">
-SMART_EMPHASIS = True        # this_or_that does not become this<i>or</i>that
-DEFAULT_OUTPUT_FORMAT = 'xhtml1'     # xhtml or html4 output
-HTML_REMOVED_TEXT = "[HTML_REMOVED]" # text used instead of HTML in safe mode
+# expand tabs to this many spaces
+TAB_LENGTH = 4
+# @id = xyz -> <... id="xyz">
+ENABLE_ATTRIBUTES = True
+# this_or_that does not become this<i>or</i>that
+SMART_EMPHASIS = True
+# xhtml or html4 output
+DEFAULT_OUTPUT_FORMAT = 'xhtml1'
+# text used instead of HTML in safe mode
+HTML_REMOVED_TEXT = "[HTML_REMOVED]"
+# 
 BLOCK_LEVEL_ELEMENTS = re.compile("p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
-                                  "|script|noscript|form|fieldset|iframe|math"
-                                  "|ins|del|hr|hr/|style|li|dt|dd|thead|tbody"
-                                  "|tr|th|td")
-DOC_TAG = "div"     # Element used to wrap document - later removed
+    "|script|noscript|form|fieldset|iframe|math|ins|del|hr|hr/|style|li|dt|dd"
+    "|thead|tbody|tr|th|td|section|article|header|footer|aside")
+# Element used to wrap document - later removed
+DOC_TAG = "div"
 
 # Placeholders
 STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
@@ -81,24 +86,22 @@ INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 AMP_SUBSTITUTE = STX+"amp"+ETX
 
 
-"""
-Constants you probably do not need to change
------------------------------------------------------------------------------
-"""
+## Constants you probably do not need to change
+## ---------------------------------------------------------------------------
 
-RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
-                     # Hebrew (0590-05FF), Arabic (0600-06FF),
-                     # Syriac (0700-074F), Arabic supplement (0750-077F),
-                     # Thaana (0780-07BF), Nko (07C0-07FF).
-                    (u'\u2D30', u'\u2D7F'), # Tifinagh
-                    )
+RTL_BIDI_RANGES = (
+    # Hebrew (0590-05FF), Arabic (0600-06FF),
+    # Syriac (0700-074F), Arabic supplement (0750-077F),
+    # Thaana (0780-07BF), Nko (07C0-07FF).
+    (u'\u0590', u'\u07FF'),
+
+    # Tifinagh
+    (u'\u2D30', u'\u2D7F'),
+)
 
 
-"""
-AUXILIARY GLOBAL FUNCTIONS
-=============================================================================
-"""
-
+## Auxiliary global functions & classes
+## ---------------------------------------------------------------------------
 
 def message(level, text):
     """ A wrapper method for logging debug messages. """
@@ -118,10 +121,6 @@ def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
     return BLOCK_LEVEL_ELEMENTS.match(tag)
 
-"""
-MISC AUXILIARY CLASSES
-=============================================================================
-"""
 
 class AtomicString(unicode):
     """A string which should not be further processed."""
@@ -138,74 +137,61 @@ class MarkdownWarning(Warning):
     pass
 
 
-"""
-OVERALL DESIGN
-=============================================================================
-
-Markdown processing takes place in four steps:
-
-1. A bunch of "preprocessors" munge the input text.
-2. BlockParser() parses the high-level structural elements of the
-   pre-processed text into an ElementTree.
-3. A bunch of "treeprocessors" are run against the ElementTree. One such
-   treeprocessor runs InlinePatterns against the ElementTree, detecting inline
-   markup.
-4. Some post-processors are run against the text after the ElementTree has
-   been serialized into text.
-5. The output is written to a string.
-
-Those steps are put together by the Markdown() class.
-
-"""
-
-import preprocessors
-import blockprocessors
-import treeprocessors
-import inlinepatterns
-import postprocessors
-import blockparser
-import etree_loader
-import odict
-
-# Extensions should use "markdown.etree" instead of "etree" (or do `from
-# markdown import etree`).  Do not import it by yourself.
-
-etree = etree_loader.importETree()
-
-# Adds the ability to output html4
-import html4
-
+## Main class
+## ---------------------------------------------------------------------------
 
 class Markdown:
-    """Convert Markdown to HTML."""
+    """Convert Markdown to HTML.
+
+    Markdown processing takes place in four steps:
+
+    1. A bunch of "preprocessors" munge the input text.
+    2. BlockParser() parses the high-level structural elements of the
+       pre-processed text into an ElementTree.
+    3. A bunch of "treeprocessors" are run against the ElementTree. One such
+       treeprocessor runs InlinePatterns against the ElementTree, detecting inline
+       markup.
+    4. Some post-processors are run against the text after the ElementTree has
+       been serialized into text.
+    5. The output is written to a string.
+    """
 
     def __init__(self,
-                 extensions=[],
-                 extension_configs={},
-                 safe_mode = False, 
-                 output_format=DEFAULT_OUTPUT_FORMAT):
-        """
-        Creates a new Markdown instance.
+            extensions=[],
+            extension_configs={},
+            safe_mode = False, 
+            output_format=DEFAULT_OUTPUT_FORMAT):
+        """Creates a new Markdown instance.
 
         Keyword arguments:
 
-        * extensions: A list of extensions.
-           If they are of type string, the module mdx_name.py will be loaded.
-           If they are a subclass of markdown.Extension, they will be used
-           as-is.
-        * extension-configs: Configuration setting for extensions.
-        * safe_mode: Disallow raw html. One of "remove", "replace" or "escape".
-        * output_format: Format of output. Supported formats are:
+        extensions
+        :   A list of extensions.
+            If they are of type string, the module mdx_name.py will be loaded.
+            If they are a subclass of markdown.Extension, they will be used
+            as-is.
+        
+        extension-configs
+        :   Configuration setting for extensions.
+        
+        safe_mode
+        :   Disallow raw html. One of "remove", "replace" or "escape".
+        
+        output_format
+        :   Format of output. Supported formats are:
+
             * "xhtml1": Outputs XHTML 1.x. Default.
-            * "xhtml": Outputs latest supported version of XHTML (currently XHTML 1.1).
+            * "xhtml": Outputs latest supported version of XHTML
+            (currently XHTML 1.1).
             * "html4": Outputs HTML 4
-            * "html": Outputs latest supported version of HTML (currently HTML 4).
+            * "html": Outputs latest supported version of HTML
+            (currently HTML 4).
+            
             Note that it is suggested that the more specific formats ("xhtml1" 
             and "html4") be used as "xhtml" or "html" may change in the future
-            if it makes sense at that time. 
-
-        """
+            if it makes sense at that time.
         
+        """
         self.safeMode = safe_mode
         self.registeredExtensions = []
         self.docType = ""
@@ -214,49 +200,46 @@ class Markdown:
         # Preprocessors
         self.preprocessors = odict.OrderedDict()
         self.preprocessors["html_block"] = \
-                preprocessors.HtmlBlockPreprocessor(self)
+            preprocessors.HtmlBlockPreprocessor(self)
         self.preprocessors["reference"] = \
-                preprocessors.ReferencePreprocessor(self)
+            preprocessors.ReferencePreprocessor(self)
         # footnote preprocessor will be inserted with "<reference"
 
         # Block processors - ran by the parser
         self.parser = blockparser.BlockParser()
         self.parser.blockprocessors['empty'] = \
-                blockprocessors.EmptyBlockProcessor(self.parser)
+            blockprocessors.EmptyBlockProcessor(self.parser)
         self.parser.blockprocessors['indent'] = \
-                blockprocessors.ListIndentProcessor(self.parser)
+            blockprocessors.ListIndentProcessor(self.parser)
         self.parser.blockprocessors['code'] = \
-                blockprocessors.CodeBlockProcessor(self.parser)
+            blockprocessors.CodeBlockProcessor(self.parser)
         self.parser.blockprocessors['hashheader'] = \
-                blockprocessors.HashHeaderProcessor(self.parser)
+            blockprocessors.HashHeaderProcessor(self.parser)
         self.parser.blockprocessors['setextheader'] = \
-                blockprocessors.SetextHeaderProcessor(self.parser)
+            blockprocessors.SetextHeaderProcessor(self.parser)
         self.parser.blockprocessors['hr'] = \
-                blockprocessors.HRProcessor(self.parser)
+            blockprocessors.HRProcessor(self.parser)
         self.parser.blockprocessors['olist'] = \
-                blockprocessors.OListProcessor(self.parser)
+            blockprocessors.OListProcessor(self.parser)
         self.parser.blockprocessors['ulist'] = \
-                blockprocessors.UListProcessor(self.parser)
+            blockprocessors.UListProcessor(self.parser)
         self.parser.blockprocessors['quote'] = \
-                blockprocessors.BlockQuoteProcessor(self.parser)
+            blockprocessors.BlockQuoteProcessor(self.parser)
         self.parser.blockprocessors['paragraph'] = \
-                blockprocessors.ParagraphProcessor(self.parser)
-
-
-        #self.prePatterns = []
-
+            blockprocessors.ParagraphProcessor(self.parser)
+        
         # Inline patterns - Run on the tree
         self.inlinePatterns = odict.OrderedDict()
         self.inlinePatterns["backtick"] = \
-                inlinepatterns.BacktickPattern(inlinepatterns.BACKTICK_RE)
+            inlinepatterns.BacktickPattern(inlinepatterns.BACKTICK_RE)
         self.inlinePatterns["escape"] = \
-                inlinepatterns.SimpleTextPattern(inlinepatterns.ESCAPE_RE)
+            inlinepatterns.SimpleTextPattern(inlinepatterns.ESCAPE_RE)
         self.inlinePatterns["reference"] = \
             inlinepatterns.ReferencePattern(inlinepatterns.REFERENCE_RE, self)
         self.inlinePatterns["link"] = \
-                inlinepatterns.LinkPattern(inlinepatterns.LINK_RE, self)
+            inlinepatterns.LinkPattern(inlinepatterns.LINK_RE, self)
         self.inlinePatterns["image_link"] = \
-                inlinepatterns.ImagePattern(inlinepatterns.IMAGE_LINK_RE, self)
+            inlinepatterns.ImagePattern(inlinepatterns.IMAGE_LINK_RE, self)
         self.inlinePatterns["image_reference"] = \
             inlinepatterns.ImageReferencePattern(inlinepatterns.IMAGE_REFERENCE_RE, self)
         self.inlinePatterns["autolink"] = \
@@ -268,11 +251,11 @@ class Markdown:
         self.inlinePatterns["linebreak"] = \
             inlinepatterns.SubstituteTagPattern(inlinepatterns.LINE_BREAK_RE, 'br')
         self.inlinePatterns["html"] = \
-                inlinepatterns.HtmlPattern(inlinepatterns.HTML_RE, self)
+            inlinepatterns.HtmlPattern(inlinepatterns.HTML_RE, self)
         self.inlinePatterns["entity"] = \
-                inlinepatterns.HtmlPattern(inlinepatterns.ENTITY_RE, self)
+            inlinepatterns.HtmlPattern(inlinepatterns.ENTITY_RE, self)
         self.inlinePatterns["not_strong"] = \
-                inlinepatterns.SimpleTextPattern(inlinepatterns.NOT_STRONG_RE)
+            inlinepatterns.SimpleTextPattern(inlinepatterns.NOT_STRONG_RE)
         self.inlinePatterns["strong_em"] = \
             inlinepatterns.DoubleTagPattern(inlinepatterns.STRONG_EM_RE, 'strong,em')
         self.inlinePatterns["strong"] = \
@@ -283,19 +266,18 @@ class Markdown:
             inlinepatterns.SimpleTagPattern(inlinepatterns.EMPHASIS_2_RE, 'em')
         # The order of the handlers matters!!!
 
-
         # Tree processors - run once we have a basic parse.
         self.treeprocessors = odict.OrderedDict()
         self.treeprocessors["inline"] = treeprocessors.InlineProcessor(self)
         self.treeprocessors["prettify"] = \
-                treeprocessors.PrettifyTreeprocessor(self)
+            treeprocessors.PrettifyTreeprocessor(self)
 
         # Postprocessors - finishing touches.
         self.postprocessors = odict.OrderedDict()
         self.postprocessors["raw_html"] = \
-                postprocessors.RawHtmlPostprocessor(self)
+            postprocessors.RawHtmlPostprocessor(self)
         self.postprocessors["amp_substitute"] = \
-                postprocessors.AndSubstitutePostprocessor()
+            postprocessors.AndSubstitutePostprocessor()
         # footnote postprocessor will be inserted with ">amp_substitute"
 
         # Map format keys to serializers
@@ -308,20 +290,22 @@ class Markdown:
 
         self.references = {}
         self.htmlStash = preprocessors.HtmlStash()
-        self.registerExtensions(extensions = extensions,
-                                configs = extension_configs)
+        self.registerExtensions(extensions=extensions,
+            configs=extension_configs)
         self.set_output_format(output_format)
         self.reset()
 
     def registerExtensions(self, extensions, configs):
-        """
-        Register extensions with this instance of Markdown.
+        """Register extensions with this instance of Markdown.
 
         Keyword aurguments:
 
-        * extensions: A list of extensions, which can either
-           be strings or objects.  See the docstring on Markdown.
-        * configs: A dictionary mapping module names to config options.
+        extensions
+        :   A list of extensions, which can either be strings or objects.
+            See the docstring on Markdown.
+        
+        configs
+        :   A dictionary mapping module names to config options.
 
         """
         for ext in extensions:
@@ -330,17 +314,17 @@ class Markdown:
             try:
                 ext.extendMarkdown(self, globals())
             except AttributeError:
-                message(ERROR, "Incorrect type! Extension '%s' is "
-                               "neither a string or an Extension." %(repr(ext)))
+                message(ERROR, "Incorrect type! Extension '%s' is"
+                    " neither a string or an Extension." %(repr(ext)))
             
 
     def registerExtension(self, extension):
-        """ This gets called by the extension """
+        """This gets called by the extension.
+        """
         self.registeredExtensions.append(extension)
 
     def reset(self):
-        """
-        Resets all state variables so that we can start with a new text.
+        """Resets all state variables so that we can start with a new text.
         """
         self.htmlStash.reset()
         self.references.clear()
@@ -349,7 +333,8 @@ class Markdown:
             extension.reset()
 
     def set_output_format(self, format):
-        """ Set the output format for the class instance. """
+        """Set the output format for the class instance.
+        """
         try:
             self.serializer = self.output_formats[format.lower()]
         except KeyError:
@@ -357,12 +342,12 @@ class Markdown:
                                % (format, self.output_formats.keys()))
 
     def convert(self, source):
-        """
-        Convert markdown to serialized XHTML or HTML.
+        """Convert markdown to serialized XHTML or HTML.
 
         Keyword arguments:
 
-        * source: Source text as a Unicode string.
+        source
+        :   Source text as a Unicode string.
 
         """
 
@@ -372,8 +357,9 @@ class Markdown:
         try:
             source = unicode(source)
         except UnicodeDecodeError:
-            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts unicode or ascii input.')
-            return u""
+            message(CRITICAL, 'UnicodeDecodeError: Markdown only accepts'
+                ' unicode or ascii input.')
+            return u''
 
         source = source.replace(STX, "").replace(ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
@@ -395,7 +381,8 @@ class Markdown:
                 root = newRoot
 
         # Serialize _properly_.  Strip top-level tags.
-        output, length = codecs.utf_8_decode(self.serializer(root, encoding="utf8"))
+        output, length = codecs.utf_8_decode(
+            self.serializer(root, encoding="utf8"))
         if self.stripTopLevelTags:
             start = output.index('<%s>'%DOC_TAG)+len(DOC_TAG)+2
             end = output.rindex('</%s>'%DOC_TAG)
@@ -421,12 +408,16 @@ class Markdown:
 
         Keyword arguments:
 
-        * input: Name of source text file.
-        * output: Name of output file. Writes to stdout if `None`.
-        * encoding: Encoding of input and output files. Defaults to utf-8.
+        input
+        :   Name of source text file.
+
+        output
+        :   Name of output file. Writes to stdout if `None`.
+
+        encoding
+        :   Encoding of input and output files. Defaults to utf-8.
 
         """
-
         encoding = encoding or "utf-8"
 
         # Read the source
@@ -447,48 +438,53 @@ class Markdown:
             output.write(html.encode(encoding))
 
 
-"""
-Extensions
------------------------------------------------------------------------------
-"""
+## Extensions
+## ---------------------------------------------------------------------------
 
 class Extension:
-    """ Base class for extensions to subclass. """
+    """ Base class for extensions to subclass."""
+
     def __init__(self, configs = {}):
-        """Create an instance of an Extention.
+        """Create an instance of an Extension.
 
         Keyword arguments:
 
-        * configs: A dict of configuration setting used by an Extension.
+        configs
+        :   A dict of configuration setting used by an Extension.
+
         """
         self.config = configs
 
     def getConfig(self, key):
-        """ Return a setting for the given key or an empty string. """
+        """Return a setting for the given key or an empty string.
+        """
         if key in self.config:
             return self.config[key][0]
         else:
             return ""
 
     def getConfigInfo(self):
-        """ Return all config settings as a list of tuples. """
+        """Return all config settings as a list of tuples.
+        """
         return [(key, self.config[key][1]) for key in self.config.keys()]
 
     def setConfig(self, key, value):
-        """ Set a config setting for `key` with the given `value`. """
+        """Set a config setting for `key` with the given `value`.
+        """
         self.config[key][0] = value
 
     def extendMarkdown(self, md, md_globals):
-        """
-        Add the various proccesors and patterns to the Markdown Instance.
+        """Add the various proccesors and patterns to the Markdown Instance.
 
         This method must be overriden by every extension.
 
         Keyword arguments:
 
-        * md: The Markdown instance.
+        md
+        :   The Markdown instance.
 
-        * md_globals: Global variables in the markdown module namespace.
+        md_globals
+        :   Global variables in the markdown module namespace.
 
         """
         pass
@@ -501,7 +497,6 @@ def load_extension(ext_name, configs = []):
     following format: "extname(key1=value1,key2=value2)"
 
     """
-
     # Parse extensions config params (ignore the order)
     configs = dict(configs)
     pos = ext_name.find("(") # find the first "("
@@ -546,18 +541,15 @@ def load_extensions(ext_names):
     return extensions
 
 
-"""
-EXPORTED FUNCTIONS
-=============================================================================
-
-Those are the two functions we really mean to export: markdown() and
-markdownFromFile().
-"""
+## EXPORTED FUNCTIONS
+## ---------------------------------------------------------------------------
+## Those are the two functions we really mean to export: markdown() and
+## markdownFromFile().
 
 def markdown(text,
-             extensions = [],
-             safe_mode = False,
-             output_format = DEFAULT_OUTPUT_FORMAT):
+            extensions = [],
+            safe_mode = False,
+            output_format = DEFAULT_OUTPUT_FORMAT):
     """Convert a markdown string to HTML and return HTML as a unicode string.
 
     This is a shortcut function for `Markdown` class to cover the most
@@ -566,38 +558,47 @@ def markdown(text,
 
     Keyword arguments:
 
-    * text: Markdown formatted text as Unicode or ASCII string.
-    * extensions: A list of extensions or extension names (may contain config args).
-    * safe_mode: Disallow raw html.  One of "remove", "replace" or "escape".
-    * output_format: Format of output. Supported formats are:
+    text
+    :   Markdown formatted text as Unicode or ASCII string.
+
+    extensions
+    :   A list of extensions or extension names (may contain config args).
+    
+    safe_mode
+    :   Disallow raw html.  One of "remove", "replace" or "escape".
+
+    output_format
+    :   Format of output. Supported formats are:
+        
         * "xhtml1": Outputs XHTML 1.x. Default.
         * "xhtml": Outputs latest supported version of XHTML (currently XHTML 1.1).
         * "html4": Outputs HTML 4
         * "html": Outputs latest supported version of HTML (currently HTML 4).
+        
         Note that it is suggested that the more specific formats ("xhtml1" 
         and "html4") be used as "xhtml" or "html" may change in the future
         if it makes sense at that time. 
 
-    Returns: An HTML document as a string.
+    Returns
+    :   An HTML document as a string.
 
     """
     md = Markdown(extensions=load_extensions(extensions),
-                  safe_mode=safe_mode, 
-                  output_format=output_format)
+        safe_mode=safe_mode, 
+        output_format=output_format)
     return md.convert(text)
 
 
 def markdownFromFile(input = None,
-                     output = None,
-                     extensions = [],
-                     encoding = None,
-                     safe_mode = False,
-                     output_format = DEFAULT_OUTPUT_FORMAT):
-    """Read markdown code from a file and write it to a file or a stream."""
+        output = None,
+        extensions = [],
+        encoding = None,
+        safe_mode = False,
+        output_format = DEFAULT_OUTPUT_FORMAT):
+    """Read markdown code from a file and write it to a file or a stream.
+    """
     md = Markdown(extensions=load_extensions(extensions), 
-                  safe_mode=safe_mode,
-                  output_format=output_format)
+        safe_mode=safe_mode,
+        output_format=output_format)
     md.convertFile(input, output, encoding)
-
-
 

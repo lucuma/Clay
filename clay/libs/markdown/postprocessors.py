@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 POST-PROCESSORS
 =============================================================================
@@ -7,9 +8,8 @@ that they need to implement a "run" method. However, they are run after core
 processing.
 
 """
-
-
 import markdown
+
 
 class Processor:
     def __init__(self, markdown_instance=None):

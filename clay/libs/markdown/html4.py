@@ -1,43 +1,46 @@
-# markdown/html4.py
-#
-# Add html4 serialization to older versions of Elementree
-# Taken from ElementTree 1.3 preview with slight modifications
-#
-# Copyright (c) 1999-2007 by Fredrik Lundh.  All rights reserved.
-#
-# fredrik@pythonware.com
-# http://www.pythonware.com
-#
-# --------------------------------------------------------------------
-# The ElementTree toolkit is
-#
-# Copyright (c) 1999-2007 by Fredrik Lundh
-#
-# By obtaining, using, and/or copying this software and/or its
-# associated documentation, you agree that you have read, understood,
-# and will comply with the following terms and conditions:
-#
-# Permission to use, copy, modify, and distribute this software and
-# its associated documentation for any purpose and without fee is
-# hereby granted, provided that the above copyright notice appears in
-# all copies, and that both that copyright notice and this permission
-# notice appear in supporting documentation, and that the name of
-# Secret Labs AB or the author not be used in advertising or publicity
-# pertaining to distribution of the software without specific, written
-# prior permission.
-#
-# SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-# TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANT-
-# ABILITY AND FITNESS.  IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR
-# BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
-# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-# WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
-# ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
-# OF THIS SOFTWARE.
-# --------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+"""
+# HTML4
 
+Add html4 serialization to older versions of Elementree
+Taken from ElementTree 1.3 preview with slight modifications
 
+Copyright (c) 1999-2007 by Fredrik Lundh.  All rights reserved.
+
+fredrik@pythonware.com
+http://www.pythonware.com
+
+--------------------------------------------------------------------
+The ElementTree toolkit is
+
+Copyright (c) 1999-2007 by Fredrik Lundh
+
+By obtaining, using, and/or copying this software and/or its
+associated documentation, you agree that you have read, understood,
+and will comply with the following terms and conditions:
+
+Permission to use, copy, modify, and distribute this software and
+its associated documentation for any purpose and without fee is
+hereby granted, provided that the above copyright notice appears in
+all copies, and that both that copyright notice and this permission
+notice appear in supporting documentation, and that the name of
+Secret Labs AB or the author not be used in advertising or publicity
+pertaining to distribution of the software without specific, written
+prior permission.
+
+SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
+TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANT-
+ABILITY AND FITNESS.  IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR
+BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+OF THIS SOFTWARE.
+--------------------------------------------------------------------
+"""
 import markdown
+
+
 ElementTree = markdown.etree.ElementTree
 QName = markdown.etree.QName
 Comment = markdown.etree.Comment
@@ -71,11 +74,13 @@ def _raise_serialization_error(text):
         "cannot serialize %r (type %s)" % (text, type(text).__name__)
         )
 
+
 def _encode(text, encoding):
     try:
         return text.encode(encoding, "xmlcharrefreplace")
     except (TypeError, AttributeError):
         _raise_serialization_error(text)
+
 
 def _escape_cdata(text, encoding):
     # escape character data
@@ -110,6 +115,7 @@ def _escape_attrib(text, encoding):
         return text.encode(encoding, "xmlcharrefreplace")
     except (TypeError, AttributeError):
         _raise_serialization_error(text)
+
 
 def _escape_attrib_html(text, encoding):
     # escape attribute value
@@ -177,6 +183,7 @@ def _serialize_html(write, elem, encoding, qnames, namespaces):
     if elem.tail:
         write(_escape_cdata(elem.tail, encoding))
 
+
 def write_html(root, f,
           # keyword arguments
           encoding="us-ascii",
@@ -193,6 +200,7 @@ def write_html(root, f,
     _serialize_html(
                 write, root, encoding, qnames, namespaces
                 )
+
 
 # --------------------------------------------------------------------
 # serialization support
@@ -264,6 +272,7 @@ def _namespaces(elem, encoding, default_namespace=None):
             add_qname(text.text)
     return qnames, namespaces
 
+
 def to_html_string(element, encoding=None):
     class dummy:
         pass
@@ -272,3 +281,4 @@ def to_html_string(element, encoding=None):
     file.write = data.append
     write_html(ElementTree(element).getroot(),file,encoding)
     return "".join(data)
+

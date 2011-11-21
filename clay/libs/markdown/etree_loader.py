@@ -1,10 +1,12 @@
-
+# -*- coding: utf-8 -*-
+""" """
 from markdown import message, CRITICAL
 import sys
 
-## Import
+
 def importETree():
-    """Import the best implementation of ElementTree, return a module object."""
+    """Import the best implementation of ElementTree, return a module object.
+    """
     etree_in_c = None
     try: # Is it Python 2.5+ with C implemenation of ElementTree installed?
         import xml.etree.cElementTree as etree_in_c

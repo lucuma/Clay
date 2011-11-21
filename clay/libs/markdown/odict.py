@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+""" """
+
 class OrderedDict(dict):
     """
     A dictionary that keeps its keys in the order in which they're inserted.

@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+# Clay.manage
+
+Command line script.
+
+"""
 import io
 import os
 import sys
@@ -51,7 +57,7 @@ def make(cwd=None):
     """
     An alias for 'clay build' (backwards compatibility)
     """
-    return make(cwd)
+    return build(cwd)
 
 
 @manager.command

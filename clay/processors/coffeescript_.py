@@ -3,6 +3,7 @@
 # Clay.processors.coffescript
 
 http://jashkenas.github.com/coffee-script/
+
 """
 import io
 import os

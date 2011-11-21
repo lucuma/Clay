@@ -3,6 +3,7 @@
 # Clay.processors.clevercss
 
 http://sandbox.pocoo.org/clevercss/
+
 """
 from ..libs import clevercss
 from ..utils import get_source, make_file

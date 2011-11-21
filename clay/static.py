@@ -3,6 +3,7 @@
 # Clay.static
 
 Static files processors
+
 """
 import os
 

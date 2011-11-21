@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 INLINE PATTERNS
 =============================================================================
@@ -40,7 +41,6 @@ So, we apply the expressions in the following order:
 
 * finally we apply strong and emphasis
 """
-
 import markdown
 import re
 from urlparse import urlparse, urlunparse
@@ -49,6 +49,7 @@ if sys.version >= "3.0":
     from html import entities as htmlentitydefs
 else:
     import htmlentitydefs
+
 
 """
 The actual regular expressions for patterns

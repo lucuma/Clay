@@ -1,6 +1,6 @@
+# -*- coding: utf-8 -*-
 """
-CORE MARKDOWN BLOCKPARSER
-=============================================================================
+# Core Markdown blockparser
 
 This parser handles basic parsing of Markdown blocks.  It doesn't concern itself
 with inline elements such as **bold** or *italics*, but rather just catches 
@@ -11,18 +11,18 @@ different type of block. Extensions may add/replace/remove BlockProcessors
 as they need to alter how markdown blocks are parsed.
 
 """
-
 import re
 import markdown
 
+
 class BlockProcessor:
-    """ Base class for block processors. 
+    """Base class for block processors. 
     
     Each subclass will provide the methods below to work with the source and
-    tree. Each processor will need to define it's own ``test`` and ``run``
-    methods. The ``test`` method should return True or False, to indicate
+    tree. Each processor will need to define it's own `test` and `run`
+    methods. The `test` method should return True or False, to indicate
     whether the current block should be processed by this processor. If the
-    test passes, the parser will call the processors ``run`` method.
+    test passes, the parser will call the processors `run` method.
 
     """
 
@@ -30,14 +30,16 @@ class BlockProcessor:
         self.parser = parser
 
     def lastChild(self, parent):
-        """ Return the last child of an etree element. """
+        """Return the last child of an etree element.
+        """
         if len(parent):
             return parent[-1]
         else:
             return None
 
     def detab(self, text):
-        """ Remove a tab from the front of each line of the given text. """
+        """Remove a tab from the front of each line of the given text.
+        """
         newtext = []
         lines = text.split('\n')
         for line in lines:
@@ -50,7 +52,8 @@ class BlockProcessor:
         return '\n'.join(newtext), '\n'.join(lines[len(newtext):])
 
     def looseDetab(self, text, level=1):
-        """ Remove a tab from front of lines but allowing dedented lines. """
+        """Remove a tab from front of lines but allowing dedented lines.
+        """
         lines = text.split('\n')
         for i in range(len(lines)):
             if lines[i].startswith(' '*markdown.TAB_LENGTH*level):
@@ -58,52 +61,60 @@ class BlockProcessor:
         return '\n'.join(lines)
 
     def test(self, parent, block):
-        """ Test for block type. Must be overridden by subclasses. 
+        """Test for block type. Must be overridden by subclasses.
         
-        As the parser loops through processors, it will call the ``test`` method
+        As the parser loops through processors, it will call the `test` method
         on each to determine if the given block of text is of that type. This
-        method must return a boolean ``True`` or ``False``. The actual method of
+        method must return a boolean `True` or `False`. The actual method of
         testing is left to the needs of that particular block type. It could 
-        be as simple as ``block.startswith(some_string)`` or a complex regular
+        be as simple as `block.startswith(some_string)` or a complex regular
         expression. As the block type may be different depending on the parent
         of the block (i.e. inside a list), the parent etree element is also 
         provided and may be used as part of the test.
 
         Keywords:
         
-        * ``parent``: A etree element which will be the parent of the block.
-        * ``block``: A block of text from the source which has been split at 
+        parent
+        :   A etree element which will be the parent of the block.
+
+        block
+        :   A block of text from the source which has been split at 
             blank lines.
+        
         """
         pass
 
     def run(self, parent, blocks):
-        """ Run processor. Must be overridden by subclasses. 
+        """Run processor. Must be overridden by subclasses. 
         
         When the parser determines the appropriate type of a block, the parser
-        will call the corresponding processor's ``run`` method. This method
+        will call the corresponding processor's `run` method. This method
         should parse the individual lines of the block and append them to
         the etree. 
 
-        Note that both the ``parent`` and ``etree`` keywords are pointers
+        Note that both the `parent` and `etree` keywords are pointers
         to instances of the objects which should be edited in place. Each
         processor must make changes to the existing objects as there is no
         mechanism to return new/different objects to replace them.
 
         This means that this method should be adding SubElements or adding text
-        to the parent, and should remove (``pop``) or add (``insert``) items to
+        to the parent, and should remove (`pop`) or add (`insert`) items to
         the list of blocks.
 
         Keywords:
 
-        * ``parent``: A etree element which is the parent of the current block.
-        * ``blocks``: A list of all remaining blocks of the document.
+        parent
+        :   A etree element which is the parent of the current block.
+        
+        blocks
+        :   A list of all remaining blocks of the document.
+
         """
         pass
 
 
 class ListIndentProcessor(BlockProcessor):
-    """ Process children of list items. 
+    """Process children of list items. 
     
     Example:
         * a list item
@@ -112,7 +123,6 @@ class ListIndentProcessor(BlockProcessor):
             or this part
 
     """
-
     INDENT_RE = re.compile(r'^(([ ]{%s})+)'% markdown.TAB_LENGTH)
     ITEM_TYPES = ['li']
     LIST_TYPES = ['ul', 'ol']
@@ -139,7 +149,7 @@ class ListIndentProcessor(BlockProcessor):
             # The sibling is a li. Use it as parent.
             self.parser.parseBlocks(sibling, [block])
         elif len(sibling) and sibling[-1].tag in self.ITEM_TYPES:
-            # The parent is a list (``ol`` or ``ul``) which has children.
+            # The parent is a list (`ol` or `ul`) which has children.
             # Assume the last child li is the parent of this block.
             if sibling[-1].text:
                 # If the parent li has text, that text needs to be moved to a p
@@ -151,12 +161,14 @@ class ListIndentProcessor(BlockProcessor):
         self.parser.state.reset()
 
     def create_item(self, parent, block):
-        """ Create a new li and parse the block with it as the parent. """
+        """Create a new li and parse the block with it as the parent.
+        """
         li = markdown.etree.SubElement(parent, 'li')
         self.parser.parseBlocks(li, [block])
  
     def get_level(self, parent, block):
-        """ Get level of indent based on list level. """
+        """Get level of indent based on list level.
+        """
         # Get indent level
         m = self.INDENT_RE.match(block)
         if m:
@@ -184,7 +196,8 @@ class ListIndentProcessor(BlockProcessor):
 
 
 class CodeBlockProcessor(BlockProcessor):
-    """ Process code blocks. """
+    """Process code blocks.
+    """
 
     def test(self, parent, block):
         return block.startswith(' '*markdown.TAB_LENGTH)
@@ -228,7 +241,7 @@ class BlockQuoteProcessor(BlockProcessor):
             before = block[:m.start()] # Lines before blockquote
             # Pass lines before blockquote in recursively for parsing forst.
             self.parser.parseBlocks(parent, [before])
-            # Remove ``> `` from begining of each line.
+            # Remove `> ` from begining of each line.
             block = '\n'.join([self.clean(line) for line in 
                             block[m.start():].split('\n')])
         sibling = self.lastChild(parent)
@@ -242,7 +255,8 @@ class BlockQuoteProcessor(BlockProcessor):
         self.parser.parseChunk(quote, block)
 
     def clean(self, line):
-        """ Remove ``>`` from beginning of a line. """
+        """Remove `>` from beginning of a line.
+        """
         m = self.RE.match(line)
         if line.strip() == ">":
             return ""
@@ -252,10 +266,11 @@ class BlockQuoteProcessor(BlockProcessor):
             return line
 
 class OListProcessor(BlockProcessor):
-    """ Process ordered list blocks. """
+    """Process ordered list blocks.
+    """
 
     TAG = 'ol'
-    # Detect an item (``1. item``). ``group(1)`` contains contents of item.
+    # Detect an item (`1. item`). `group(1)` contains contents of item.
     RE = re.compile(r'^[ ]{0,3}\d+\.[ ](.*)')
     # Detect items on secondary lines. they can be of either list type.
     CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.)|[*+-])[ ](.*)')
@@ -300,7 +315,8 @@ class OListProcessor(BlockProcessor):
         self.parser.state.reset()
 
     def get_items(self, block):
-        """ Break a block into list items. """
+        """Break a block into list items.
+        """
         items = []
         for line in block.split('\n'):
             m = self.CHILD_RE.match(line)
@@ -321,14 +337,16 @@ class OListProcessor(BlockProcessor):
 
 
 class UListProcessor(OListProcessor):
-    """ Process unordered list blocks. """
+    """Process unordered list blocks.
+    """
 
     TAG = 'ul'
     RE = re.compile(r'^[ ]{0,3}[*+-][ ](.*)')
 
 
 class HashHeaderProcessor(BlockProcessor):
-    """ Process Hash Headers. """
+    """Process Hash Headers.
+    """
 
     # Detect a header at start of any line in block
     RE = re.compile(r'(^|\n)(?P<level>#{1,6})(?P<header>.*?)#*(\n|$)')
@@ -359,7 +377,8 @@ class HashHeaderProcessor(BlockProcessor):
 
 
 class SetextHeaderProcessor(BlockProcessor):
-    """ Process Setext-style Headers. """
+    """Process Setext-style Headers.
+    """
 
     # Detect Setext-style header. Must be first 2 lines of block.
     RE = re.compile(r'^.*?\n[=-]{3,}', re.MULTILINE)
@@ -369,7 +388,7 @@ class SetextHeaderProcessor(BlockProcessor):
 
     def run(self, parent, blocks):
         lines = blocks.pop(0).split('\n')
-        # Determine level. ``=`` is 1 and ``-`` is 2.
+        # Determine level. `=` is 1 and `-` is 2.
         if lines[1].startswith('='):
             level = 1
         else:
@@ -382,7 +401,8 @@ class SetextHeaderProcessor(BlockProcessor):
 
 
 class HRProcessor(BlockProcessor):
-    """ Process Horizontal Rules. """
+    """Process Horizontal Rules.
+    """
 
     RE = r'[ ]{0,3}(?P<ch>[*_-])[ ]?((?P=ch)[ ]?){2,}[ ]*'
     # Detect hr on any line of a block.
@@ -416,7 +436,8 @@ class HRProcessor(BlockProcessor):
 
 
 class EmptyBlockProcessor(BlockProcessor):
-    """ Process blocks and start with an empty line. """
+    """Process blocks and start with an empty line.
+    """
 
     # Detect a block that only contains whitespace 
     # or only whitespace on the first line.
@@ -439,7 +460,8 @@ class EmptyBlockProcessor(BlockProcessor):
 
 
 class ParagraphProcessor(BlockProcessor):
-    """ Process Paragraph blocks. """
+    """Process Paragraph blocks.
+    """
 
     def test(self, parent, block):
         return True
@@ -458,3 +480,4 @@ class ParagraphProcessor(BlockProcessor):
                 # Create a regular paragraph
                 p = markdown.etree.SubElement(parent, 'p')
                 p.text = block.lstrip()
+
