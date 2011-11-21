@@ -75,6 +75,7 @@ You can use more than just HTML: JSON, csv, plain text, etc. Any text-based form
 Jinja2 templates are much more than just template inheritance. For more advaced features check the [official documentation] (http://jinja.pocoo.org/docs/templates/).
 
 
+---------------------------------------
 ***Happy coding!***
 
 ---------------------------------------
