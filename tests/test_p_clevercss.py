@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from .utils import *
-
-import clevercss
 from clay.processors import clevercss_
+
+from .utils import *
 
 
 SRC_CLEVERCSS = """
@@ -22,10 +21,11 @@ ul#comments, ol#comments:
       padding: 0.3em
     p.meta:
       text-align: right
-"""
+""".strip()
 
 
-EXPECTED_CLEVERCSS = """ul#comments,
+EXPECTED_CLEVERCSS = """
+ul#comments,
 ol#comments {
   margin: 0;
   padding: 0;
@@ -50,17 +50,23 @@ ol#comments li p {
 ul#comments li p.meta,
 ol#comments li p.meta {
   text-align: right;
-}"""
+}
+""".strip()
+
+
+FILENAME_IN = 'clever.ccss'
+FILENAME_OUT = 'clever.css'
 
 
 SRC_HTML = """
-<link rel="stylesheet" href="clever.ccss" />
-<link href="clever.ccss" rel="stylesheet" />"""
+<link rel="stylesheet" href="foo/bar/%s" />
+<p class="scss"></p>""" % FILENAME_IN
 
 
 EXPECTED_HTML = """
-<link rel="stylesheet" href="clever.css" />
-<link href="clever.css" rel="stylesheet" />"""
+<link rel="stylesheet" href="foo/bar/%s" />
+<p class="scss"></p>""" % FILENAME_OUT
+
 
 
 def test_clevercss_enabled():
@@ -72,39 +78,40 @@ def test_clevercss_enabled():
 
 
 def test_clevercss_render():
-    filename = 'clever.ccss'
-    filepath = make_static(filename, SRC_CLEVERCSS)
+    filepath = make_static(FILENAME_IN, SRC_CLEVERCSS)
 
-    resp = c.get('/static/' + filename)
-    assert resp.data == EXPECTED_CLEVERCSS
+    resp = c.get('/static/' + FILENAME_IN)
+    content = resp.data.strip()
+    assert content == EXPECTED_CLEVERCSS
     assert resp.mimetype == clevercss_.mimetype_out
 
     remove_file(filepath)
 
 
 def test_clevercss_make():
-    filename = 'clever.ccss'
-    filepath = make_static(filename, SRC_CLEVERCSS)
-    proto.make()
-    filepath_out = get_static_filepath('clever.css')
+    filepath = make_static(FILENAME_IN, SRC_CLEVERCSS)
+    proto.build()
+    filepath_out = get_static_filepath(FILENAME_OUT)
 
-    content = read_file(filepath_out)
+    content = read_file(filepath_out).strip()
     assert content == EXPECTED_CLEVERCSS
     remove_file(filepath)
     remove_file(filepath_out)
 
 
-def test_html_replace():
-    static_filename = 'clever.ccss'
-    static_filepath = make_static(static_filename, SRC_CLEVERCSS)
+def test_clevercss_html_replace():
+    static_filepath = make_static(FILENAME_IN, SRC_CLEVERCSS)
+    filepath_out = get_static_filepath(FILENAME_OUT)
+
     html_filename = 'test_clevercss.html'
     html_filepath = make_view(html_filename, SRC_HTML)
-    proto.make()
+    proto.build()
     html_filepath_out = get_build_filepath(html_filename)
 
     content = read_file(html_filepath_out)
     assert content == EXPECTED_HTML
 
     remove_file(static_filepath)
+    remove_file(filepath_out)
     remove_file(html_filepath)
 

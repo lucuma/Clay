@@ -1,23 +1,28 @@
 # -*- coding: utf-8 -*-
 """
-# Clay.processors.clevercss
+# Clay.processors.scss
 
-http://sandbox.pocoo.org/clevercss/
+Sassy CSS processor
+
+http://sass-lang.com/
+https://github.com/Kronuz/pyScss
 """
-from ..libs import clevercss
+from ..libs import scss
 from ..utils import get_source, make_file
 
 
 enabled = True
 
-extensions_in = ['.ccss']
+extensions_in = ['.scss']
 mimetype_out = 'text/css'
 extension_out = 'css'
+
+css = scss.Scss()
 
 
 def render(filepath_in, settings):
     source = get_source(filepath_in)
-    return clevercss.convert(source)
+    return css.compile(source)
 
 
 def build(filepath_in, filepath_out, settings):

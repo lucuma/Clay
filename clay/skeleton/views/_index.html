@@ -7,50 +7,116 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="shortcut icon" type="image/x-icon" href="{{ STATIC }}/images/favicon.ico" />
 <style>
-html, body {
-font-family: Helvetica, Arial, sans-serif;
+body {
+font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 16px;
 line-height: 1.5;
-color: #222;
-padding: 0 0 20px;
-margin: 0;
+color: #333;
 background: #fefefe;
+text-shadow: 0 0 4px #ddd;
 }
 
-.content {
-margin: 0 auto;
-width: 900px;
-}
+div.page {
+margin: 10px auto;
+padding: 30px 0;
+position: relative;
+width: 800px;
+} 
 
 h1 {
-line-height: 1.2;
-font-size: 32px;
-background: #a3312d;
-color: white;
+font-size: 60px;
 font-weight: bold;
-padding: 4px 40px;
-margin: 5px 0;
+color: #404040;
+letter-spacing: -1px;
+line-height: 1;
+text-shadow: 0 0 10px #ccc;
+margin: 20px 0 50px;
+border: 0;
+border-bottom: 1px solid #eee;
+}
+
+a, a:visited {
+color: #0069D6;
+border-bottom: 1px dotted #0069D6;
+text-decoration: none;
+}
+
+a:hover, a:focus, a:active {
+color: #00438A;
+border-bottom: 1px solid #00438A;
 }
 
 ul {
 margin: 15px 0 0;
 padding: 0;
 list-style-type: none;
+border: 1px solid #ddd;
 }
 
 li {
+padding: 5px 20px;
+border-top: 1px solid #ddd;
+background-color: #fff;
+-ms-transition: background .1s ease-in;
+-moz-transition: background .1s ease-in;
+-webkit-transition: background .1s ease-in;
+transition: background .1s ease-in; 
+}
+
+li:first-child {
+border-top: none;
+}
+
+li:hover {
+background-color: #fefef2;
+}
+
+li .date {
+color: #888;
+font-size: 12px;
+text-align: right;
+float: right;
+line-height: 2.2;
+margin-left: 40px;
+}
+
+.poweredby {
+display: block;
+text-align: center;
+margin-top: 60px;
 padding: 5px 0;
+font-size: 12px;
+color: #999;
+}
+.poweredby a {
+border: none;
+border-bottom: 1px dotted #666;
+color: #666;
+}
+.poweredby a:hover {
+color: #333;
+border-bottom: 1px solid #333;
+margin-bottom: -1px;
 }
 </style>
 </head>
 <body>
-<div class="content">
+<div class="page">
 <h1>Pages index</h1>
 <ul>
-{% for view in views -%}
-  <li><a href="{{ view }}" target="_blank">{{ view }}</a></li>
+{% for path, name, date in views -%}
+  <li>
+    <a href="{{ path|e }}" target="_blank">
+      <span class="path">{{ name|e }}</span>
+    </a>
+    <span class="date">{{ date.strftime('%Y/%m/%d %I:%M %p') }}</span>
+  </li>
 {% endfor %}
 </ul>
+</div>
+
+<div class="poweredby">
+  Powered by <a href="http://clay.lucumalabs.com">Clay</a>
 </div>
 </body>
 </html>

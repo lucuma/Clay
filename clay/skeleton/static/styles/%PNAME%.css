@@ -1,3 +1,26 @@
 /* Welcome to Clay :) */
 
 /* Your styles here */
+
+
+
+/* --- */
+
+.poweredby {
+display: block;
+text-align: center;
+margin-top: 60px;
+padding: 5px 0;
+font-size: 12px;
+color: #999;
+}
+.poweredby a {
+border: none;
+border-bottom: none;
+color: #666;
+}
+.poweredby a:hover {
+color: #333;
+border-bottom: 1px solid #333;
+margin-bottom: -1px;
+}

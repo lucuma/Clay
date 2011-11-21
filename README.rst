@@ -47,7 +47,7 @@ under the folder ``static`` and they'll be available at::
 To generate a static version of your site, stop the server (with
 ``Control + C``) and run::
 
-    $ clay make
+    $ clay build
 
 and all the templates will be processed and the result stored inside the
 ``build`` folder.
@@ -63,4 +63,4 @@ Just run::
 and you're ready to go.
 
 
-Happy prototyping!
+Happy coding!

@@ -11,7 +11,7 @@ import subprocess
 COMMAND = 'lessc'
 
 try:
-    subprocess.check_call([COMMAND, '--version'])
+    subprocess.check_output([COMMAND, '--version'])
     enabled = True
 except OSError:
     enabled = False
@@ -21,14 +21,11 @@ mimetype_out = 'text/css'
 extension_out = 'css'
 
 
-def render(filepath_in):
+def render(filepath_in, settings):
     return subprocess.check_output([COMMAND, filepath_in])
 
 
-def make(filepath_in, filepath_out):
-    try:
-        stdout = io.open(filepath_out)
-        subprocess.check_output([COMMAND, filepath_in], stdout=stdout)
-    finally:
-        stdout.close()
+def build(filepath_in, filepath_out, settings):
+    stdout = io.open(filepath_out, 'w+t')
+    subprocess.call([COMMAND, filepath_in], stdout=stdout)
 

@@ -38,18 +38,18 @@ def new(new_app_path):
 
 
 @manager.command
-def make(cwd=None):
+def build(cwd=None):
     """
     Generates a static version of the site
     """
     proto = get_current(cwd)
-    proto.make()
+    proto.build()
 
 
 @manager.command
-def build(cwd=None):
+def make(cwd=None):
     """
-    An alias for 'clay make'
+    An alias for 'clay build' (backwards compatibility)
     """
     return make(cwd)
 
@@ -81,7 +81,7 @@ def get_settings(cwd, filename='settings.json'):
                 if not l.strip().startswith(JSON_COMMENTS)])
         try:
             settings = json.loads(settings_json)
-        except ValueError:
+        except (ValueError, SyntaxError):
             settings = {}
     return settings
 

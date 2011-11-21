@@ -20,7 +20,7 @@ Inside `myprojectname`, run the development server with
 
 or generate a static version of the site
 
-    $ clay make
+    $ clay build
 
 
 ## Quickstart
@@ -46,7 +46,7 @@ Likewise, put your static files — like images, stylesheets and scripts – und
 
 To generate a static version of your site, stop the server (with `Control + C`) and run:
 
-    $ clay make
+    $ clay build
 
 and all the templates will be processed and the result stored inside the `build` folder.
 
@@ -81,12 +81,11 @@ You can use more than just HTML: JSON, csv, plain text, etc. Any text-based form
 Jinja2 templates are much more than just template inheritance. For more advaced features check the [official documentation] (http://jinja.pocoo.org/docs/templates/).
 
 
-## Advanced use
+## Not just for HTML
 
-...
+Clay can automatically compiles Less, Sass & CoffeeScript files.
+(Less and CoffeeScript has to be installed in node first).
 
-
-Happy prototyping!
 
 ---------------------------------------
 Copyright © 2011 by [Lúcuma labs] (http://lucumalabs.com).<br />

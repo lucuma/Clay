@@ -22,7 +22,7 @@ def test_common():
 
 def test_view_not_found():
     resp = c.get('/qwertyuiop.bar')
-    assert resp.status_code == HTTP_NOT_FOUND
+    assert '<!-- not found -->' in resp.data
 
 
 def test_render_non_ascii_filenames():
@@ -47,12 +47,12 @@ def test_render_static():
     assert resp.data == expected
 
 
-def test_make():
+def test_build():
     try:
         os.remove(proto.build_dir)
     except OSError:
         pass
-    proto.make()
+    proto.build()
     assert os.path.isdir(proto.build_dir)
 
     # Test overwrite
@@ -60,7 +60,7 @@ def test_make():
     bad_data = u':('
     with io.open(filename, 'w+t') as f:
         f.write(bad_data)
-    proto.make()
+    proto.build()
     with io.open(filename) as f:
         new_data = f.read()
     assert new_data != bad_data

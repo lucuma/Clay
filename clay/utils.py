@@ -1,14 +1,18 @@
+# -*- coding: utf-8 -*-
 """
 # Clay.utils
 
 """
+from datetime import datetime
 import errno
 import io
+import math
 import os
 import re
 
 
-def walk_dir(path, callback, ignore='.'):
+def walk_dir(path, callback, ignore=None):
+    ignore = ignore or ()
     for folder, subs, files in os.walk(path):
         ffolder = os.path.relpath(folder, path)
         for filename in files:
@@ -45,8 +49,8 @@ def make_file(filepath, content):
 
 def get_processed_regex(processed_files):
     rx_processed = [[
-        re.compile(r' (src|href)=[\'"]%s[\'"]' % old),
-        r' \1="%s"' % new
+        re.compile(r' (src|href)=[\'"](.*)%s[\'"]' % old),
+        r' \1="\2%s"' % new
     ] for old, new in processed_files]
     return rx_processed
 
@@ -55,4 +59,11 @@ def replace_processed_names(content, rx_processed):
     for rxold, rxnew in rx_processed:
         content = re.sub(rxold, rxnew, content)
     return content
+
+
+def get_file_mdate(filepath):
+    st = os.stat(filepath)
+    mdate = datetime.utcfromtimestamp(st.st_mtime)
+    mdate -=  datetime.utcnow() - datetime.now()
+    return mdate
 

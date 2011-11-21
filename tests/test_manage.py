@@ -25,16 +25,3 @@ def test_get_current():
     
     assert proto.base_dir == expected
 
-
-# def test_make():
-#     cwd = get_cwd()
-#     build_dir = os.path.join(cwd, 'build')
-#     try:
-#         os.remove(build_dir)
-#     except OSError:
-#         pass
-    
-#     execute('clay', ['make', cwd])
-    
-#     assert os.path.isdir(build_dir)
-

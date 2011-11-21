@@ -31,7 +31,7 @@ setup(
     description='A rapid prototyping tool',
     long_description=open(README).read(),
     install_requires=[
-        'Shake>=0.12',
+        'Shake>=0.12'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
