@@ -32,9 +32,6 @@ if coffeescript_.enabled:
     for ext in coffeescript_.extensions_in:
         enabled_processors[ext] = coffeescript_
 
-## Extensions
-from .extensions import markdown_jinja
-
 
 text_files = ['.html', '.htm', '.txt', '.csv',]
 
@@ -48,13 +45,7 @@ class Render(object):
             FileSystemLoader(views_dir),
             PackageLoader('clay', 'views'),
         ])
-        extensions = self.get_extensions()
-        self.render = JinjaRender(loader=loader, extensions=extensions)
-    
-    def get_extensions(self):
-        return [
-            markdown_jinja.get_extension(self.settings),
-        ]
+        self.render = JinjaRender(loader=loader)
     
     def __call__(self, path, **env):
         fn, ext = os.path.splitext(path)
