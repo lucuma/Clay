@@ -33,8 +33,8 @@ update Clay whitout having to recreate your projects.
 * A really nice default style for the list of views and "not found" pages.
 
 
-## 0.7
+## 0.8
 
-* Markdown Jinja extension. As a preprocessor (for *.md and *.markdown files) and as a tag ({% markdown %}{% endmarkdown %}). All interesting python-markdown extensions are activated.
-Now you can use Clay to make documentation :).
+* The static dir is now inside the views... and can be called whatever you want.
+* The build dir is now fully commiteable.
 

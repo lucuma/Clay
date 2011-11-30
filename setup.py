@@ -13,7 +13,7 @@ def run_tests():
 
 setup(
     name='Clay',
-    version='0.8',
+    version='0.8.1',
     author='Juan-Pablo Scaletti',
     author_email='juanpablo@lucumalabs.com',
     packages=['clay'],

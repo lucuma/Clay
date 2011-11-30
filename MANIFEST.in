@@ -1,3 +1,5 @@
 include *.*
 recursive-include clay *
 recursive-include tests *
+recursive-exclude clay *.pyc .DS_Store
+recursive-exclude tests *.pyc .DS_Store
