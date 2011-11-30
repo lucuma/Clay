@@ -20,8 +20,8 @@ Quickstart
 will generate a new app container with the following structure::
 
     myappname
-      ├── static/
       ├── views/
+      ├─────── static/
       └── settings.json
 
 Inside that folder, run the development server with::
@@ -39,10 +39,6 @@ and ``views/foo/bar.json`` at::
 
     http://0.0.0.0:5000/foo/bar.json
 
-Likewise, put your static files — like images, stylesheets and scripts –
-under the folder ``static`` and they'll be available at::
-
-    http://0.0.0.0:5000/static/path_to_my_static_file
 
 To generate a static version of your site, stop the server (with
 ``Control + C``) and run::

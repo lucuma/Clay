@@ -22,8 +22,17 @@ or generate a static version of the site
 ## Quickstart
 
 
-Inside this folder, run the development server with:
-    
+    $ clay new myappname
+
+will generate a new app container with the following structure::
+
+    myappname
+      ├── views/
+      ├─────── static/
+      └── settings.json
+
+Inside that folder, run the development server with:
+
     $ clay run
 
 and your site'll be available at `http://0.0.0.0:5000/`.
