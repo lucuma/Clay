@@ -44,7 +44,7 @@ EXPECTED_HTML = """
 
 
 def test_scss_enabled():
-    from clay.static import enabled_processors
+    from clay.render import enabled_processors
 
     assert scss_.enabled
     for ext in scss_.extensions_in:
@@ -52,20 +52,19 @@ def test_scss_enabled():
 
 
 def test_scss_render():
-    filepath = make_static(FILENAME_IN, SRC_SCSS)
+    filepath = make_view(FILENAME_IN, SRC_SCSS)
 
-    resp = c.get('/static/' + FILENAME_IN)
+    resp = c.get('/' + FILENAME_IN)
     content = resp.data.strip()
     assert content == EXPECTED_SCSS
-    assert resp.mimetype == scss_.mimetype_out
 
     remove_file(filepath)
 
 
 def test_scss_build():
-    filepath = make_static(FILENAME_IN, SRC_SCSS)
+    filepath = make_view(FILENAME_IN, SRC_SCSS)
     proto.build()
-    filepath_out = get_static_filepath(FILENAME_OUT)
+    filepath_out = get_build_filepath(FILENAME_OUT)
 
     content = read_file(filepath_out).strip()
     assert content == EXPECTED_SCSS
@@ -75,8 +74,8 @@ def test_scss_build():
 
 
 def test_scss_html_replace():
-    static_filepath = make_static(FILENAME_IN, SRC_SCSS)
-    filepath_out = get_static_filepath(FILENAME_OUT)
+    static_filepath = make_view(FILENAME_IN, SRC_SCSS)
+    filepath_out = get_build_filepath(FILENAME_OUT)
 
     html_filename = 'test_scss.html'
     html_filepath = make_view(html_filename, SRC_HTML)

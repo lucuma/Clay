@@ -52,7 +52,7 @@ EXPECTED_HTML = """
 
 
 def test_less_enabled():
-    from clay.static import enabled_processors
+    from clay.render import enabled_processors
 
     assert less_.enabled
     for ext in less_.extensions_in:
@@ -60,20 +60,19 @@ def test_less_enabled():
 
 
 def test_less_render():
-    filepath = make_static(FILENAME_IN, SRC_LESS)
+    filepath = make_view(FILENAME_IN, SRC_LESS)
 
-    resp = c.get('/static/' + FILENAME_IN)
+    resp = c.get('/' + FILENAME_IN)
     content = resp.data.strip()
     assert content == EXPECTED_LESS
-    assert resp.mimetype == less_.mimetype_out
 
     remove_file(filepath)
 
 
 def test_less_make():
-    filepath = make_static(FILENAME_IN, SRC_LESS)
+    filepath = make_view(FILENAME_IN, SRC_LESS)
     proto.build()
-    filepath_out = get_static_filepath(FILENAME_OUT)
+    filepath_out = get_build_filepath(FILENAME_OUT)
 
     content = read_file(filepath_out).strip()
     assert content.strip() == EXPECTED_LESS
@@ -82,8 +81,8 @@ def test_less_make():
 
 
 def test_less_html_replace():
-    static_filepath = make_static(FILENAME_IN, SRC_LESS)
-    filepath_out = get_static_filepath(FILENAME_OUT)
+    static_filepath = make_view(FILENAME_IN, SRC_LESS)
+    filepath_out = get_build_filepath(FILENAME_OUT)
 
     html_filename = 'test_less.html'
     html_filepath = make_view(html_filename, SRC_HTML)

@@ -41,8 +41,7 @@ and all the templates will be processed and the result stored inside the `build`
 
 ## Not just for HTML
 
-Clay can automatically compiles Less, Sass, CleverCSS & CoffeeScript files.
-(Less and CoffeeScript has to be installed in node first).
+Clay can automatically compiles Less, Sass, CleverCSS & CoffeeScript files directly from your `static` dir (Less and CoffeeScript has to be installed in node first).
 
 
 ## How to install

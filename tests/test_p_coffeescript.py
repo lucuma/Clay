@@ -43,7 +43,7 @@ EXPECTED_HTML = """
 
 
 def test_coffeescript_enabled():
-    from clay.static import enabled_processors
+    from clay.render import enabled_processors
 
     assert coffeescript_.enabled
     for ext in coffeescript_.extensions_in:
@@ -51,21 +51,20 @@ def test_coffeescript_enabled():
 
 
 def test_coffeescript_render():
-    filepath = make_static(FILENAME_IN, SRC_COFFEESCRIPT)
+    filepath = make_view(FILENAME_IN, SRC_COFFEESCRIPT)
 
-    resp = c.get('/static/' + FILENAME_IN)
+    resp = c.get('/' + FILENAME_IN)
     content = resp.data.strip()
     print content
     assert content == EXPECTED_COFFEESCRIPT
-    assert resp.mimetype == coffeescript_.mimetype_out
 
     remove_file(filepath)
 
 
 def test_coffeescript_make():
-    filepath = make_static(FILENAME_IN, SRC_COFFEESCRIPT)
+    filepath = make_view(FILENAME_IN, SRC_COFFEESCRIPT)
     proto.build()
-    filepath_out = get_static_filepath(FILENAME_OUT)
+    filepath_out = get_build_filepath(FILENAME_OUT)
 
     content = read_file(filepath_out).strip()
     assert content == EXPECTED_COFFEESCRIPT
@@ -74,8 +73,8 @@ def test_coffeescript_make():
 
 
 def test_coffeescript_html_replace():
-    static_filepath = make_static(FILENAME_IN, SRC_COFFEESCRIPT)
-    filepath_out = get_static_filepath(FILENAME_OUT)
+    static_filepath = make_view(FILENAME_IN, SRC_COFFEESCRIPT)
+    filepath_out = get_build_filepath(FILENAME_OUT)
 
     html_filename = 'test_coffee.html'
     html_filepath = make_view(html_filename, SRC_HTML)

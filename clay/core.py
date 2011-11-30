@@ -12,95 +12,31 @@ MIT License. (http://www.opensource.org/licenses/mit-license.php).
 """
 import mimetypes
 import os
+import shutil
 
-from jinja2 import PackageLoader, ChoiceLoader, FileSystemLoader
-from shake import Shake, Settings, Render, Rule, NotFound, TemplateNotFound
+from shake import (Shake, Settings, Rule, NotFound,
+    TemplateNotFound, Response, send_file)
 
-from . import static, utils
-
-
-STATIC_DIR = 'static'
-VIEWS_DIR = 'views'
-BUILD_DIR = 'build'
-
-VIEWS_INDEX = '_index.html'
-
-IGNORE = ('.', '_')
-
-
-default_settings = {
-    'views_list_ignore': [],
-
-    # CoffeeScript settings
-    'coffee': {
-        # Compile without a top-level function wrapper
-        'bare': False
-    },
-
-    'host': '0.0.0.0',
-    'port': 5000,
-}
-
-context_run = {
-    'STATIC': '/' + STATIC_DIR,
-}
-
-context_build = {
-    'STATIC': STATIC_DIR,
-}
+from . import utils
+from .config import *
+from .render import Render
 
 
 class Clay(object):
 
     def __init__(self, base_dir, settings=None):
         if os.path.isfile(base_dir):
-            base_dir = os.path.dirname(base_dir)
+            base_dir = os.path.abspath(os.path.dirname(base_dir))
         self.base_dir = base_dir
-        self.static_dir = utils.make_dirs(base_dir, STATIC_DIR)
+        self.settings = settings
         self.views_dir = utils.make_dirs(base_dir, VIEWS_DIR)
         self.build_dir = os.path.join(base_dir, BUILD_DIR)
-        
+
         self.settings = Settings(default_settings, settings,
             case_insensitive=True)
+        
         self.app = Shake(self._get_urls())
-
-        loader = ChoiceLoader([
-            FileSystemLoader(self.views_dir),
-            PackageLoader('clay', 'views'),
-        ])
-        self.render = Render(loader=loader)
-    
-    def test_client(self):
-        return self.app.test_client()
-    
-    def render_view(self, request, view_path=''):
-        """Default controller.
-        Render the template at `view_path` guessing it's mimetype.
-        """
-        if '..' in view_path:
-            return self.not_found()
-        view_path = view_path.strip('/')
-        is_dir = os.path.isdir(os.path.join(self.views_dir, view_path))
-        if is_dir:
-            view_path += '/'
-        if not view_path or is_dir:
-            view_path += 'index.html'
-        
-        mime = mimetypes.guess_type(view_path)[0] or 'text/plain'
-        try:
-            return self.render(view_path, context_run, mimetype=mime)
-        except TemplateNotFound:
-            return self.not_found()
-    
-    def render_static(self, request, static_path):
-        if '..' in static_path:
-            return self.not_found()
-        static_path = static_path.strip('/')
-        static_abspath = os.path.join(self.static_dir, static_path)
-        if not os.path.isfile(static_abspath):
-            return self.not_found()
-        
-        return static.render(request, static_abspath, self.settings)
+        self.render = Render(self.views_dir, self.settings)
     
     def run(self, host=None, port=None):
         host = host or self.settings.host
@@ -110,28 +46,78 @@ class Clay(object):
     def build(self):
         """Generates a static version of the site.
         """
-        processed_files = self._make_static()
-        self._make_views(processed_files)
+        print '\nGenerating views...\n', '-' * 20
+        self.build_views()
         print '\nDone!\n'
     
-    def _make_views(self, processed_files):
-        print '\nGenerating views...\n', '-' * 20
-        rx_processed = utils.get_processed_regex(processed_files)
-        views_list = []
+    def test_client(self):
+        return self.app.test_client()
+    
+    def _get_urls(self):
+        return [
+            Rule('/', self.render_view),
+            Rule('/<path:path>', self.render_view),
+        ]
+    
+    def _normalize_path(self, path):
+        if '..' in path:
+            return self.not_found()
+        path = path.strip('/')
+        is_dir = os.path.isdir(os.path.join(self.views_dir, path))
+        if is_dir:
+            path += '/'
+        if not path or is_dir:
+            path += 'index.html'
+        return path
+    
+    def render_view(self, request, path=''):
+        """Default controller.
+        Render the template at `path` guessing it's mimetype.
+        """
+        path = self._normalize_path(path)
+        try:
+            content, ext = self.render(path)
+            mimetype = mimetypes.guess_type('a' + ext)[0] or 'text/plain'
+        except TemplateNotFound:
+            return self.not_found()
+        if content:
+            return Response(content, mimetype=mimetype)
+        
+        fullpath = os.path.join(self.views_dir, path)
+        if not os.path.isfile(fullpath):
+            return self.not_found() 
+        return send_file(request, fullpath)
+    
+    def build_views(self):
+        processed = []
+        views = []
 
-        def callback(relpath):
-            uv = relpath.decode('utf8')
-            print uv
-            views_list.append(uv)
-            content = self.render.to_string(relpath, context_build)
-            content = utils.replace_processed_names(content, rx_processed)
-            filepath = utils.make_dirs(self.build_dir, relpath)
-            utils.make_file(filepath, content)
+        def callback(relpath_in):
+            fn, old_ext = os.path.splitext(relpath_in)
+            content, ext = self.render(relpath_in)
+            relpath_out = '%s%s' % (fn, ext)
+            path_in = os.path.join(self.views_dir, relpath_in)
+            path_out = utils.make_dirs(self.build_dir, relpath_out)
+
+            if not content:
+                shutil.copy2(path_in, path_out)
+            elif ext == old_ext:
+                views.append([relpath_in, path_out, content])
+            else:
+                processed.append([relpath_in, relpath_out])
+                utils.make_file(path_out, content)
         
         utils.walk_dir(self.views_dir, callback, IGNORE)
-        self._make_views_list(views_list)
+        rx_processed = utils.get_processed_regex(processed)
+        views_list = []
+        for relpath_in, path_out, content in views:
+            content = utils.replace_processed_names(content, rx_processed)
+            utils.make_file(path_out, content)
+            views_list.append(relpath_in.decode('utf8'))
+        
+        self.build_views_list(views_list)
     
-    def _make_views_list(self, views):
+    def build_views_list(self, views):
         ignore = self.settings.views_list_ignore
         ignore.append(VIEWS_INDEX)
 
@@ -139,52 +125,18 @@ class Clay(object):
             (
                 v,
                 ' / '.join(v.split('/')),
-                utils.get_file_mdate(os.path.join(self.views_dir, v))
+                utils.get_file_mdate(os.path.join(self.views_dir, v)),
             ) \
             for v in views \
                 if v not in ignore and not v.startswith(IGNORE)
             ]
-        context_build['views'] = views
-
-        content = self.render.to_string(VIEWS_INDEX, context_build)
+        content, mimetype = self.render(VIEWS_INDEX, views=views)
         final_path = utils.make_dirs(self.build_dir, VIEWS_INDEX)
         utils.make_file(final_path, content)
     
-    def _make_static(self):
-        print '\nProcessing static files...\n', '-' * 20
-        processed_files = []
-
-        def callback(relpath):
-            filepath = utils.make_dirs(self.static_dir, relpath)
-            file_tuple = static.build(filepath, self.settings)
-            if file_tuple:
-                processed_files.append(file_tuple)
-        
-        utils.walk_dir(self.static_dir, callback, IGNORE)
-        self._make_static_symlink()
-        return processed_files
-    
-    def _make_static_symlink(self):
-        utils.make_dirs(self.build_dir, '')
-        if os.symlink:
-            _old = os.getcwd()
-            os.chdir(self.build_dir)
-            try:
-                os.symlink(self.static_dir, STATIC_DIR)
-            except (OSError), e:
-                pass
-            os.chdir(_old)
-    
     def not_found(self):
-        resp = self.render('notfound.html')
+        content, ext = self.render('notfound.html')
+        resp = Response(content)
         resp.status_code = 404
         return resp
-    
-    def _get_urls(self):
-        return [
-            Rule('/', self.render_view),
-            Rule('/favicon.ico', redirect_to='/static/favicon.ico'),
-            Rule('/static/<path:static_path>', self.render_static),
-            Rule('/<path:view_path>', self.render_view),
-        ]
 

@@ -16,10 +16,6 @@ def get_views_filepath(filename):
     return os.path.join(proto.views_dir, filename)
 
 
-def get_static_filepath(filename):
-    return os.path.join(proto.static_dir, filename)
-
-
 def get_build_filepath(filename):
     return os.path.join(proto.build_dir, filename)
 
@@ -34,12 +30,6 @@ def make_file(filepath, content):
 
 def make_view(filename, content):
     filepath = get_views_filepath(filename)
-    make_file(filepath, content)
-    return filepath
-
-
-def make_static(filename, content):
-    filepath = get_static_filepath(filename)
     make_file(filepath, content)
     return filepath
 

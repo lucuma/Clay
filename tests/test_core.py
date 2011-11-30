@@ -37,25 +37,19 @@ def test_render_non_utf8_content():
     assert resp.mimetype == 'text/plain'
 
 
-def test_render_static():
-    filename = os.path.join(proto.static_dir, 'test.css')
-    with io.open(filename) as f:
-        expected = f.read()
-    resp = c.get('/static/test.css')
-    assert resp.status_code == HTTP_OK
-    assert resp.mimetype == 'text/css'
-    assert resp.data == expected
-
-
 def test_build():
     try:
         os.remove(proto.build_dir)
     except OSError:
         pass
     proto.build()
-    assert os.path.isdir(proto.build_dir)
 
-    # Test overwrite
+    assert os.path.isdir(proto.build_dir)
+    path = os.path.join(proto.build_dir, 'index.html')
+    assert os.path.isfile(path)
+
+
+def test_build_overwrite():
     filename = os.path.join(proto.build_dir, 'index.html')
     bad_data = u':('
     with io.open(filename, 'w+t') as f:

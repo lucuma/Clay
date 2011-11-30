@@ -10,8 +10,7 @@ import io
 import os
 import sys
 
-from shake import manager, json
-import voodoo
+from shake import manager, json, voodoo
 
 from .core import Clay
 

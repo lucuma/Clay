@@ -1,56 +1,52 @@
 # -*- coding: utf-8 -*-
 """
-# Clay.extensions.markdown_jinja
+    # Clay.processors.markdown_jinja
 
-A markdown pre-compiler for jinja templates.
+    A markdown pre-compiler for jinja templates.
+    http://www.freewisdom.org/projects/python-markdown/
 
 """
-import re
-import os.path
+import os
+from string import Template
 
-from jinja2 import Environment, TemplateSyntaxError
 from jinja2.ext import Extension
+import markdown
 
 
-class HamlishExtension(Extension):
+extensions_in = ['.md', '.markdown']
 
-    def __init__(self, environment):
-        super(HamlishExtension, self).__init__(environment)
+WRAPPER = Template("""{% extends "$base" %}
 
-        environment.extend(
-            hamlish_mode='compact',
-            hamlish_file_extensions=('.haml',),
-            hamlish_indent_string='    ',
-            hamlish_newline_string='\n',
-            hamlish_debug=False,
-            hamlish_enable_div_shortcut=False,
-        )
+{% block title %}$title{% endblock %}
+
+{% block content %}
+$_html
+{% endblock %}
+""")
 
 
-    def preprocess(self, source, name, filename=None):
-        if not os.path.splitext(name)[1] in \
-            self.environment.hamlish_file_extensions:
-            return source
+def get_extension(settings):
 
-        h = self.get_preprocessor(self.environment.hamlish_mode)
-        try:
-            return h.convert_source(source)
-        except TemplateIndentationError, e:
-            raise TemplateSyntaxError(e.message, e.lineno, name=name, filename=filename)
-        except TemplateSyntaxError, e:
-            raise TemplateSyntaxError(e.message, e.lineno, name=name, filename=filename)
+    md = markdown.Markdown(
+        extensions=settings.markdown_extensions,
+        safe_mode=settings.markdown_safe_mode,
+        output_format=settings.markdown_output_format
+    )
 
+    class MarkdownExtension(Extension):
+        
+        def preprocess(self, source, name, filename=None):
+            if not os.path.splitext(name)[1] in extensions_in:
+                return source
+            
+            html = md.convert(source)
+            meta = md.Meta
+            data = {}
+            data['title'] = meta.get('title', [u''])[0].strip()
+            data['base'] = meta.get('base', [u'base.html'])[0].strip()
+            data['_html'] = html
 
-    def get_preprocessor(self, mode):
-
-        if mode == 'compact':
-            output = Output(indent_string='', newline_string='')
-        elif mode == 'debug':
-            output = Output(indent_string='   ', newline_string='\n', debug=True)
-        else:
-            output = Output(indent_string=self.environment.hamlish_indent_string,
-                        newline_string=self.environment.hamlish_newline_string,
-                        debug=self.environment.hamlish_debug)
-
-        return Hamlish(output, self.environment.hamlish_enable_div_shortcut)
+            return WRAPPER.substitute(data)
+    
+    return MarkdownExtension
 

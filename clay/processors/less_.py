@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-# Clay.processors.less
+    # Clay.processors.less
 
-http://lesscss.org/
+    http://lesscss.org/
 
 """
 import io
@@ -18,15 +18,10 @@ except OSError:
     enabled = False
 
 extensions_in = ['.less']
-mimetype_out = 'text/css'
-extension_out = 'css'
+extension_out = '.css'
 
 
-def render(filepath_in, settings):
-    return subprocess.check_output([COMMAND, filepath_in])
-
-
-def build(filepath_in, filepath_out, settings):
-    stdout = io.open(filepath_out, 'w+t')
-    subprocess.call([COMMAND, filepath_in], stdout=stdout)
+def render(path, settings):
+    content = subprocess.check_output([COMMAND, path])
+    return content, extension_out
 
