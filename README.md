@@ -30,8 +30,6 @@ and your site'll be available at `http://0.0.0.0:5000/`.
 
 Anything you put under `views` will be render as a page. For instance `views/page.html` will be visible at `http://0.0.0.0:5000/page.html`, and `views/foo/bar.json` at `http://0.0.0.0:5000/foo/bar.json`.
 
-Likewise, put your static files — like images, stylesheets and scripts – under the folder `static` and they'll be available at `http://0.0.0.0:5000/static/path_to_my_static_file`.
-
 To generate a static version of your site, stop the server (with `Control + C`) and run:
 
     $ clay build

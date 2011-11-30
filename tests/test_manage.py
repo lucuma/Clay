@@ -4,7 +4,6 @@ import os
 
 from clay.manage import new, make, run, get_settings, get_current
 import pytest
-# from shake import execute
 
 
 def get_cwd():

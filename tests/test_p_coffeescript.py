@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+from clay.processors import coffeescript_
 import pytest
 
-from .utils import *
-
-from clay.processors import coffeescript_
+from tests.utils import *
 
 
 SRC_COFFEESCRIPT = """

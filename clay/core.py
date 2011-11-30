@@ -93,6 +93,7 @@ class Clay(object):
         views = []
 
         def callback(relpath_in):
+            print relpath_in
             fn, old_ext = os.path.splitext(relpath_in)
             content, ext = self.render(relpath_in)
             relpath_out = '%s%s' % (fn, ext)
@@ -100,17 +101,20 @@ class Clay(object):
             path_out = utils.make_dirs(self.build_dir, relpath_out)
 
             if not content:
-                shutil.copy2(path_in, path_out)
-            elif ext == old_ext:
-                views.append([relpath_in, path_out, content])
-            else:
+                return shutil.copy2(path_in, path_out)
+            if ext == '.html':
+                return views.append([relpath_in, path_out, content])
+            if ext != old_ext:
                 processed.append([relpath_in, relpath_out])
-                utils.make_file(path_out, content)
+            utils.make_file(path_out, content)
+            return
         
         utils.walk_dir(self.views_dir, callback, IGNORE)
         rx_processed = utils.get_processed_regex(processed)
         views_list = []
+
         for relpath_in, path_out, content in views:
+            content = utils.absolute_to_relative(content, relpath_in)
             content = utils.replace_processed_names(content, rx_processed)
             utils.make_file(path_out, content)
             views_list.append(relpath_in.decode('utf8'))

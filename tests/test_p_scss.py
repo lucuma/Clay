@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+from clay.processors import scss_
 import pytest
 
-from clay.processors import scss_
-
-from .utils import *
+from tests.utils import *
 
 
 SRC_SCSS = """

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+from clay.processors import less_
 import pytest
 
-from .utils import *
-
-from clay.processors import less_
+from tests.utils import *
 
 
 SRC_LESS = """

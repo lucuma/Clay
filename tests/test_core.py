@@ -5,6 +5,8 @@ import os
 from clay import Clay
 import pytest
 
+from tests.utils import make_file, read_file
+
 
 proto = Clay(__file__)
 c = proto.test_client()
@@ -52,10 +54,20 @@ def test_build():
 def test_build_overwrite():
     filename = os.path.join(proto.build_dir, 'index.html')
     bad_data = u':('
-    with io.open(filename, 'w+t') as f:
-        f.write(bad_data)
+    make_file(filename, bad_data)
     proto.build()
-    with io.open(filename) as f:
-        new_data = f.read()
+    
+    new_data = read_file(filename)
     assert new_data != bad_data
+
+
+def test_build_absolute2relative():
+    filename1 = os.path.join(proto.build_dir, 'index.html')
+    filename2 = os.path.join(proto.build_dir, 'foo', 'index.html')
+    proto.build()
+
+    c1 = read_file(filename1)
+    assert '<link href="styles/test.css"' in c1
+    c2 = read_file(filename2)
+    assert '<link href="../styles/test.css"' in c2
 

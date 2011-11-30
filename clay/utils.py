@@ -11,6 +11,9 @@ import os
 import re
 
 
+rx_abs_url = re.compile(r' (src|href)=[\'"]\/')
+
+
 def walk_dir(path, callback, ignore=None):
     ignore = ignore or ()
     for folder, subs, files in os.walk(path):
@@ -45,6 +48,14 @@ def make_file(filepath, content):
         content = unicode(content, 'utf-8')
     with io.open(filepath, 'w+t') as f:
         f.write(content)
+
+
+def absolute_to_relative(content, relpath):
+    depth = relpath.count(os.path.sep)
+    repl = '../' * depth
+    rx_rel_url = r' \1="%s' % repl
+    content = re.sub(rx_abs_url, rx_rel_url, content)
+    return content
 
 
 def get_processed_regex(processed_files):

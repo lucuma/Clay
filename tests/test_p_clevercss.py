@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+from clay.processors import clevercss_
 import pytest
 
-from clay.processors import clevercss_
-
-from .utils import *
+from tests.utils import *
 
 
 SRC_CLEVERCSS = """
