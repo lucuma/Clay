@@ -10,7 +10,7 @@ from ..utils import get_source
 
 
 enabled = True
-extensions_in = ['.ccss']
+extensions_in = ['.css.ccss', '.ccss']
 extension_out = '.css'
 
 

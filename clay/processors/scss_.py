@@ -13,7 +13,7 @@ from ..utils import get_source
 
 
 enabled = True
-extensions_in = ['.scss']
+extensions_in = ['.css.scss', '.scss']
 extension_out = '.css'
 
 css = scss.Scss()

@@ -17,7 +17,7 @@ try:
 except OSError:
     enabled = False
 
-extensions_in = ['.less']
+extensions_in = ['.css.less', '.less']
 extension_out = '.css'
 
 

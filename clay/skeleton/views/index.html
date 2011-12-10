@@ -3,5 +3,8 @@
 {% block title %}Welcome to Clay{% endblock %}
 
 {% block content %}
-<h1>:)</h1>
+<div class="wrapper">
+  <h1>{{ self.title() }}</h1>
+  <h2>Now go to <code>views/index.html</code> to edit me. ;)</h2>
+</div>
 {% endblock %}

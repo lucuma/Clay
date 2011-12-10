@@ -1,8 +1,24 @@
 # -*- coding: utf-8 -*-
+import shutil
+
 from clay.processors import coffeescript_
 import pytest
 
 from tests.utils import *
+
+
+def setup_module():
+    try:
+        shutil.rmtree(proto.build_dir)
+    except OSError:
+        pass
+
+
+def teardown_module():
+    try:
+        shutil.rmtree(proto.build_dir)
+    except OSError:
+        pass
 
 
 SRC_COFFEESCRIPT = """

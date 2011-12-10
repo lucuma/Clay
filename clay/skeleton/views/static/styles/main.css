@@ -1,11 +1,45 @@
-/* Welcome to Clay :) */
 
-/* Your styles here */
+@font-face {
+font-family: 'Pacifico';
+/* http://www.fontsquirrel.com/fonts/pacifico */
+src: url('pacifico-webfont.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+}
+
+html, body {
+padding: 0;
+margin: 0;
+background: #fefefe;
+font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 16px;
+line-height: 1.5;
+color: #222;
+}
+
+.wrapper {
+width: 960px;
+margin: 0 auto;
+}
+
+h1 {
+font-size: 70px;
+color: #a3312d;
+font-weight: bold;
+padding: 30px 0 0;
+font-family: 'Pacifico';
+text-align: center;
+}
+
+h2 {
+font-size: 20px;
+color: #777;
+padding: 0 0 40px;
+text-align: center;
+}
 
 
-
-/* --- */
-
+/* ------------- */
 .poweredby {
 display: block;
 text-align: center;

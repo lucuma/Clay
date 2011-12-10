@@ -1,18 +1,26 @@
 # -*- coding: utf-8 -*-
 import io
 import os
+import shutil
 
 from clay import Clay
 import pytest
 
-from tests.utils import make_file, read_file
+from .utils import *
 
 
-proto = Clay(__file__)
-c = proto.test_client()
+def setup_module():
+    try:
+        shutil.rmtree(proto.build_dir)
+    except OSError:
+        pass
 
-HTTP_OK = 200
-HTTP_NOT_FOUND = 404
+
+def teardown_module():
+    try:
+        shutil.rmtree(proto.build_dir)
+    except OSError:
+        pass
 
 
 def test_common():
@@ -41,7 +49,7 @@ def test_render_non_utf8_content():
 
 def test_build():
     try:
-        os.remove(proto.build_dir)
+        shutil.rmtree(proto.build_dir)
     except OSError:
         pass
     proto.build()

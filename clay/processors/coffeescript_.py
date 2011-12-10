@@ -20,7 +20,7 @@ try:
 except OSError:
     enabled = False
 
-extensions_in = ['.coffee']
+extensions_in = ['.js.coffee',  '.coffee']
 extension_out = '.js'
 
 

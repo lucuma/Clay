@@ -42,7 +42,7 @@ default_settings = {
     'markdown_output_format': 'xhtml1',
 
     'host': '0.0.0.0',
-    'port': 5000,
+    'port': 8080,
 }
 
 
