@@ -1,0 +1,9 @@
+## Project settings
+
+# Ignore the views listed here in the _index
+views_list_ignore:
+    - base.html
+
+# Development server
+host: 0.0.0.0
+port: 8800

@@ -1,25 +1,25 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 """
-# pyScss
+    # pyScss
 
-A Scss compiler for Python
+    A Scss compiler for Python
 
-https://github.com/Kronuz/pyScss
+    https://github.com/Kronuz/pyScss
 
-copyright:  Copyright 2011 German M. Bravo (Kronuz)
-license: MIT License (http://www.opensource.org/licenses/mit-license.php)
+    Copyright:  Copyright 2011 German M. Bravo (Kronuz)
+    License: MIT License (http://www.opensource.org/licenses/mit-license.php)
 
-Bits of code in pyScss come from various projects:
-Compass:
-    © 2009 Christopher M. Eppstein
-    http://compass-style.org/
-Sass:
-    © 2006-2009 Hampton Catlin and Nathan Weizenbaum
-    http://sass-lang.com/
-xCSS:
-    © 2010 Anton Pawlik
-    http://xcss.antpaw.org/docs/
+    Bits of code in pyScss come from various projects:
+    Compass
+    :   © 2009 Christopher M. Eppstein
+        http://compass-style.org/
+    Sass
+    :   © 2006-2009 Hampton Catlin and Nathan Weizenbaum
+        http://sass-lang.com/
+    xCSS
+    :   © 2010 Anton Pawlik
+        http://xcss.antpaw.org/docs/
 
 """
 VERSION_INFO = (1, 0, 8)

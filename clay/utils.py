@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-# Clay.utils
-
+    # Clay.utils
 """
 from datetime import datetime
 import errno

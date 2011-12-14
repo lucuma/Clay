@@ -5,6 +5,7 @@ import re
 from setuptools import setup
 
 
+PACKAGE = 'clay'
 THIS_DIR = os.path.dirname(__file__).rstrip('/')
 
 
@@ -19,7 +20,7 @@ def read_from(filepath):
 
 
 def get_version():
-    data = read_from(get_path('clay', '__init__.py'))
+    data = read_from(get_path(PACKAGE, '__init__.py'))
     version = re.search(r"__version__\s*=\s*'([^']+)'", data).group(1)
     return version.encode('utf-8')
 
@@ -66,8 +67,8 @@ setup(
     version = get_version(),
     author = 'Juan-Pablo Scaletti',
     author_email = 'juanpablo@lucumalabs.com',
-    packages = ['clay'],
-    package_data = find_packages_data('clay', 'tests'),
+    packages = [PACKAGE],
+    package_data = find_packages_data(PACKAGE, 'tests'),
     zip_safe = False,
     url = 'http://github.com/lucuma/Clay',
     license = 'MIT license (http://www.opensource.org/licenses/mit-license.php)',

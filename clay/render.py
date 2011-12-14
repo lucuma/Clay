@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+    # Clay.render
+"""
 import os
 
 from jinja2 import PackageLoader, ChoiceLoader, FileSystemLoader

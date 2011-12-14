@@ -12,10 +12,10 @@ def get_cwd():
 
 def test_get_settings():
     cwd = get_cwd()
-    settings = get_settings(cwd, filename='_test.json')
+    settings = get_settings(cwd, filename='_test.yml')
 
     assert settings
-    assert 'views_list' in settings
+    assert 'foo' in settings
 
 
 def test_get_current():

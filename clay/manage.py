@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-# Clay.manage
+    # Clay.manage
 
-Command line script.
+    Command line scripts.
 
 """
 import io
@@ -11,6 +11,7 @@ import os
 import sys
 
 from shake import manager, json, voodoo
+import yaml
 
 from .core import Clay
 
@@ -77,17 +78,23 @@ def get_current(cwd=None):
     return proto
 
 
-def get_settings(cwd, filename='settings.json'):
+def get_settings(cwd, filename='settings.yml'):
     settings = {}
     settings_filepath = os.path.join(cwd, filename)
     if os.path.isfile(settings_filepath):
         with io.open(settings_filepath) as f:
-            settings_json = ''.join([l for l in f.readlines()
-                if not l.strip().startswith(JSON_COMMENTS)])
-        try:
-            settings = json.loads(settings_json)
-        except (ValueError, SyntaxError):
-            settings = {}
+            source = f.read()
+        settings = yaml.load(source)
+    else:
+        settings_filepath = os.path.join(cwd, 'settings.json')
+        if os.path.isfile(settings_filepath):
+            with io.open(settings_filepath) as f:
+                settings_json = ''.join([l for l in f.readlines()
+                    if not l.strip().startswith(JSON_COMMENTS)])
+            try:
+                settings = json.loads(settings_json)
+            except (ValueError, SyntaxError):
+                settings = {}
     return settings
 
 

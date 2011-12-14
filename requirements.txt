@@ -4,4 +4,8 @@
 #
 #     pip install -r requirements.txt
 
+Jinja2
+pyCEO
+pyYAML
 Shake>=0.21
+Voodoo

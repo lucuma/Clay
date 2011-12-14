@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-# Clay
+    # Clay.core
 
-A rapid prototyping tool
-
-
-Copyright © 2011 by Lúcuma labs (http://lucumalabs.com).
-Coded by Juan-Pablo Scaletti <juanpablo@lucumalabs.com>.
-MIT License. (http://www.opensource.org/licenses/mit-license.php).
+    Main file
 
 """
 import mimetypes

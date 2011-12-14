@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-# CleverCSS
+    # CleverCSS
 
-The Pythonic way of CSS files.
+    The Pythonic way of CSS files.
 
-http://sandbox.pocoo.org/clevercss/
+    http://sandbox.pocoo.org/clevercss/
 
-copyright: Copyright 2007 by Armin Ronacher, Georg Brandl.
-license: BSD License
+    Copyright: Copyright 2007 by Armin Ronacher, Georg Brandl.
+    License: BSD License
 
 """
 import re
