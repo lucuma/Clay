@@ -2,9 +2,69 @@
 
 {% block title %}Welcome to Clay{% endblock %}
 
-{% block content %}
+
+{% block header -%}
+<style>
+@import url(http://fonts.googleapis.com/css?family=Pacifico);
+
+html, body {
+padding: 0;
+margin: 0;
+background: #fefefe;
+font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 16px;
+line-height: 1.5;
+color: #111;
+}
+
+.wrapper {
+width: 960px;
+margin: 0 auto;
+}
+
+h1 {
+font-size: 70px;
+color: #a3312d;
+font-weight: bold;
+padding: 30px 0 0;
+font-family: 'Pacifico', Georgia, serif;
+text-align: center;
+}
+
+h2 {
+font-size: 20px;
+color: #777;
+padding: 0 0 40px;
+text-align: center;
+}
+
+.poweredby {
+display: block;
+text-align: center;
+margin-top: 60px;
+padding: 5px 0;
+font-size: 12px;
+color: #999;
+}
+.poweredby a {
+border: none;
+border-bottom: none;
+color: #666;
+}
+.poweredby a:hover {
+color: #333;
+border-bottom: 1px solid #333;
+margin-bottom: -1px;
+}
+</style>
+{%- endblock %}
+
+
+{% block content -%}
 <div class="wrapper">
   <h1>{{ self.title() }}</h1>
   <h2>Now go to <code>views/index.html</code> to edit me. ;)</h2>
 </div>
-{% endblock %}
+
+<div class="poweredby">Powered by <a href="http://clay.lucumalabs.com">Clay</a></div>
+{%- endblock %}

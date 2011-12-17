@@ -6,15 +6,18 @@
 <title>{% block title %}{% endblock %}</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />
-<link href="/static/styles/reset.css" rel="stylesheet" />
+<script src="/static/script/jquery1.7.1.min.js"></script>
+<!--[if (gte IE 6)&(lte IE 8)]>
+<script src="/static/script/selectivizr.js"></script>
+<![endif]-->
 <link href="/static/styles/main.css" rel="stylesheet" />
+<script src="/static/script/modernizr2.js"></script>
+{% block header %}{% endblock %}
 </head>
 <body>
+
 {% block content %}{% endblock %}
 
-<script src="/static/scripts/jquery-1.7.1.min.js"></script>
-<script src="/static/scripts/underscore-1.1.6.min.js"></script>
 <script src="/static/scripts/main.js"></script>
-<div class="poweredby">Powered by <a href="http://clay.lucumalabs.com">Clay</a></div>
 </body>
 </html>
