@@ -54,14 +54,6 @@ def build(cwd=None):
 
 
 @manager.command
-def make(cwd=None):
-    """
-    An alias for 'clay build' (backwards compatibility)
-    """
-    return build(cwd)
-
-
-@manager.command
 def run(cwd=None):
     """
     Run the development server
@@ -69,6 +61,16 @@ def run(cwd=None):
     proto = get_current(cwd)
     proto.run()
 
+
+@manager.command
+def version():
+    """
+    Prints the current Clay version
+    """
+    import clay
+    print clay.__version__
+
+#------------------------------------------------------------------------------
 
 def get_current(cwd=None):
     cwd = '.' if cwd is None else cwd
