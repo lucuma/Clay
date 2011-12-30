@@ -2,7 +2,7 @@
 import io
 import os
 
-from clay.manage import new, make, run, get_settings, get_current
+from clay.manage import new, build, run, get_settings, get_current
 import pytest
 
 

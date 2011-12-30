@@ -46,7 +46,8 @@ def new(new_app_path):
 
 @manager.command
 def build(cwd=None):
-    """
+    """.
+
     Generates a static version of the site
     """
     proto = get_current(cwd)
@@ -55,7 +56,8 @@ def build(cwd=None):
 
 @manager.command
 def run(cwd=None):
-    """
+    """.
+
     Run the development server
     """
     proto = get_current(cwd)
@@ -64,7 +66,8 @@ def run(cwd=None):
 
 @manager.command
 def version():
-    """
+    """.
+
     Prints the current Clay version
     """
     import clay
@@ -102,7 +105,8 @@ def get_settings(cwd, filename='settings.yml'):
 
 
 def main():
-    manager.run(prefix=WELCOME)
+    manager.run()
+    print '\n'
 
 
 if __name__ == "__main__":
