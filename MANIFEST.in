@@ -1,7 +1,3 @@
 include *.py *.txt *.md *.rst
 recursive-include clay *
 recursive-include tests *
-recursive-exclude clay *.pyc
-recursive-exclude clay .DS_Store
-recursive-exclude tests *.pyc
-recursive-exclude tests .DS_Store
