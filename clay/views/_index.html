@@ -7,43 +7,43 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon.ico" />
 <style>
+@import url(http://fonts.googleapis.com/css?family=Pacifico);
+
 body {
 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-font-size: 16px;
+font-size: 26px;
 line-height: 1.5;
 color: #333;
 background: #fefefe;
-text-shadow: 0 0 4px #ddd;
+text-shadow: 0 0 4px rgba(0,0,0,0.4);
 }
 
 div.page {
-margin: 10px auto;
+margin: 0 auto;
 padding: 30px 0;
-position: relative;
-width: 800px;
+position:relative;
+width: 600px;
 } 
 
 h1 {
-font-size: 60px;
-font-weight: bold;
-color: #404040;
+font-family: 'Pacifico', Georgia, serif;
+font-size: 90px;
+font-weight: normal;
+color: #a3312d;
 letter-spacing: -1px;
 line-height: 1;
-text-shadow: 0 0 10px #ccc;
-margin: 20px 0 50px;
-border: 0;
-border-bottom: 1px solid #eee;
+margin: 80px 0 50px;
+border: 20px;
+text-align: left;
 }
 
 a, a:visited {
-color: #0069D6;
-border-bottom: 1px dotted #0069D6;
+color: #a3312d;
 text-decoration: none;
 }
 
 a:hover, a:focus, a:active {
-color: #00438A;
-border-bottom: 1px solid #00438A;
+color: #932c28;
 }
 
 ul {
@@ -53,7 +53,8 @@ list-style-type: none;
 border: 1px solid #ddd;
 }
 
-li {
+li a {
+display: block;
 padding: 5px 20px;
 border-top: 1px solid #ddd;
 background-color: #fff;
@@ -63,40 +64,28 @@ background-color: #fff;
 transition: background .1s ease-in; 
 }
 
-li:first-child {
+li:first-child a {
 border-top: none;
 }
 
-li:hover {
+li a:hover {
 background-color: #fefef2;
 }
 
 li .date {
 color: #888;
 font-size: 12px;
-text-align: right;
 float: right;
-line-height: 2.2;
-margin-left: 40px;
+line-height: 42px;
 }
 
 .✓ {
 display: block;
 text-align: center;
-margin-top: 60px;
+margin-top: 90px;
 padding: 5px 0;
 font-size: 12px;
 color: #999;
-}
-.✓ a {
-border: none;
-border-bottom: 1px dotted #666;
-color: #666;
-}
-.✓ a:hover {
-color: #333;
-border-bottom: 1px solid #333;
-margin-bottom: -1px;
 }
 </style>
 </head>
@@ -106,10 +95,7 @@ margin-bottom: -1px;
 <ul>
 {% for path, name, date in views -%}
   <li>
-    <a href="{{ path|e }}" target="_blank">
-      <span class="path">{{ name|e }}</span>
-    </a>
-    <span class="date">{{ date.strftime('%Y/%m/%d %I:%M %p') }}</span>
+    <a href="{{ path|e }}" target="_blank">{{ name|e }} <span class="date">{{ date.strftime('%Y/%m/%d %I:%M %p') }}</span></a>
   </li>
 {% endfor %}
 </ul>
