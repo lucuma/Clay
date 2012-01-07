@@ -5,6 +5,8 @@
     Main file
 
 """
+from __future__ import absolute_import
+
 import mimetypes
 import os
 import shutil
@@ -137,5 +139,6 @@ class Clay(object):
         content, ext = self.render('notfound.html')
         resp = Response(content)
         resp.status_code = 404
+        resp.mimetype = 'text/html'
         return resp
 

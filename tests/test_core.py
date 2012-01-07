@@ -33,6 +33,8 @@ def test_common():
 def test_view_not_found():
     resp = c.get('/qwertyuiop.bar')
     assert '<!-- not found -->' in resp.data
+    assert resp.status_code == HTTP_NOT_FOUND
+    assert resp.mimetype == 'text/html'
 
 
 def test_render_non_ascii_filenames():

@@ -5,12 +5,12 @@
     A rapid prototyping tool
 
     ------------
-    Copyright © 2011 by [Lúcuma labs] (http://lucumalabs.com).
-    See `AUTHORS.md` for more details.
+    Copyright © 2011 by [Lúcuma labs] (http://lucumalabs.com).  
+    See `AUTHORS.md` for more details.  
     License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).
 
 """
 from .core import *
 
 
-__version__ = '0.8.8'
+__version__ = '0.8.10'
