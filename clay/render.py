@@ -41,12 +41,12 @@ text_files = ['.html', '.htm', '.txt', '.csv',]
 
 class Render(object):
 
-    def __init__(self, views_dir, settings):
-        self.views_dir = views_dir
+    def __init__(self, source_dir, settings):
+        self.source_dir = source_dir
         self.settings = settings
         loader = ChoiceLoader([
-            FileSystemLoader(views_dir),
-            PackageLoader('clay', 'views'),
+            FileSystemLoader(source_dir),
+            PackageLoader('clay', 'src'),
         ])
         self.render = JinjaRender(loader=loader)
     
@@ -55,7 +55,7 @@ class Render(object):
         processor = enabled_processors.get(ext)
         content = u''
         if processor:
-            fullpath = os.path.join(self.views_dir, path)
+            fullpath = os.path.join(self.source_dir, path)
             content, ext = processor.render(fullpath, self.settings)
         else:
             if ext in text_files:

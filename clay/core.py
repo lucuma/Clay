@@ -21,19 +21,19 @@ from .render import Render
 
 class Clay(object):
 
-    def __init__(self, base_dir, settings=None):
+    def __init__(self, base_dir, settings=None, source_dir=SOURCE_DIR):
         if os.path.isfile(base_dir):
             base_dir = os.path.abspath(os.path.dirname(base_dir))
         self.base_dir = base_dir
         self.settings = settings
-        self.views_dir = utils.make_dirs(base_dir, VIEWS_DIR)
+        self.source_dir = utils.make_dirs(base_dir, source_dir)
         self.build_dir = os.path.join(base_dir, BUILD_DIR)
 
         self.settings = Settings(default_settings, settings,
             case_insensitive=True)
         
         self.app = Shake(self._get_urls())
-        self.render = Render(self.views_dir, self.settings)
+        self.render = Render(self.source_dir, self.settings)
     
     def run(self, host=None, port=None):
         host = host or self.settings.host
@@ -60,7 +60,7 @@ class Clay(object):
         if '..' in path:
             return self.not_found()
         path = path.strip('/')
-        is_dir = os.path.isdir(os.path.join(self.views_dir, path))
+        is_dir = os.path.isdir(os.path.join(self.source_dir, path))
         if is_dir:
             path += '/'
         if not path or is_dir:
@@ -80,7 +80,7 @@ class Clay(object):
         if content:
             return Response(content, mimetype=mimetype)
         
-        fullpath = os.path.join(self.views_dir, path)
+        fullpath = os.path.join(self.source_dir, path)
         if not os.path.isfile(fullpath):
             return self.not_found() 
         return send_file(request, fullpath)
@@ -94,7 +94,7 @@ class Clay(object):
             fn, old_ext = os.path.splitext(relpath_in)
             content, ext = self.render(relpath_in)
             relpath_out = '%s%s' % (fn, ext)
-            path_in = os.path.join(self.views_dir, relpath_in)
+            path_in = os.path.join(self.source_dir, relpath_in)
             path_out = utils.make_dirs(self.build_dir, relpath_out)
 
             if not content:
@@ -106,7 +106,7 @@ class Clay(object):
             utils.make_file(path_out, content)
             return
         
-        utils.walk_dir(self.views_dir, callback, IGNORE)
+        utils.walk_dir(self.source_dir, callback, IGNORE)
         rx_processed = utils.get_processed_regex(processed)
         views_list = []
 
@@ -126,7 +126,7 @@ class Clay(object):
             (
                 v,
                 ' / '.join(v.split('/')),
-                utils.get_file_mdate(os.path.join(self.views_dir, v)),
+                utils.get_file_mdate(os.path.join(self.source_dir, v)),
             ) \
             for v in views \
                 if v not in ignore and not v.startswith(IGNORE)

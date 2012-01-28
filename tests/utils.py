@@ -13,7 +13,7 @@ c = proto.test_client()
 
 
 def get_views_filepath(filename):
-    return os.path.join(proto.views_dir, filename)
+    return os.path.join(proto.source_dir, filename)
 
 
 def get_build_filepath(filename):

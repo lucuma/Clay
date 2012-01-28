@@ -29,7 +29,15 @@ SKELETON_HELP = """
     Don't forget to read the README.md
     """
 
+SOURCE_NOT_FOUND_HELP = """We couldn't found a source dir ('src' or 'views').
+Are you sure you're in the correct folder?
+"""
+
 JSON_COMMENTS = ('/', '#')
+
+
+class SourceDirNotFound(Exception):
+    pass
 
 
 @manager.command
@@ -50,7 +58,11 @@ def build(cwd=None):
 
     Generates a static version of the site
     """
-    proto = get_current(cwd)
+    try:
+        proto = get_current(cwd)
+    except SourceDirNotFound:
+        print SOURCE_NOT_FOUND_HELP
+        return
     proto.build()
 
 
@@ -60,7 +72,11 @@ def run(cwd=None):
 
     Run the development server
     """
-    proto = get_current(cwd)
+    try:
+        proto = get_current(cwd)
+    except SourceDirNotFound:
+        print SOURCE_NOT_FOUND_HELP
+        return
     proto.run()
 
 
@@ -79,9 +95,18 @@ def get_current(cwd=None):
     cwd = '.' if cwd is None else cwd
     cwd = os.path.abspath(cwd)
     # print cwd
+    source_dir = get_source_dir(cwd)
     settings = get_settings(cwd)
-    proto = Clay(cwd, settings)
+    proto = Clay(cwd, settings, source_dir=source_dir)
     return proto
+
+
+def get_source_dir(cwd):
+    sources = ['src', 'views']
+    for source in sources:
+        if os.path.exists(os.path.join(cwd, source)):
+            return source
+    raise SourceDirNotFound
 
 
 def get_settings(cwd, filename='settings.yml'):

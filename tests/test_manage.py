@@ -19,6 +19,7 @@ def test_get_settings():
 
 
 def test_get_current():
+    os.chdir(os.path.dirname(__file__))
     expected = os.getcwd()
     proto = get_current()
     
