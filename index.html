@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Clay — A Rapid Prototyping Tool</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<link href="clay.css" rel="stylesheet" />
+</head>
+<body>
+<header class="l-header">
+<hgroup>
+<h1>Clay</h1>
+<h2>A Rapid Prototyping Tool</h2>
+</hgroup>
+</header>
+<section class="l-main">
+<p>With Clay you can forget about making changes to dozens of HTML files just because you need to add a link in the footer. You can also use it to prototype your AJAX-driven application or the responses of sending forms, because it acts like a real server.</p>
+
+<h3>Instructions</h3>
+<p>Run the development server with</p>
+
+<pre>$ clay run</pre>
+
+<p>or generate a static version of the site</p>
+
+<pre>$ clay build</pre>
+
+<h3>Quickstart</h3>
+<pre>$ clay new myappname</pre>
+
+<p>will generate a new app container with the following structure:</p>
+
+<pre>myappname
+  ├── source/
+  ├─────── static/
+  ├── README.md
+  └── settings.yml
+</pre>
+
+<p>Inside that folder, run the development server with:</p>
+
+<pre>$ clay run</pre>
+
+<p>and your site'll be available at <code>http://0.0.0.0:8080/</code>.</p>
+
+<p>Anything you put under <em>source</em> will be render as a page. For instance <code>source/page.html</code> will be visible at <code>http://0.0.0.0:8080/page.html</code>, and <code>source/foo/bar.json</code> at <code>http://0.0.0.0:8080/foo/bar.json</code>.</p>
+
+<p>To generate a static version of your site, stop the server (with <kbd>Control + C</kbd>) and run:</p>
+
+<pre>$ clay build</pre>
+<p>and all the templates will be processed and the result stored inside the build folder.</p>
+
+<h3>Not just for HTML</h3>
+<p>Clay can automatically compiles Less, Sass, CleverCSS &amp; CoffeeScript files directly from your static dir (Less and CoffeeScript has to be installed in node first).</p>
+
+<h3>How to install</h3>
+<p>Just run</p>
+<pre>sudo pip install clay</pre>
+<p>and you're ready to go.</p>
+
+<h3>Templates</h3>
+<p>The real power of Clay comes by using the <a href="http://jinja.pocoo.org/2/" target="_blank">Jinja2</a> template syntax.</p>
+
+<p>You can make a single file, (for instance, your header) and included it many times using:</p>
+    
+<pre>{% include "header.html "%}</pre>
+
+<p>You can also use a powerful feature called <em>template imheritance</em>:</p>
+
+<p>Inside the source folder you'll find a file called base.html. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!</p>
+
+<p>The rest of the files, like <code>index.html</code>, are composed of blocks, like</p>
+
+<pre>{% block title %}Welcome to Clay{% endblock %}</pre>
+<p>Any content you put inside those blocks will be used to fill the same-named blocks in base.html. In this case to fill the title tag.</p>
+
+<p>You can create new blocks for your templates. You can even create new base files, just change in your templates the base that they will use, by updating the line that says:</p>
+
+<pre>{% extends "base.html" %}</pre>
+<p>You can use more than just HTML: JSON, csv, plain text, etc. Any text-based format will be ok.</p>
+
+<p><a href="http://jinja.pocoo.org/2/" target="_blank">Jinja2</a> templates are much more than just template inheritance. For more advaced features check the official documentation.</p>
+</section>
+<a id="github" href="http://github.com/lucuma/clay"><img src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub"></a>
+</body>
+</html>
