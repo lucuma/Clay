@@ -46,7 +46,7 @@ class Render(object):
         self.settings = settings
         loader = ChoiceLoader([
             FileSystemLoader(source_dir),
-            PackageLoader('clay', 'src'),
+            PackageLoader('clay', SOURCE_DIR),
         ])
         self.render = JinjaRender(loader=loader)
     
