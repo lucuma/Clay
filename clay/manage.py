@@ -14,6 +14,7 @@ from shake import manager, json
 import voodoo
 import yaml
 
+from .config import SOURCE_DIR
 from .core import Clay
 
 
@@ -29,9 +30,9 @@ SKELETON_HELP = """
     Don't forget to read the README.md
     """
 
-SOURCE_NOT_FOUND_HELP = """We couldn't found a source dir ('src' or 'views').
+SOURCE_NOT_FOUND_HELP = """We couldn't found a source dir ('%s' or 'views').
 Are you sure you're in the correct folder?
-"""
+""" % SOURCE_DIR
 
 JSON_COMMENTS = ('/', '#')
 
@@ -102,7 +103,7 @@ def get_current(cwd=None):
 
 
 def get_source_dir(cwd):
-    sources = ['src', 'views']
+    sources = [SOURCE_DIR, 'views']
     for source in sources:
         if os.path.exists(os.path.join(cwd, source)):
             return source

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Clay{% endblock %}
+
+
+{% block head %}
+<link href="/static/styles/index.css" rel="stylesheet" />
+{%- endblock %}
+
+
+{% block content %}
+  <h1>Welcome to Clay</h1>
+  <p>Now go to <code>source/index.html</code> to edit me. ;)</p>
+  {% include "footer.html" %}
+{%- endblock %}
+

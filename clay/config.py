@@ -3,7 +3,7 @@
     # Clay.config
 """
 
-SOURCE_DIR = 'src'
+SOURCE_DIR = 'source'
 BUILD_DIR = 'build'
 VIEWS_INDEX = '_index.html'
 
