@@ -27,17 +27,18 @@ or generate a static version of the site
 will generate a new app container with the following structure::
 
     myappname
-      ├── views/
+      ├── source/
       ├─────── static/
-      └── settings.json
+      ├── README.md
+      └── settings.yml
 
 Inside that folder, run the development server with:
 
     $ clay run
 
-and your site'll be available at `http://0.0.0.0:5000/`.
+and your site'll be available at `http://0.0.0.0:8080/`.
 
-Anything you put under `views` will be render as a page. For instance `views/page.html` will be visible at `http://0.0.0.0:5000/page.html`, and `views/foo/bar.json` at `http://0.0.0.0:5000/foo/bar.json`.
+Anything you put under `source` will be render as a page. For instance `source/page.html` will be visible at `http://0.0.0.0:8080/page.html`, and `source/foo/bar.json` at `http://0.0.0.0:8080/foo/bar.json`.
 
 To generate a static version of your site, stop the server (with `Control + C`) and run:
 
@@ -64,7 +65,11 @@ and you're ready to go.
 
 The real power of Clay comes by using the Jinja2 template syntax. 
 
-Inside the `views` folder you'll find a file called `base.html`. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!
+You can make a single file, (for instance, your header) and included it many times using:
+    
+    {% include "header.html "%}
+
+You can also use a powerful feature called _template imheritance_: inside the `source` folder you'll find a file called `base.html`. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!
 
 The rest of the files, like `index.html`, are composed of **blocks**, like
 

@@ -20,24 +20,25 @@ Quickstart
 will generate a new app container with the following structure::
 
     myappname
-      ├── views/
+      ├── source/
       ├─────── static/
-      └── settings.json
+      ├── README.md
+      └── settings.yml
 
 Inside that folder, run the development server with::
 
     $ clay run
 
-and your site'll be available at ``http://0.0.0.0:5000/``.
+and your site'll be available at ``http://0.0.0.0:8080/``.
 
-Anything you put under ``views`` will be render as a page. For instance,
-``views/page.html`` will be visible at::
+Anything you put under ``source`` will be render as a page. For instance,
+``source/page.html`` will be visible at::
 
-    http://0.0.0.0:5000/page.html
+    http://0.0.0.0:8080/page.html
 
-and ``views/foo/bar.json`` at::
+and ``source/foo/bar.json`` at::
 
-    http://0.0.0.0:5000/foo/bar.json
+    http://0.0.0.0:8080/foo/bar.json
 
 
 To generate a static version of your site, stop the server (with
