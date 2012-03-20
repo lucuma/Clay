@@ -3,6 +3,8 @@
 
 **A rapid prototyping tool.**
 
+http://lucuma.github.com/Clay
+
 With Clay you can forget about making changes to dozens of HTML files just because you need to add a link in the footer.
 
 You can also use it to prototype your AJAX-driven application or the responses of sending forms, because it acts like a real server.

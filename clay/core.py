@@ -73,7 +73,7 @@ class Clay(object):
         """
         path = self._normalize_path(path)
         try:
-            content, ext = self.render(path)
+            content, ext = self.render(path, **self.settings)
             mimetype = mimetypes.guess_type('a' + ext)[0] or 'text/plain'
         except TemplateNotFound:
             return self.not_found()
@@ -92,7 +92,7 @@ class Clay(object):
         def callback(relpath_in):
             print relpath_in
             fn, old_ext = os.path.splitext(relpath_in)
-            content, ext = self.render(relpath_in)
+            content, ext = self.render(relpath_in, **self.settings)
             relpath_out = '%s%s' % (fn, ext)
             path_in = os.path.join(self.source_dir, relpath_in)
             path_out = utils.make_dirs(self.build_dir, relpath_out)
