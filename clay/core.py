@@ -10,6 +10,7 @@ from __future__ import absolute_import
 import mimetypes
 import os
 import shutil
+import socket
 
 from shake import (Shake, Settings, Rule, NotFound,
     TemplateNotFound, Response, send_file)
@@ -38,6 +39,10 @@ class Clay(object):
     def run(self, host=None, port=None):
         host = host or self.settings.host
         port = port or self.settings.port
+        ips = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2]
+            if not ip.startswith("127.")][:1]
+        if ips:
+            print ' * Your local IP is:', ips[0]
         return self.app.run(host, port)
     
     def build(self):
