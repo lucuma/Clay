@@ -2,7 +2,7 @@
 
 body {
 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-font-size: 26px;
+font-size: 1.6em;
 line-height: 1.5;
 color: #333;
 background: #fefefe;
@@ -11,7 +11,7 @@ text-align: center;
 
 h1 {
 font-family: 'Pacifico', Georgia, serif;
-font-size: 90px;
+font-size: 2em;
 font-weight: normal;
 color: #a3312d;
 letter-spacing: -1px;
