@@ -10,6 +10,13 @@ import math
 import os
 import re
 import shutil
+try:
+    import simplejson as json
+except ImportError:
+    try:
+        import json
+    except ImportError:
+        pass
 
 
 RX_ASB_URL = re.compile(r' (src|href)=[\'"]\/')
@@ -102,10 +109,6 @@ def get_file_mdate(filepath):
     return mdate
 
 
-def filter_to_json(source_dict):
-    return json.dumps(source_dict)
-
-
 def copy_if_has_change(path_in, path_out):
     oldt = os.path.getmtime(path_out)
     newt = os.path.getmtime(path_in)
@@ -180,4 +183,8 @@ def to_unicode(s, encoding='utf-8', strings_only=False, errors='strict'):
             s = u' '.join([to_unicode(arg, encoding, strings_only,
                 errors) for arg in s])
     return s
+
+
+def filter_to_json(source_dict):
+    return json.dumps(source_dict)
 
