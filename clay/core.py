@@ -122,8 +122,8 @@ class Clay(object):
         Render the template at `path` guessing it's mimetype.
         """
         path = self._normalize_path(path)
-        fullpath = os.path.join(self.source_dir, path)
-
+        fullpath = os.path.join(self.source_dir, path.lstrip('/'))
+        
         if not os.path.exists(fullpath):
             return self.not_found()
 
