@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import shutil
 
-from clay.processors import scss_
+from clay import p_scss
 import pytest
 
 from tests.utils import *
@@ -9,14 +9,14 @@ from tests.utils import *
 
 def setup_module():
     try:
-        shutil.rmtree(proto.build_dir)
+        shutil.rmtree(clay_.build_dir)
     except OSError:
         pass
 
 
 def teardown_module():
     try:
-        shutil.rmtree(proto.build_dir)
+        shutil.rmtree(clay_.build_dir)
     except OSError:
         pass
 
@@ -51,56 +51,50 @@ SRC_HTML = """
 <link rel="stylesheet" href="foo/bar/%s" />
 <p class="scss"></p>""" % FILENAME_IN
 
-
 EXPECTED_HTML = """
 <link rel="stylesheet" href="foo/bar/%s" />
 <p class="scss"></p>""" % FILENAME_OUT
 
 
-
 def test_scss_enabled():
-    from clay.render import enabled_processors
-
-    assert scss_.enabled
-    for ext in scss_.extensions_in:
-        assert ext in enabled_processors
+    assert p_scss.enabled
 
 
 def test_scss_render():
     filepath = make_view(FILENAME_IN, SRC_SCSS)
-
-    resp = c.get('/' + FILENAME_IN)
-    content = resp.data.strip()
-    assert content == EXPECTED_SCSS
-
-    remove_file(filepath)
+    try:
+        resp = c.get('/' + FILENAME_IN)
+        content = resp.data.strip()
+        assert content == EXPECTED_SCSS
+    finally:
+        remove_file(filepath)
 
 
 def test_scss_build():
     filepath = make_view(FILENAME_IN, SRC_SCSS)
-    proto.build()
     filepath_out = get_build_filepath(FILENAME_OUT)
-
-    content = read_file(filepath_out).strip()
-    assert content == EXPECTED_SCSS
-
-    remove_file(filepath)
-    remove_file(filepath_out)
+    try:
+        clay_.build()
+        content = read_file(filepath_out).strip()
+        assert content == EXPECTED_SCSS
+    finally:
+        remove_file(filepath)
+        remove_file(filepath_out)
 
 
 def test_scss_html_replace():
     static_filepath = make_view(FILENAME_IN, SRC_SCSS)
     filepath_out = get_build_filepath(FILENAME_OUT)
-
     html_filename = 'test_scss.html'
     html_filepath = make_view(html_filename, SRC_HTML)
-    proto.build()
     html_filepath_out = get_build_filepath(html_filename)
-
-    content = read_file(html_filepath_out)
-    assert content == EXPECTED_HTML
-
-    remove_file(static_filepath)
-    remove_file(filepath_out)
-    remove_file(html_filepath)
+    try:
+        clay_.build()
+        content = read_file(html_filepath_out)
+        assert content == EXPECTED_HTML
+    finally:
+        remove_file(static_filepath)
+        remove_file(filepath_out)
+        remove_file(html_filepath)
+        remove_file(html_filepath_out)
 

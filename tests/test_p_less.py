@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import shutil
 
-from clay.processors import less_
+from clay import p_less
 import pytest
 
 from tests.utils import *
@@ -9,14 +9,14 @@ from tests.utils import *
 
 def setup_module():
     try:
-        shutil.rmtree(proto.build_dir)
+        shutil.rmtree(clay_.build_dir)
     except OSError:
         pass
 
 
 def teardown_module():
     try:
-        shutil.rmtree(proto.build_dir)
+        shutil.rmtree(clay_.build_dir)
     except OSError:
         pass
 
@@ -67,47 +67,44 @@ EXPECTED_HTML = """
 
 
 def test_less_enabled():
-    from clay.render import enabled_processors
-
-    assert less_.enabled
-    for ext in less_.extensions_in:
-        assert ext in enabled_processors
+    assert p_less.enabled
 
 
 def test_less_render():
     filepath = make_view(FILENAME_IN, SRC_LESS)
-
-    resp = c.get('/' + FILENAME_IN)
-    content = resp.data.strip()
-    assert content == EXPECTED_LESS
-
-    remove_file(filepath)
+    try:
+        resp = c.get('/' + FILENAME_IN)
+        content = resp.data.strip()
+        assert content == EXPECTED_LESS
+    finally:
+        remove_file(filepath)
 
 
 def test_less_make():
     filepath = make_view(FILENAME_IN, SRC_LESS)
-    proto.build()
     filepath_out = get_build_filepath(FILENAME_OUT)
-
-    content = read_file(filepath_out).strip()
-    assert content.strip() == EXPECTED_LESS
-    remove_file(filepath)
-    remove_file(filepath_out)
+    try:
+        clay_.build()
+        content = read_file(filepath_out).strip()
+        assert content.strip() == EXPECTED_LESS
+    finally:
+        remove_file(filepath)
+        remove_file(filepath_out)
 
 
 def test_less_html_replace():
     static_filepath = make_view(FILENAME_IN, SRC_LESS)
     filepath_out = get_build_filepath(FILENAME_OUT)
-
     html_filename = 'test_less.html'
     html_filepath = make_view(html_filename, SRC_HTML)
-    proto.build()
     html_filepath_out = get_build_filepath(html_filename)
-
-    content = read_file(html_filepath_out)
-    assert content == EXPECTED_HTML
-
-    remove_file(static_filepath)
-    remove_file(filepath_out)
-    remove_file(html_filepath)
+    try:
+        clay_.build()
+        content = read_file(html_filepath_out)
+        assert content == EXPECTED_HTML
+    finally:
+        remove_file(static_filepath)
+        remove_file(filepath_out)
+        remove_file(html_filepath)
+        remove_file(html_filepath_out)
 

@@ -11,14 +11,14 @@ from .utils import *
 
 def setup_module():
     try:
-        shutil.rmtree(proto.build_dir)
+        shutil.rmtree(clay_.build_dir)
     except OSError:
         pass
 
 
 def teardown_module():
     try:
-        shutil.rmtree(proto.build_dir)
+        shutil.rmtree(clay_.build_dir)
     except OSError:
         pass
 
@@ -51,30 +51,30 @@ def test_render_non_utf8_content():
 
 def test_build():
     try:
-        shutil.rmtree(proto.build_dir)
+        shutil.rmtree(clay_.build_dir)
     except OSError:
         pass
-    proto.build()
+    clay_.build()
 
-    assert os.path.isdir(proto.build_dir)
-    path = os.path.join(proto.build_dir, 'index.html')
+    assert os.path.isdir(clay_.build_dir)
+    path = os.path.join(clay_.build_dir, 'index.html')
     assert os.path.isfile(path)
 
 
 def test_build_overwrite():
-    filename = os.path.join(proto.build_dir, 'index.html')
+    filename = os.path.join(clay_.build_dir, 'index.html')
     bad_data = u':('
     make_file(filename, bad_data)
-    proto.build()
+    clay_.build()
     
     new_data = read_file(filename)
     assert new_data != bad_data
 
 
 def test_build_absolute2relative():
-    filename1 = os.path.join(proto.build_dir, 'index.html')
-    filename2 = os.path.join(proto.build_dir, 'foo', 'index.html')
-    proto.build()
+    filename1 = os.path.join(clay_.build_dir, 'index.html')
+    filename2 = os.path.join(clay_.build_dir, 'foo', 'index.html')
+    clay_.build()
 
     c1 = read_file(filename1)
     assert '<link href="styles/test.css"' in c1

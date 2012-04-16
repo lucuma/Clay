@@ -1,9 +1,24 @@
-## Project settings
 
-# Ignore the views listed here in the _index
-views_list_ignore:
-    - base.html
+# Project settings
+# =================
 
-# Development server
+## Development server
 host: 0.0.0.0
 port: 8080
+
+## Ignore the views listed here in the _index
+views_list_ignore:
+  - base.html
+
+## Enabled pre-processors
+pre_processors: 
+  - scss
+  - less
+  - coffee
+  - markdown
+
+## Enabled post-processors
+post_processors: 
+  - pygments
+  - typogrify
+

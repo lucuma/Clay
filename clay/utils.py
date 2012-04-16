@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    # Clay.utils
+# Clay.utils
+
 """
 from datetime import datetime
 import errno
@@ -8,9 +9,24 @@ import io
 import math
 import os
 import re
+import shutil
 
 
-rx_abs_url = re.compile(r' (src|href)=[\'"]\/')
+RX_ASB_URL = re.compile(r' (src|href)=[\'"]\/')
+
+
+def is_binary(filepath):
+    """Return True if the given filename is binary.
+    """
+    CHUNKSIZE = 1024
+    with io.open(filepath, 'rb') as f:
+        while 1:
+            chunk = f.read(CHUNKSIZE)
+            if '\0' in chunk: # found null byte
+                return True
+            if len(chunk) < CHUNKSIZE:
+                break
+    return False
 
 
 def walk_dir(path, callback, ignore=None):
@@ -35,6 +51,7 @@ def make_dirs(*lpath):
     return path
 
 
+
 def get_source(filepath):
     source = ''
     with io.open(filepath) as f:
@@ -49,11 +66,18 @@ def make_file(filepath, content):
         f.write(content)
 
 
+def remove_file(filepath):
+    try:
+        os.remove(filepath)
+    except OSError:
+        pass
+
+
 def absolute_to_relative(content, relpath):
     depth = relpath.count(os.path.sep)
     repl = '../' * depth
     rx_rel_url = r' \1="%s' % repl
-    content = re.sub(rx_abs_url, rx_rel_url, content)
+    content = re.sub(RX_ASB_URL, rx_rel_url, content)
     return content
 
 
@@ -76,4 +100,16 @@ def get_file_mdate(filepath):
     mdate = datetime.utcfromtimestamp(st.st_mtime)
     mdate -=  datetime.utcnow() - datetime.now()
     return mdate
+
+
+def filter_to_json(source_dict):
+    return json.dumps(source_dict)
+
+
+def copy_if_has_change(path_in, path_out):
+    oldt = os.path.getmtime(path_out)
+    newt = os.path.getmtime(path_in)
+    if oldt != newt:
+        shutil.copy2(path_in, path_out)
+
 

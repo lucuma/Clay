@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-    # Clay.manage
+# Clay.manage
 
-    Command line scripts.
+Command line scripts.
 
 """
 import io
@@ -34,8 +34,6 @@ SOURCE_NOT_FOUND_HELP = """We couldn't found a source dir ('%s' or 'views').
 Are you sure you're in the correct folder?
 """ % SOURCE_DIR
 
-JSON_COMMENTS = ('/', '#')
-
 
 class SourceDirNotFound(Exception):
     pass
@@ -54,13 +52,13 @@ def new(new_app_path):
 
 
 @manager.command
-def build(cwd=None):
+def build(theme_prefix=''):
     """.
 
     Generates a static version of the site
     """
     try:
-        proto = get_current(cwd)
+        proto = get_current(theme_prefix)
     except SourceDirNotFound:
         print SOURCE_NOT_FOUND_HELP
         return
@@ -68,13 +66,13 @@ def build(cwd=None):
 
 
 @manager.command
-def run(cwd=None):
+def run(theme_prefix=''):
     """.
 
     Run the development server
     """
     try:
-        proto = get_current(cwd)
+        proto = get_current(theme_prefix)
     except SourceDirNotFound:
         print SOURCE_NOT_FOUND_HELP
         return
@@ -92,14 +90,15 @@ def version():
 
 #------------------------------------------------------------------------------
 
-def get_current(cwd=None):
+def get_current(theme_prefix='', cwd=None):
     cwd = '.' if cwd is None else cwd
     cwd = os.path.abspath(cwd)
     # print cwd
     source_dir = get_source_dir(cwd)
     settings = get_settings(cwd)
-    proto = Clay(cwd, settings, source_dir=source_dir)
-    return proto
+    settings.setdefault('theme_prefix', theme_prefix)
+    
+    return Clay(cwd, settings, source_dir=source_dir)
 
 
 def get_source_dir(cwd):
@@ -117,16 +116,7 @@ def get_settings(cwd, filename='settings.yml'):
         with io.open(settings_filepath) as f:
             source = f.read()
         settings = yaml.load(source)
-    else:
-        settings_filepath = os.path.join(cwd, 'settings.json')
-        if os.path.isfile(settings_filepath):
-            with io.open(settings_filepath) as f:
-                settings_json = ''.join([l for l in f.readlines()
-                    if not l.strip().startswith(JSON_COMMENTS)])
-            try:
-                settings = json.loads(settings_json)
-            except (ValueError, SyntaxError):
-                settings = {}
+
     return settings
 
 

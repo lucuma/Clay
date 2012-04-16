@@ -13,15 +13,12 @@ def get_cwd():
 def test_get_settings():
     cwd = get_cwd()
     settings = get_settings(cwd, filename='_test.yml')
-
     assert settings
-    assert 'foo' in settings
 
 
 def test_get_current():
     os.chdir(os.path.dirname(__file__))
     expected = os.getcwd()
-    proto = get_current()
-    
-    assert proto.base_dir == expected
+    clay_ = get_current()
+    assert clay_.base_dir == expected
 

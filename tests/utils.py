@@ -8,16 +8,16 @@ from clay import Clay
 HTTP_OK = 200
 HTTP_NOT_FOUND = 404
 
-proto = Clay(__file__)
-c = proto.test_client()
+clay_ = Clay(__file__)
+c = clay_.test_client()
 
 
 def get_views_filepath(filename):
-    return os.path.join(proto.source_dir, filename)
+    return os.path.join(clay_.source_dir, filename)
 
 
 def get_build_filepath(filename):
-    return os.path.join(proto.build_dir, filename)
+    return os.path.join(clay_.build_dir, filename)
 
 
 def make_file(filepath, content):

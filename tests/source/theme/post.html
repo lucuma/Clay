@@ -4,9 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width" />
 <title>{% block title %}Test{% endblock %}</title>
-<link href="/styles/test.css" rel="stylesheet" />
 </head>
 <body>
 {% block content %}{% endblock %}
+
+<p>— {% block author %}Anonymous{% endblock %}</p>
 </body>
 </html>

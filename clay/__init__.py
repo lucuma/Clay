@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-    # Clay
+# Clay
 
-    A rapid prototyping tool
+A rapid prototyping tool
 
-    ------------
-    Copyright © 2011 by [Lúcuma labs] (http://lucumalabs.com).  
-    See `AUTHORS.md` for more details.  
-    License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).
+------------
+Copyright © 2011 by [Lúcuma labs] (http://lucumalabs.com).  
+See `AUTHORS.md` for more details.  
+License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).
 
 """
 from .core import *
 
 
-__version__ = '0.26'
+__version__ = '1.0.0'
