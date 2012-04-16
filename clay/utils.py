@@ -58,7 +58,6 @@ def make_dirs(*lpath):
     return path
 
 
-
 def get_source(filepath):
     source = ''
     with io.open(filepath) as f:
@@ -103,17 +102,19 @@ def replace_processed_names(content, rx_processed):
 
 
 def get_file_mdate(filepath):
-    st = os.stat(filepath)
-    mdate = datetime.utcfromtimestamp(st.st_mtime)
+    mtime = os.path.getmtime(filepath)
+    mdate = datetime.utcfromtimestamp(mtime)
     mdate -=  datetime.utcnow() - datetime.now()
     return mdate
 
 
 def copy_if_has_change(path_in, path_out):
-    oldt = os.path.getmtime(path_out)
-    newt = os.path.getmtime(path_in)
-    if oldt != newt:
-        shutil.copy2(path_in, path_out)
+    if os.path.exists(path_out):
+        oldt = os.path.getmtime(path_out)
+        newt = os.path.getmtime(path_in)
+        if oldt == newt:
+            return
+    shutil.copy2(path_in, path_out)
 
 
 def _is_protected_type(obj):
