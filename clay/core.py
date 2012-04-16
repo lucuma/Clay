@@ -123,9 +123,11 @@ class Clay(object):
         """
         path = self._normalize_path(path)
         fullpath = os.path.join(self.source_dir, path.lstrip('/'))
-        
+
         if not os.path.exists(fullpath):
-            return self.not_found()
+            fullpath = os.path.join(config.DEFAULT_TEMPLATES, path.lstrip('/'))
+            if not os.path.exists(fullpath):
+                return self.not_found()
 
         if utils.is_binary(fullpath):
             return send_file(request, fullpath)

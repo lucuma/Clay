@@ -3,10 +3,13 @@
 # Clay.config
 
 """
+import os
 
 SOURCE_DIR = 'source'
 BUILD_DIR = 'build'
 VIEWS_INDEX = '_index.html'
+
+DEFAULT_TEMPLATES = os.path.join(os.path.dirname(__file__), 'source')
 
 IGNORE = ('.', '_')
 
