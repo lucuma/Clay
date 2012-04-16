@@ -84,7 +84,7 @@ class Clay(object):
 
 
     def _post_process(self, html):
-        html = unicode(html, 'utf-8')
+        html = utils.to_unicode(html)
         processors = self.settings.post_processors
 
         for name in processors:
