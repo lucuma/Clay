@@ -14,18 +14,16 @@ from jinja2.ext import Extension
 try:
     import misaka as m
     enabled = True
+    MISAKA_EXTENSIONS = m.EXT_AUTOLINK | m.EXT_TABLES | m.EXT_FENCED_CODE
+    MISAKA_EXTENSIONS |= m.EXT_NO_INTRA_EMPHASIS | m.EXT_STRIKETHROUGH
+    MISAKA_EXTENSIONS |= m.EXT_SUPERSCRIPT
+    MISAKA_RENDER_FLAGS =  m.HTML_TOC
 except ImportError:
     enabled = False
 
 
 extensions_in = ('.html.md', '.md', '.markdown',)
 extension_out = '.html'
-
-MISAKA_EXTENSIONS = m.EXT_AUTOLINK | m.EXT_TABLES | m.EXT_FENCED_CODE
-MISAKA_EXTENSIONS |= m.EXT_NO_INTRA_EMPHASIS | m.EXT_STRIKETHROUGH
-MISAKA_EXTENSIONS |= m.EXT_SUPERSCRIPT
-
-MISAKA_RENDER_FLAGS =  m.HTML_TOC
 
 RX_META = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')
 RX_META_MORE = re.compile(r'^[ ]{4,}(?P<value>.*)')

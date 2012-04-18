@@ -16,7 +16,7 @@ from shake import Shake, Settings, Render, Rule, NotFound, send_file
 
 from . import utils, config
 from . import p_scss, p_less, p_markdown, p_coffee
-from . import pp_pygments
+from . import pp_pygments, pp_typogrify
 
 
 class Clay(object):

@@ -18,7 +18,7 @@ except ImportError:
 
 
 RX_CODEBLOCK = re.compile(r'<pre(?: lang="([a-z0-9]+#?)")?><code'
-    '(?: class="([a-z0-9]+#?).*?")?>(.*?)</code></pre>',
+    '(?: class="([a-z0-9_\-]+#?).*?")?>(.*?)</code></pre>',
     re.IGNORECASE | re.DOTALL)
 
 
