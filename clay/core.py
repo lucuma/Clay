@@ -28,12 +28,13 @@ class Clay(object):
         self.source_dir = utils.make_dirs(base_dir, source_dir)
         self.build_dir = os.path.join(base_dir, config.BUILD_DIR)
 
+        settings = settings or {}
         self.settings = Settings(config.default_settings, settings,
             case_insensitive=True)
         theme_prefix = self.settings.get('theme_prefix', '').rstrip('/')
         if theme_prefix:
             theme_prefix += '/'
-        self.settings.theme_prefix = theme_prefix
+        self.settings['theme_prefix'] = theme_prefix
 
         self.app = Shake()
         self._make_render()
