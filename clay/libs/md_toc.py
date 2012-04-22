@@ -23,17 +23,8 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                 yield parent, child
 
     def run(self, doc):
-        marker_found = False
-
         div = etree.Element("div")
-        div.attrib["class"] = "toc"
         last_li = None
-
-        # Add title to the div
-        if self.config["title"]:
-            header = etree.SubElement(div, "span")
-            header.attrib["class"] = "toctitle"
-            header.text = self.config["title"]
 
         level = 0
         list_stack=[div]
@@ -65,6 +56,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                         else:
                             list_stack[-1].append(newlist)
                         list_stack.append(newlist)
+
                         if level == 0:
                             level = tag_level
                         else:
@@ -77,7 +69,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     else:
                         id = c.attrib["id"]
 
-                    # List item link, to be inserted into the toc div
+                    # List item link, to be inserted into the toc
                     last_li = etree.Element("li")
                     link = etree.SubElement(last_li, "a")
                     link.text = text
@@ -100,7 +92,13 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
                     pass
         
         # searialize and attach to markdown instance.
-        toc = self.markdown.serializer(div)
+        ul = div.find('ul')
+        if not ul:
+            self.markdown.toc = ''
+            return
+        
+        ul.attrib["class"] = "toc"
+        toc = self.markdown.serializer(ul)
         for pp in self.markdown.postprocessors.values():
             toc = pp.run(toc)
         self.markdown.toc = toc
@@ -110,17 +108,9 @@ class TocExtension(markdown.Extension):
 
     def __init__(self, **configs):
         self.config = {
-            "marker" : ["[TOC]", 
-                "Text to find and replace with Table of Contents -"
-                "Defaults to \"[TOC]\""
-            ],
             "slugify" : [slugify,
                 "Function to generate anchors based on header text-"
                 "Defaults to the headerid ext's slugify function."
-            ],
-            "title" : [None,
-                "Title to insert into TOC <div> - "
-                "Defaults to None"
             ],
             "anchorlink" : [True,
                 "True if header should be a self link"
