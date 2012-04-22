@@ -30,12 +30,15 @@ class Clay(object):
 
         self.settings = Settings(config.default_settings, settings,
             case_insensitive=True)
+        theme_prefix = self.settings.get('theme_prefix', '').rstrip('/')
+        if theme_prefix:
+            theme_prefix += '/'
+        self.settings.theme_prefix = theme_prefix
 
         self.app = Shake()
         self._make_render()
         self._enable_pre_processors()
         self._add_urls()
-    
 
     def _make_render(self):
         loader = ChoiceLoader([
@@ -44,7 +47,6 @@ class Clay(object):
         ])
         self.render = Render(loader=loader)
         self.render.set_filter('json', utils.filter_to_json)
-
 
     def _enable_pre_processors(self):
         ext_trans = {}
@@ -59,17 +61,14 @@ class Clay(object):
 
         self.ext_trans = ext_trans
 
-
     def _add_urls(self):
         self.app.add_urls([
             Rule('/', self.render_view),
             Rule('/<path:path>', self.render_view),
         ])
 
-
     def _translate_ext(self, old_ext):
         return self.ext_trans.get(old_ext, old_ext)
-
 
     def _normalize_path(self, path):
         if '..' in path:
@@ -82,7 +81,6 @@ class Clay(object):
             path += 'index.html'
         return path
 
-
     def _post_process(self, html):
         html = utils.to_unicode(html)
         processors = self.settings.post_processors
@@ -94,7 +92,6 @@ class Clay(object):
 
         return html
 
-
     def run(self, host=None, port=None):
         host = host or self.settings.host
         port = port or self.settings.port
@@ -103,7 +100,6 @@ class Clay(object):
         if ips:
             print ' * Your local IP is:', ips[0]
         return self.app.run(host, port)
-    
 
     def build(self):
         """Generates a static version of the site.
@@ -111,11 +107,9 @@ class Clay(object):
         print '\nGenerating views...\n', '-' * 20
         self.build_views()
         print '\nDone!\n'
-    
 
     def test_client(self):
         return self.app.test_client()
-    
 
     def render_view(self, request, path=''):
         """Default controller.
@@ -142,7 +136,6 @@ class Clay(object):
         resp.mimetype = mimetypes.guess_type('a' + real_ext)[0] or 'text/plain'
         return resp
 
-
     def build_views(self):
         processed = []
         views = []
@@ -161,12 +154,12 @@ class Clay(object):
 
             content = self.render.to_string(relpath_in, **self.settings)
             
+            if ext != old_ext:
+                processed.append([relpath_in, relpath_out])
+
             if ext == '.html':
                 content = self._post_process(content)
                 return views.append([relpath_in, path_out, content])
-
-            if ext != old_ext:
-                processed.append([relpath_in, relpath_out])
 
             utils.make_file(path_out, content)
             return
@@ -182,7 +175,6 @@ class Clay(object):
             views_list.append(relpath_in.decode('utf8'))
         
         self.build_views_list(views_list)
-    
 
     def build_views_list(self, views):
         ignore = self.settings.views_list_ignore
@@ -200,7 +192,6 @@ class Clay(object):
         content = self.render.to_string(config.VIEWS_INDEX, views=views)
         final_path = utils.make_dirs(self.build_dir, config.VIEWS_INDEX)
         utils.make_file(final_path, content)
-    
 
     def not_found(self):
         resp = self.render('notfound.html')

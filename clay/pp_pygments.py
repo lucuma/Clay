@@ -45,8 +45,7 @@ def _highlight_match(match):
     try:
         lexer = get_lexer_by_name(lang_or_class)
     except ClassNotFound:
-        return '<div class="%s">%s</div>' % (lang_or_class, code)
-
+        return match.group(0)
     
     formatter = HtmlFormatter(
         cssclass='highlight ' + lang_or_class,

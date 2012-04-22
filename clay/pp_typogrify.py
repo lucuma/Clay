@@ -6,7 +6,7 @@
     amp and initial_quotes.
 
 """
-from .typogrify import typogrify
+from .libs.typographer import typogrify
 
 
 enabled = True

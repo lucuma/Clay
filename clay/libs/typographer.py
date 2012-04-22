@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    # Typogrify Plus
+    # Typographer
 
     Typogrify without dependencies
 
