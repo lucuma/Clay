@@ -10,6 +10,10 @@ port: 8080
 views_list_ignore:
   - base.html
 
+## Do not process files with these extensions as jinja templates
+plain_text:
+  - .js
+
 ## Enabled pre-processors
 pre_processors: 
   - scss

@@ -17,6 +17,7 @@ default_settings = {
     'host': '0.0.0.0',
     'port': 8080,
 
+    'plain_text': ['.js', ],
     'views_list_ignore': [],
 
     'pre_processors': ['scss', 'less', 'coffee', 'markdown'],

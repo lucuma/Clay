@@ -11,8 +11,10 @@ import mimetypes
 import os
 import socket
 
-from jinja2 import PackageLoader, ChoiceLoader, FileSystemLoader
-from shake import Shake, Settings, Render, Rule, NotFound, send_file
+from jinja2 import (PackageLoader, ChoiceLoader, FileSystemLoader)
+from jinja2.exceptions import TemplateSyntaxError
+from shake import (Shake, Settings, Render, Rule, NotFound, send_file,
+    Response)
 
 from . import utils, config
 from . import p_scss, p_less, p_markdown, p_coffee
@@ -124,13 +126,21 @@ class Clay(object):
             if not os.path.exists(fullpath):
                 return self.not_found()
 
-        if utils.is_binary(fullpath):
+        plain_text_exts = self.settings.plain_text
+        if ext in plain_text_exts or utils.is_binary(fullpath):
             return send_file(request, fullpath)
 
         fn, ext = os.path.splitext(path)
         real_ext = self._translate_ext(ext)
 
-        resp = self.render(path, **self.settings)
+        try:
+            resp = self.render(path, **self.settings)
+        except TemplateSyntaxError:
+            print '-- WARNING:', 'Syntax error while trying to process', \
+                    utils.to_unicode(path), 'as a Jinja template.'
+            source = utils.get_source(fullpath)
+            resp = Response(source)
+
         if real_ext == '.html':
             resp.data = self._post_process(resp.data)
 
@@ -150,10 +160,16 @@ class Clay(object):
             path_in = os.path.join(self.source_dir, relpath_in)
             path_out = utils.make_dirs(self.build_dir, relpath_out)
 
-            if utils.is_binary(path_in):
+            plain_text_exts = self.settings.plain_text
+            if ext in plain_text_exts or utils.is_binary(path_in):
                 return utils.copy_if_has_change(path_in, path_out)
 
-            content = self.render.to_string(relpath_in, **self.settings)
+            try:
+                content = self.render.to_string(relpath_in, **self.settings)
+            except TemplateSyntaxError:
+                print '-- WARNING:', 'Syntax error while trying to process', \
+                    utils.to_unicode(relpath_in), 'as a Jinja template.'
+                content = utils.get_source(path_in)
             
             if ext != old_ext:
                 processed.append([relpath_in, relpath_out])
