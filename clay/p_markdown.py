@@ -21,7 +21,7 @@ except ImportError:
 from .utils import to_unicode
 
 
-extensions_in = ('.html.md', '.md', '.markdown',)
+extensions_in = ('.md', '.markdown', '.mdown', '.html.md', '.html.mdown', '.html.markdown',)
 extension_out = '.html'
 
 
