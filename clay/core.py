@@ -119,6 +119,8 @@ class Clay(object):
         Render the template at `path` guessing it's mimetype.
         """
         path = self._normalize_path(path)
+        fn, ext = os.path.splitext(path)
+        real_ext = self._translate_ext(ext)
         fullpath = os.path.join(self.source_dir, path.lstrip('/'))
 
         if not os.path.exists(fullpath):
@@ -129,9 +131,6 @@ class Clay(object):
         plain_text_exts = self.settings.plain_text
         if ext in plain_text_exts or utils.is_binary(fullpath):
             return send_file(request, fullpath)
-
-        fn, ext = os.path.splitext(path)
-        real_ext = self._translate_ext(ext)
 
         try:
             resp = self.render(path, **self.settings)
@@ -153,9 +152,9 @@ class Clay(object):
 
         def callback(relpath_in):
             print relpath_in
-            fn, old_ext = os.path.splitext(relpath_in)
-            ext = self._translate_ext(old_ext)
-            relpath_out = '%s%s' % (fn, ext)
+            fn, ext = os.path.splitext(relpath_in)
+            real_ext = self._translate_ext(ext)
+            relpath_out = '%s%s' % (fn, real_ext)
 
             path_in = os.path.join(self.source_dir, relpath_in)
             path_out = utils.make_dirs(self.build_dir, relpath_out)
@@ -171,10 +170,10 @@ class Clay(object):
                     utils.to_unicode(relpath_in), 'as a Jinja template.'
                 content = utils.get_source(path_in)
             
-            if ext != old_ext:
+            if real_ext != ext:
                 processed.append([relpath_in, relpath_out])
 
-            if ext == '.html':
+            if real_ext == '.html':
                 content = self._post_process(content)
                 return views.append([relpath_in, path_out, content])
 
