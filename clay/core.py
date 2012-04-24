@@ -38,7 +38,7 @@ class Clay(object):
             theme_prefix += '/'
         self.settings['theme_prefix'] = theme_prefix
 
-        self.app = Shake()
+        self.app = Shake(config.app_settings)
         self._make_render()
         self._enable_pre_processors()
         self._add_urls()

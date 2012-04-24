@@ -26,4 +26,7 @@ default_settings = {
     'theme_prefix': '',
 }
 
+app_settings = {
+    'RELOAD': False,
+}
 
