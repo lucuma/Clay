@@ -40,7 +40,7 @@ class SourceDirNotFound(Exception):
 
 
 @manager.command
-def new(new_app_path):
+def new(new_app_path='.'):
     """DIR_PATH
 
     Creates a new project
