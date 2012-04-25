@@ -7,6 +7,7 @@ Main file
 """
 from __future__ import absolute_import
 
+import glob
 import mimetypes
 import os
 import socket
@@ -70,9 +71,6 @@ class Clay(object):
             Rule('/<path:path>', self.render_view),
         ])
 
-    def _translate_ext(self, old_ext):
-        return self.ext_trans.get(old_ext, old_ext)
-
     def _normalize_path(self, path):
         if '..' in path:
             return self.not_found()
@@ -83,6 +81,29 @@ class Clay(object):
         if not path or is_dir:
             path += 'index.html'
         return path
+
+    def _translate_ext(self, old_ext):
+        return self.ext_trans.get(old_ext, old_ext)
+
+    def _get_alternative(self, path):
+        path = path.strip('/')
+        fname, ext = os.path.splitext(path)
+        fullpath = os.path.join(config.DEFAULT_TEMPLATES, path)
+        if os.path.exists(fullpath):
+            return ext, path, fullpath
+        
+        if path != 'index.html':
+            return None, None, None
+
+        pdir = os.path.join(self.source_dir, fname + '.*')
+        files = glob.glob(pdir)
+        if files:
+            fullpath = files[0]
+            path = fullpath.replace(self.source_dir, '')
+            _, ext = os.path.splitext(path)
+            return ext, path, fullpath
+
+        return None, None, None
 
     def _post_process(self, html):
         html = utils.to_unicode(html)
@@ -124,8 +145,8 @@ class Clay(object):
         fullpath = os.path.join(self.source_dir, path.lstrip('/'))
 
         if not os.path.exists(fullpath):
-            fullpath = os.path.join(config.DEFAULT_TEMPLATES, path.lstrip('/'))
-            if not os.path.exists(fullpath):
+            ext, path, fullpath = self._get_alternative(path)
+            if not fullpath:
                 return self.not_found()
 
         plain_text_exts = self.settings.plain_text
