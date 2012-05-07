@@ -18,7 +18,7 @@ COMMAND = 'coffee'
 try:
     subprocess.check_output([COMMAND, '--version'])
     enabled = True
-except OSError:
+except Exception:
     enabled = False
 
 extensions_in = ('.js.coffee',  '.coffee',)
