@@ -53,7 +53,7 @@ import markdown
 
 
 RX_FENCED_BLOCK = re.compile(
-    r'''(?P<fence>^`{3,})[ ]*(?P<lang>[a-zA-Z0-9_\s-]+)?\n(?P<code>.*?)(?P=fence)[ ]*$''',
+    r'''(?P<fence>^`{3,})[ ]*(?P<lang>[^\n]+)?\n(?P<code>.*?)(?P=fence)[ ]*$''',
     re.MULTILINE|re.DOTALL
 )
 CODE_WRAP = '<pre><code%s>%s</code></pre>'
@@ -85,7 +85,11 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                 if m.group('lang'):
                     lang = LANG_TAG % m.group('lang')
 
-                code = CODE_WRAP % (lang, self._escape(m.group('code')))
+                code = ''.join([
+                    '{% raw %}',
+                    CODE_WRAP % (lang, self._escape(m.group('code'))),
+                    '{% endraw %}'
+                ])
 
                 placeholder = self.markdown.htmlStash.store(code, safe=True)
                 text = '%s\n%s\n%s'% (text[:m.start()], placeholder, text[m.end():])

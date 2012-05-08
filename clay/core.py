@@ -216,17 +216,18 @@ class Clay(object):
     def build_views_list(self, views):
         ignore = self.settings.views_list_ignore
         ignore.append(config.VIEWS_INDEX)
+        real_views = []
 
-        views = [
-            (
-                v,
-                ' / '.join(v.split('/')),
-                utils.get_file_mdate(os.path.join(self.source_dir, v)),
-            ) \
-            for v in views \
-                if v not in ignore and not v.startswith(config.IGNORE)
-            ]
-        content = self.render.to_string(config.VIEWS_INDEX, views=views)
+        for v in views:
+            if v in ignore or v.startswith(config.IGNORE):
+                continue
+            mdate = utils.get_file_mdate(os.path.join(self.source_dir, v))
+            fn, ext = os.path.splitext(v)
+            real_ext = self._translate_ext(ext)
+            v = '%s%s' % (fn, real_ext)
+            real_views.append((v, ' / '.join(v.split('/')), mdate))
+        
+        content = self.render.to_string(config.VIEWS_INDEX, views=real_views)
         final_path = utils.make_dirs(self.build_dir, config.VIEWS_INDEX)
         utils.make_file(final_path, content)
 
