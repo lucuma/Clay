@@ -34,10 +34,14 @@ class Clay(object):
         settings = settings or {}
         self.settings = Settings(config.default_settings, settings,
             case_insensitive=True)
+
         theme_prefix = self.settings.get('theme_prefix', '').rstrip('/')
         if theme_prefix:
             theme_prefix += '/'
         self.settings['theme_prefix'] = theme_prefix
+
+        views_ignore = self.settings.get('views_ignore', [])
+        self.settings['views_ignore'] = tuple(views_ignore)
 
         self.app = Shake(config.app_settings)
         self._make_render()
@@ -170,12 +174,19 @@ class Clay(object):
     def build_views(self):
         processed = []
         views = []
+        views_ignore = self.settings.views_ignore
+        theme_prefix = self.settings.theme_prefix
 
         def callback(relpath_in):
-            print relpath_in
+            if relpath_in.endswith(views_ignore):
+                return
             fn, ext = os.path.splitext(relpath_in)
             real_ext = self._translate_ext(ext)
-            relpath_out = '%s%s' % (fn, real_ext)
+            relpath_in_real = '%s%s' % (fn, real_ext)
+            relpath_out = relpath_in_real
+            if theme_prefix and not relpath_out.startswith(theme_prefix):
+                relpath_out = os.path.join(theme_prefix, relpath_out)
+            print relpath_out
 
             path_in = os.path.join(self.source_dir, relpath_in)
             path_out = utils.make_dirs(self.build_dir, relpath_out)
@@ -192,7 +203,7 @@ class Clay(object):
                 content = utils.get_source(path_in)
             
             if real_ext != ext:
-                processed.append([relpath_in, relpath_out])
+                processed.append([relpath_in, relpath_in_real])
 
             if real_ext == '.html':
                 content = self._post_process(content)
@@ -206,7 +217,8 @@ class Clay(object):
         views_list = []
 
         for relpath_in, path_out, content in views:
-            content = utils.absolute_to_relative(content, relpath_in)
+            content = utils.absolute_to_relative(content, relpath_in,
+                theme_prefix)
             content = utils.replace_processed_names(content, rx_processed)
             utils.make_file(path_out, content)
             views_list.append(relpath_in.decode('utf8'))
@@ -228,7 +240,9 @@ class Clay(object):
             real_views.append((v, ' / '.join(v.split('/')), mdate))
         
         content = self.render.to_string(config.VIEWS_INDEX, views=real_views)
-        final_path = utils.make_dirs(self.build_dir, config.VIEWS_INDEX)
+        relpath = os.path.join(self.settings.theme_prefix, config.VIEWS_INDEX)
+        print relpath
+        final_path = utils.make_dirs(self.build_dir, relpath)
         utils.make_file(final_path, content)
 
     def not_found(self):

@@ -6,6 +6,10 @@
 host: 0.0.0.0
 port: 8080
 
+## Ignore the views listed here when generating the static files
+views_ignore:
+  - base.html
+
 ## Ignore the views listed here in the _index
 views_list_ignore:
   - base.html

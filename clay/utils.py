@@ -19,9 +19,6 @@ except ImportError:
         pass
 
 
-RX_ASB_URL = re.compile(r' (src|href)=[\'"]\/')
-
-
 def is_binary(filepath):
     """Return True if the given filename is binary.
     """
@@ -79,18 +76,37 @@ def remove_file(filepath):
         pass
 
 
-def absolute_to_relative(content, relpath):
+def absolute_to_relative(content, relpath, theme_prefix=''):
+    # ## Normalize the relative-by-default URLs to absolute
+    # ## Eg: "foo.html" => "/foo.html"
+    # rx_rel_url = r' (src|href)=[\'"]([a-zA-Z0-9_]+[^\'"\:]+)[\'"]'
+    # abs_url = r' \1="/\2"'
+    # content = re.sub(rx_rel_url, abs_url, content)
+
+    ## Relativize all absolute URLs
+    ## Eg: "/en/bar.html" => "en/bar.html", and "/" => "index.html"
     depth = relpath.count(os.path.sep)
     repl = '../' * depth
-    rx_rel_url = r' \1="%s' % repl
-    content = re.sub(RX_ASB_URL, rx_rel_url, content)
+    rel_url = r' \1="%s\2"' % repl
+
+    if theme_prefix:
+        theme_prefix = theme_prefix.strip('/').replace(r'/', r'\/') + r'\/+'
+        rx_abs_url = r' (src|href)=[\'"]\/+(?:%s)?([^\'"]+)' % theme_prefix
+    else:
+        rx_abs_url = r' (src|href)=[\'"]\/+([^\'"]+)'
+    content = re.sub(rx_abs_url, rel_url, content)
+
+    rx_abs_url = r' (src|href)=(?P<fence>[\'"])\/(?P=fence)'
+    rel_url = r' \1="%sindex.html"' % repl
+    content = re.sub(rx_abs_url, rel_url, content)
+
     return content
 
 
 def get_processed_regex(processed_files):
     rx_processed = [[
-        re.compile(r' (src|href)=[\'"](.*)%s[\'"]' % old),
-        r' \1="\2%s"' % new
+        re.compile(r' (src|href)=(?P<fence>[\'"])(.*)%s((\#.*)?(\?.*)?)?(?P=fence)' % old),
+        r' \1="\3%s\4"' % new
     ] for old, new in processed_files]
     return rx_processed
 
