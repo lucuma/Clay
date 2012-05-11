@@ -105,7 +105,7 @@ def absolute_to_relative(content, relpath, theme_prefix=''):
 
 def get_processed_regex(processed_files):
     rx_processed = [[
-        re.compile(r' (src|href)=(?P<fence>[\'"])(.*)%s((\#.*)?(\?.*)?)?(?P=fence)' % old),
+        re.compile(r' (src|href)=(?P<fence>[\'"])(.*)%s((\?.*)?(\#.*)?)?(?P=fence)' % old),
         r' \1="\3%s\4"' % new
     ] for old, new in processed_files]
     return rx_processed
