@@ -6,18 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>{% block title %}Default title{% endblock %}</title>
   <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
-  <script src="/static/scripts/jquery1.7.1.min.js"></script>
-  <!--[if (gte IE 6)&(lte IE 8)]>
-  <script src="/static/scripts/selectivizr.js"></script>
-  <![endif]-->
+  <link href="/static/styles/bootstrap.css" rel="stylesheet">
   <link href="/static/styles/main.css" rel="stylesheet">
-  <script src="/static/scripts/modernizr2.js"></script>
   {% block head %}{% endblock %}
 </head>
 <body>
   {% block content %}{% endblock %}
   
   {% block scripts %}{% endblock %}
+  <script src="/static/scripts/jquery1.7.1.min.js"></script>
+  <script src="/static/scripts/bootstrap.js"></script>
   <script src="/static/scripts/main.js"></script>
 </body>
 </html>
