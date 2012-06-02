@@ -57,7 +57,7 @@ def make_dirs(*lpath):
 
 def get_source(filepath):
     source = ''
-    with io.open(filepath) as f:
+    with io.open(filepath, encoding='utf-8') as f:
         source = f.read()
     return source
 
@@ -65,7 +65,7 @@ def get_source(filepath):
 def make_file(filepath, content):
     if not isinstance(content, unicode):
         content = unicode(content, 'utf-8')
-    with io.open(filepath, 'w+t') as f:
+    with io.open(filepath, 'w+t', encoding='utf-8') as f:
         f.write(content)
 
 

@@ -121,13 +121,20 @@ class Clay(object):
         return html
 
     def run(self, host=None, port=None):
-        host = host or self.settings.host
-        port = port or self.settings.port
+        host = host if host is not None else self.settings.HOST
+        port = port if port is not None else self.settings.PORT
+        try:
+            port = int(port)
+        except Exception:
+            port = self.settings.PORT
         ips = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2]
             if not ip.startswith("127.")][:1]
         if ips:
             print ' * Your local IP is:', ips[0]
-        return self.app.run(host, port)
+        try:
+            self.app.run(host=host, port=port)
+        except socket.error, e:
+            print e
 
     def build(self):
         """Generates a static version of the site.
@@ -159,11 +166,12 @@ class Clay(object):
 
         try:
             resp = self.render(path, **self.settings)
-        except TemplateSyntaxError:
+        except TemplateSyntaxError, e:
             print '-- WARNING:', 'Syntax error while trying to process', \
                     utils.to_unicode(path), 'as a Jinja template.'
             source = utils.get_source(fullpath)
             resp = Response(source)
+            print e
 
         if real_ext == '.html':
             resp.data = self._post_process(resp.data)

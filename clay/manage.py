@@ -66,7 +66,7 @@ def build(theme_prefix=''):
 
 
 @manager.command
-def run(theme_prefix=''):
+def run(theme_prefix='', host=None, port=None):
     """.
 
     Run the development server
@@ -76,7 +76,7 @@ def run(theme_prefix=''):
     except SourceDirNotFound:
         print SOURCE_NOT_FOUND_HELP
         return
-    proto.run()
+    proto.run(host=host, port=port)
 
 
 @manager.command
