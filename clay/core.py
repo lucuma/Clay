@@ -32,8 +32,7 @@ class Clay(object):
         self.build_dir = os.path.join(base_dir, config.BUILD_DIR)
 
         settings = settings or {}
-        self.settings = Settings(config.default_settings, settings,
-            case_insensitive=True)
+        self.settings = Settings(config.default_settings, settings)
 
         theme_prefix = self.settings.get('theme_prefix', '').rstrip('/')
         if theme_prefix:
