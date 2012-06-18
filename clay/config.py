@@ -28,6 +28,6 @@ default_settings = {
 }
 
 app_settings = {
-    'RELOAD': False,
+    'reloader': False,
 }
 
