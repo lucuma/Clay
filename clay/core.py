@@ -204,7 +204,7 @@ class Clay(object):
                 return utils.copy_if_has_change(path_in, path_out)
 
             try:
-                content = self.render.to_string(relpath_in, **self.settings)
+                content = self.render.to_string(relpath_in.replace('\\', '/'), **self.settings)
             except TemplateSyntaxError:
                 print '-- WARNING:', 'Syntax error while trying to process', \
                     utils.to_unicode(relpath_in), 'as a Jinja template.'

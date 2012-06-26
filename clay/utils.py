@@ -36,12 +36,10 @@ def is_binary(filepath):
 def walk_dir(path, callback, ignore=None):
     ignore = ignore or ()
     for folder, subs, files in os.walk(path):
-        ffolder = os.path.relpath(folder, path)
         for filename in files:
             if filename.startswith(ignore):
                 continue
-            relpath = os.path.join(ffolder, filename) \
-                .lstrip('.').lstrip('/')
+            relpath = os.path.relpath(os.path.join(folder, filename), path)
             callback(relpath)
 
 

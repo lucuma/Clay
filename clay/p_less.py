@@ -11,7 +11,7 @@ import subprocess
 from jinja2.ext import Extension
 
 
-COMMAND = 'lessc'
+COMMAND = 'lessc.cmd'
 
 try:
     subprocess.check_output([COMMAND, '--version'])

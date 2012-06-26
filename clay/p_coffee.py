@@ -13,7 +13,7 @@ from jinja2.ext import Extension
 from .utils import get_source, remove_file
 
 
-COMMAND = 'coffee'
+COMMAND = 'coffee.cmd'
 
 try:
     subprocess.check_output([COMMAND, '--version'])
