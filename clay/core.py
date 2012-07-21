@@ -26,8 +26,9 @@ from . import pp_pygments
 class Clay(object):
 
     def __init__(self, base_dir, settings=None, source_dir=c.SOURCE_DIR):
+        base_dir = normpath(abspath(realpath(base_dir)))
         if not isdir(base_dir):
-            base_dir = normpath(abspath(realpath(dirname(base_dir))))
+            base_dir = dirname(base_dir)
         self.base_dir = base_dir
         self.source_dir = u.make_dirs(base_dir, source_dir)
         self.build_dir = join(base_dir, c.BUILD_DIR)
