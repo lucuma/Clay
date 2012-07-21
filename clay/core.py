@@ -12,6 +12,7 @@ import mimetypes
 from os.path import (isfile, isdir, realpath, abspath, normpath, dirname,
     join, splitext, exists)
 import socket
+import sys
 
 from jinja2 import (PackageLoader, ChoiceLoader, FileSystemLoader)
 from jinja2.exceptions import TemplateSyntaxError
@@ -230,7 +231,7 @@ class Clay(object):
                 theme_prefix)
             content = u.replace_processed_names(content, rx_processed)
             u.make_file(path_out, content)
-            views_list.append(relpath_in.decode('utf8'))
+            views_list.append(u.to_unicode(relpath_in))
         
         self.build_views_list(views_list)
 
