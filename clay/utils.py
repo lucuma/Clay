@@ -44,12 +44,11 @@ def walk_dir(path, callback, ignore=None):
                 continue
             relpath = os.path.join(ffolder, filename) \
                 .lstrip('.').lstrip('/').lstrip('\\')
-            relpath = to_bytestring(relpath)
             callback(relpath)
 
 
 def make_dirs(*lpath):
-    path = os.path.join(*lpath)
+    path = to_unicode(os.path.join(*lpath))
     try:
         os.makedirs(os.path.dirname(path))
     except (OSError), e:

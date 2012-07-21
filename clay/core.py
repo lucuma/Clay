@@ -30,7 +30,7 @@ class Clay(object):
         base_dir = normpath(abspath(realpath(base_dir)))
         if not isdir(base_dir):
             base_dir = dirname(base_dir)
-        self.base_dir = base_dir
+        self.base_dir = u.to_unicode(base_dir)
         self.source_dir = u.make_dirs(base_dir, source_dir)
         self.build_dir = join(base_dir, c.BUILD_DIR)
 
@@ -39,7 +39,7 @@ class Clay(object):
 
         theme_prefix = self.settings.get('theme_prefix', '').rstrip('/')
         if theme_prefix:
-            theme_prefix += '/'
+            theme_prefix += u'/'
         self.settings['theme_prefix'] = theme_prefix
 
         views_ignore = self.settings.get('views_ignore', [])
@@ -83,7 +83,7 @@ class Clay(object):
         path = path.strip('/')
         is_dir = isdir(join(self.source_dir, path))
         if is_dir:
-            path += '/'
+            path += u'/'
         if not path or is_dir:
             path += 'index.html'
         return path
@@ -175,7 +175,7 @@ class Clay(object):
             resp = Response(source)
             print e
 
-        if real_ext == '.html':
+        if real_ext == u'.html':
             resp.data = self._post_process(resp.data)
 
         resp.mimetype = mimetypes.guess_type('a' + real_ext)[0] or 'text/plain'
@@ -192,7 +192,7 @@ class Clay(object):
                 return
             fn, ext = splitext(relpath_in)
             real_ext = self._translate_ext(ext)
-            relpath_in_real = '%s%s' % (fn, real_ext)
+            relpath_in_real = u'%s%s' % (fn, real_ext)
             relpath_out = relpath_in_real
             if theme_prefix and not relpath_out.startswith(theme_prefix):
                 relpath_out = join(theme_prefix, relpath_out)
@@ -215,7 +215,7 @@ class Clay(object):
             if real_ext != ext:
                 processed.append([relpath_in, relpath_in_real])
 
-            if real_ext == '.html':
+            if real_ext == u'.html':
                 content = self._post_process(content)
                 return views.append([relpath_in, path_out, content])
 
@@ -247,7 +247,7 @@ class Clay(object):
             fn, ext = splitext(v)
             real_ext = self._translate_ext(ext)
             v = '%s%s' % (fn, real_ext)
-            real_views.append((v, ' / '.join(v.split('/')), mdate))
+            real_views.append((v, u' / '.join(v.split('/')), mdate))
         
         content = self.render(
             c.VIEWS_INDEX, 
