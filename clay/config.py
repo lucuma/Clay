@@ -3,13 +3,13 @@
 # Clay.config
 
 """
-import os
+from os.path import abspath, join, dirname
 
-SOURCE_DIR = 'source'
-BUILD_DIR = 'build'
-VIEWS_INDEX = '_index.html'
+SOURCE_DIR = u'source'
+BUILD_DIR = u'build'
+VIEWS_INDEX = u'_index.html'
 
-DEFAULT_TEMPLATES = os.path.join(os.path.dirname(__file__), 'source')
+DEFAULT_TEMPLATES = join(abspath(dirname(__file__)), u'source')
 
 IGNORE = ('.', '_')
 
