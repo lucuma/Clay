@@ -25,7 +25,7 @@ def is_binary(filepath):
     """Return True if the given filename is binary.
     """
     CHUNKSIZE = 1024
-    with io.open(to_unicode(filepath), 'rb') as f:
+    with io.open(filepath, 'rb') as f:
         while 1:
             chunk = f.read(CHUNKSIZE)
             if '\0' in chunk: # found null byte
@@ -44,6 +44,7 @@ def walk_dir(path, callback, ignore=None):
                 continue
             relpath = os.path.join(ffolder, filename) \
                 .lstrip('.').lstrip('/').lstrip('\\')
+            relpath = to_unicode(relpath)
             callback(relpath)
 
 
