@@ -44,7 +44,7 @@ def walk_dir(path, callback, ignore=None):
                 continue
             relpath = os.path.join(ffolder, filename) \
                 .lstrip('.').lstrip('/').lstrip('\\')
-            relpath = to_unicode(relpath)
+            relpath = to_bytestring(relpath)
             callback(relpath)
 
 
