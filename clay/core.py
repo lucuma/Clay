@@ -9,7 +9,8 @@ from __future__ import absolute_import
 
 import glob
 import mimetypes
-from os.path import isdir, abspath, dirname, join, splitext, exists
+from os.path import (isfile, isdir, realpath, abspath, normpath, dirname,
+    join, splitext, exists)
 import socket
 
 from jinja2 import (PackageLoader, ChoiceLoader, FileSystemLoader)
@@ -26,7 +27,7 @@ class Clay(object):
 
     def __init__(self, base_dir, settings=None, source_dir=c.SOURCE_DIR):
         if not isdir(base_dir):
-            base_dir = abspath(dirname(base_dir))
+            base_dir = normpath(abspath(realpath(dirname(base_dir))))
         self.base_dir = base_dir
         self.source_dir = u.make_dirs(base_dir, source_dir)
         self.build_dir = join(base_dir, c.BUILD_DIR)
