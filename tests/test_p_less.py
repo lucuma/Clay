@@ -56,14 +56,12 @@ FILENAME_IN = 'less.less'
 FILENAME_OUT = 'less.css'
 
 
-SRC_HTML = """
+BASE_HTML = HTML = """
 <link rel="stylesheet" href="foo/bar/%s" />
-<p class="scss"></p>""" % FILENAME_IN
+<p class="scss"></p>"""
 
-
-EXPECTED_HTML = """
-<link rel="stylesheet" href="foo/bar/%s" />
-<p class="scss"></p>""" % FILENAME_OUT
+SRC_HTML = BASE_HTML % FILENAME_IN
+EXPECTED_HTML = BASE_HTML % FILENAME_OUT
 
 
 def test_less_enabled():

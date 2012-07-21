@@ -1,11 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-Table of Contents Extension for Python-Markdown
-* * *
+# Table of Contents Extension for Python-Markdown
 
-(c) 2008 [Jack Miller](http://codezen.org)
-
-Dependencies:
-* [Markdown 2.1+](http://www.freewisdom.org/projects/python-markdown/)
+By [Jack Miller](http://codezen.org)
 
 """
 import markdown

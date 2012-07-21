@@ -23,22 +23,23 @@ def teardown_module():
 
 SRC_SCSS = """
 @option compress: no;
-$main-color: #ce4dd6;
-$style: solid;
-$side: bottom;
-#navbar {
-  border-#{$side}: {
-    color: $main-color;
-    style: $style;
-  }
+.selector {
+    a {
+        display: block;
+    }
+        strong {
+        color: blue;
+    }
 }
 """.strip()
 
 
 EXPECTED_SCSS = """
-#navbar {
-  border-bottom-color: #ce4dd6;
-  border-bottom-style: solid;
+.selector a {
+  display: block;
+}
+.selector strong {
+  color: #0000ff;
 }
 """.strip()
 
@@ -47,13 +48,12 @@ FILENAME_IN = 'sassy.scss'
 FILENAME_OUT = 'sassy.css'
 
 
-SRC_HTML = """
+BASE_HTML = """
 <link rel="stylesheet" href="foo/bar/%s" />
-<p class="scss"></p>""" % FILENAME_IN
+<p class="scss"></p>"""
 
-EXPECTED_HTML = """
-<link rel="stylesheet" href="foo/bar/%s" />
-<p class="scss"></p>""" % FILENAME_OUT
+SRC_HTML = BASE_HTML % FILENAME_IN
+EXPECTED_HTML = BASE_HTML % FILENAME_OUT
 
 
 def test_scss_enabled():

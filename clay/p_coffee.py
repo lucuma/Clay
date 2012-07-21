@@ -46,5 +46,5 @@ def add_extensions(clay):
                 remove_file(filepath_out)
             return content
 
-    clay.render.add_extension(CoffeeExtension)
+    clay.render.env.add_extension(CoffeeExtension)
 

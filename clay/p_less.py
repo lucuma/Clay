@@ -38,5 +38,5 @@ def add_extensions(clay):
                 content = ''
             return content
 
-    clay.render.add_extension(LessExtension)
+    clay.render.env.add_extension(LessExtension)
 

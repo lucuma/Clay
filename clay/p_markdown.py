@@ -119,5 +119,5 @@ def add_extensions(clay):
             
             return ''.join(content)
 
-    clay.render.add_extension(MarkdownExtension)
+    clay.render.env.add_extension(MarkdownExtension)
 

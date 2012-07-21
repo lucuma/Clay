@@ -9,7 +9,7 @@
 from .libs.typographer import typogrify
 
 
-enabled = True
+enabled = False
 
 def process(html):
     return typogrify(html)

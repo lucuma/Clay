@@ -48,8 +48,8 @@ Language tags:
     </code></pre>
 
 """
-import re
 import markdown
+import re
 
 
 RX_FENCED_BLOCK = re.compile(

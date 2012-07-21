@@ -3,7 +3,8 @@
 # Clay.utils
 
 """
-from datetime import datetime
+from datetime import datetime, date, time
+from decimal import Decimal
 import errno
 import io
 import math
@@ -17,6 +18,7 @@ except ImportError:
         import json
     except ImportError:
         pass
+import types
 
 
 def is_binary(filepath):
@@ -91,12 +93,12 @@ def absolute_to_relative(content, relpath, theme_prefix=''):
 
     if theme_prefix:
         theme_prefix = theme_prefix.strip('/').replace(r'/', r'\/') + r'\/+'
-        rx_abs_url = r' (src|href)=[\'"]\/+(?:%s)?([^\'"]+)' % theme_prefix
+        rx_abs_url = r' (src|href)=[\'"]\/+(?:%s)?([^\'"]+)[\'"]' % theme_prefix
     else:
-        rx_abs_url = r' (src|href)=[\'"]\/+([^\'"]+)'
+        rx_abs_url = r' (src|href)=[\'"]\/+([^\'"]+)[\'"]'
     content = re.sub(rx_abs_url, rel_url, content)
 
-    rx_abs_url = r' (src|href)=(?P<fence>[\'"])\/(?P=fence)'
+    rx_abs_url = r' (src|href)=[\'"]\/[\'"]'
     rel_url = r' \1="%sindex.html"' % repl
     content = re.sub(rx_abs_url, rel_url, content)
 
@@ -105,8 +107,8 @@ def absolute_to_relative(content, relpath, theme_prefix=''):
 
 def get_processed_regex(processed_files):
     rx_processed = [[
-        re.compile(r' (src|href)=(?P<fence>[\'"])(.*)%s((\?.*)?(\#.*)?)?(?P=fence)' % old),
-        r' \1="\3%s\4"' % new
+        re.compile(r' (?P<attr>src|href)=[\'"](?P<path>.*)%s(?P<args>(\?.*)?(\#.*)?)?[\'"]' % (old,)),
+        r' \g<attr>="\g<path>%s\g<args>"' % (new,)
     ] for old, new in processed_files]
     return rx_processed
 
@@ -142,7 +144,7 @@ def _is_protected_type(obj):
     return isinstance(obj, (
         types.NoneType,
         int, long,
-        datetime.datetime, datetime.date, datetime.time,
+        datetime, date, time,
         float, Decimal)
     )
 
@@ -200,6 +202,38 @@ def to_unicode(s, encoding='utf-8', strings_only=False, errors='strict'):
             s = u' '.join([to_unicode(arg, encoding, strings_only,
                 errors) for arg in s])
     return s
+
+
+def to_bytestring(s, encoding='utf-8', strings_only=False, errors='strict'):
+    """Returns a bytestring version of 's', encoded as specified in 'encoding'.
+
+    If strings_only is True, don't convert (some) non-string-like objects.
+
+    --------------------------------
+    Copied almost unchanged from Django <https://www.djangoproject.com/>
+    Copyright © Django Software Foundation and individual contributors.
+    Used under the modified BSD license.
+    """
+    if strings_only and isinstance(s, (types.NoneType, int)):
+        return s
+    encoding = encoding or 'utf-8'
+    if not isinstance(s, basestring):
+        try:
+            return str(s)
+        except UnicodeEncodeError:
+            if isinstance(s, Exception):
+                # An Exception subclass containing non-ASCII data that doesn't
+                # know how to print itself properly. We shouldn't raise a
+                # further exception.
+                return ' '.join([to_bytestring(arg, encoding, strings_only,
+                    errors) for arg in s])
+            return unicode(s).encode(encoding, errors)
+    elif isinstance(s, unicode):
+        return s.encode(encoding, errors)
+    elif s and encoding != 'utf-8':
+        return s.decode('utf-8', errors).encode(encoding, errors)
+    else:
+        return s
 
 
 def filter_to_json(source_dict):

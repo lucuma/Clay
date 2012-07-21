@@ -32,5 +32,5 @@ def add_extensions(clay):
                 return source
             return css.compile(source)
     
-    clay.render.add_extension(SassyCSSExtension)
+    clay.render.env.add_extension(SassyCSSExtension)
 

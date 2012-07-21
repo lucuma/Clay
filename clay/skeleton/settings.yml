@@ -28,5 +28,4 @@ pre_processors:
 ## Enabled post-processors
 post_processors: 
   - pygments
-  - typogrify
 

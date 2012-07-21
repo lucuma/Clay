@@ -22,12 +22,12 @@ default_settings = {
     'views_list_ignore': [],
 
     'pre_processors': ['scss', 'less', 'coffee', 'markdown'],
-    'post_processors': ['pygments', 'typogrify'],
+    'post_processors': ['pygments',],
 
     'theme_prefix': '',
 }
 
 app_settings = {
-    'reloader': False,
+    'RELOADER': False,
 }
 

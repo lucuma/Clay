@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Superscipt extension for Markdown.
+"""
+# Superscipt extension for Markdown.
 
 To superscript something, place a carat symbol, '^', before and after the
 text that you would like in superscript:  6.02 x 10^23^
@@ -25,7 +26,6 @@ Paragraph breaks will nullify superscripts across paragraphs. Line breaks
 within paragraphs will not.
 
 """
-
 import markdown
 
 

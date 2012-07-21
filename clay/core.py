@@ -9,7 +9,7 @@ from __future__ import absolute_import
 
 import glob
 import mimetypes
-import os
+from os.path import isdir, abspath, dirname, join, splitext, exists
 import socket
 
 from jinja2 import (PackageLoader, ChoiceLoader, FileSystemLoader)
@@ -17,22 +17,22 @@ from jinja2.exceptions import TemplateSyntaxError
 from shake import (Shake, Settings, Render, Rule, NotFound, send_file,
     Response)
 
-from . import utils, config
+from . import utils as u, config as c
 from . import p_scss, p_less, p_markdown, p_coffee
-from . import pp_pygments, pp_typogrify
+from . import pp_pygments
 
 
 class Clay(object):
 
-    def __init__(self, base_dir, settings=None, source_dir=config.SOURCE_DIR):
-        if os.path.isfile(base_dir):
-            base_dir = os.path.abspath(os.path.dirname(base_dir))
+    def __init__(self, base_dir, settings=None, source_dir=c.SOURCE_DIR):
+        if not isdir(base_dir):
+            base_dir = abspath(dirname(base_dir))
         self.base_dir = base_dir
-        self.source_dir = utils.make_dirs(base_dir, source_dir)
-        self.build_dir = os.path.join(base_dir, config.BUILD_DIR)
+        self.source_dir = u.make_dirs(base_dir, source_dir)
+        self.build_dir = join(base_dir, c.BUILD_DIR)
 
         settings = settings or {}
-        self.settings = Settings(config.default_settings, settings)
+        self.settings = Settings(c.default_settings, settings)
 
         theme_prefix = self.settings.get('theme_prefix', '').rstrip('/')
         if theme_prefix:
@@ -42,7 +42,7 @@ class Clay(object):
         views_ignore = self.settings.get('views_ignore', [])
         self.settings['views_ignore'] = tuple(views_ignore)
 
-        self.app = Shake(config.app_settings)
+        self.app = Shake(__file__, c.app_settings)
         self._make_render()
         self._enable_pre_processors()
         self._add_urls()
@@ -50,10 +50,10 @@ class Clay(object):
     def _make_render(self):
         loader = ChoiceLoader([
             FileSystemLoader(self.source_dir),
-            PackageLoader('clay', config.SOURCE_DIR),
+            PackageLoader('clay', c.SOURCE_DIR),
         ])
         self.render = Render(loader=loader)
-        self.render.set_filter('json', utils.filter_to_json)
+        self.render.env.filters['json'] = u.filter_to_json
 
     def _enable_pre_processors(self):
         ext_trans = {}
@@ -78,7 +78,7 @@ class Clay(object):
         if '..' in path:
             return self.not_found()
         path = path.strip('/')
-        is_dir = os.path.isdir(os.path.join(self.source_dir, path))
+        is_dir = isdir(join(self.source_dir, path))
         if is_dir:
             path += '/'
         if not path or is_dir:
@@ -90,26 +90,26 @@ class Clay(object):
 
     def _get_alternative(self, path):
         path = path.strip('/')
-        fname, ext = os.path.splitext(path)
-        fullpath = os.path.join(config.DEFAULT_TEMPLATES, path)
-        if os.path.exists(fullpath):
+        fname, ext = splitext(path)
+        fullpath = join(c.DEFAULT_TEMPLATES, path)
+        if exists(fullpath):
             return ext, path, fullpath
         
         if path != 'index.html':
             return None, None, None
 
-        pdir = os.path.join(self.source_dir, fname + '.*')
+        pdir = join(self.source_dir, fname + '.*')
         files = glob.glob(pdir)
         if files:
             fullpath = files[0]
             path = fullpath.replace(self.source_dir, '')
-            _, ext = os.path.splitext(path)
+            _, ext = splitext(path)
             return ext, path, fullpath
 
         return None, None, None
 
     def _post_process(self, html):
-        html = utils.to_unicode(html)
+        html = u.to_unicode(html)
         processors = self.settings.post_processors
 
         for name in processors:
@@ -150,25 +150,25 @@ class Clay(object):
         Render the template at `path` guessing it's mimetype.
         """
         path = self._normalize_path(path)
-        fn, ext = os.path.splitext(path)
+        fn, ext = splitext(path)
         real_ext = self._translate_ext(ext)
-        fullpath = os.path.join(self.source_dir, path.lstrip('/'))
+        fullpath = join(self.source_dir, path.lstrip('/'))
 
-        if not os.path.exists(fullpath):
+        if not exists(fullpath):
             ext, path, fullpath = self._get_alternative(path)
             if not fullpath:
                 return self.not_found()
 
         plain_text_exts = self.settings.plain_text
-        if ext in plain_text_exts or utils.is_binary(fullpath):
+        if ext in plain_text_exts or u.is_binary(fullpath):
             return send_file(request, fullpath)
 
         try:
-            resp = self.render(path, **self.settings)
+            resp = self.render(path, self.settings)
         except TemplateSyntaxError, e:
             print '-- WARNING:', 'Syntax error while trying to process', \
-                    utils.to_unicode(path), 'as a Jinja template.'
-            source = utils.get_source(fullpath)
+                    u.to_unicode(path), 'as a Jinja template.'
+            source = u.get_source(fullpath)
             resp = Response(source)
             print e
 
@@ -187,27 +187,27 @@ class Clay(object):
         def callback(relpath_in):
             if relpath_in.endswith(views_ignore):
                 return
-            fn, ext = os.path.splitext(relpath_in)
+            fn, ext = splitext(relpath_in)
             real_ext = self._translate_ext(ext)
             relpath_in_real = '%s%s' % (fn, real_ext)
             relpath_out = relpath_in_real
             if theme_prefix and not relpath_out.startswith(theme_prefix):
-                relpath_out = os.path.join(theme_prefix, relpath_out)
+                relpath_out = join(theme_prefix, relpath_out)
             print relpath_out
 
-            path_in = os.path.join(self.source_dir, relpath_in)
-            path_out = utils.make_dirs(self.build_dir, relpath_out)
+            path_in = join(self.source_dir, relpath_in)
+            path_out = u.make_dirs(self.build_dir, relpath_out)
 
             plain_text_exts = self.settings.plain_text
-            if ext in plain_text_exts or utils.is_binary(path_in):
-                return utils.copy_if_has_change(path_in, path_out)
+            if ext in plain_text_exts or u.is_binary(path_in):
+                return u.copy_if_has_change(path_in, path_out)
 
             try:
-                content = self.render.to_string(relpath_in, **self.settings)
+                content = self.render(relpath_in, self.settings, to_string=True)
             except TemplateSyntaxError:
                 print '-- WARNING:', 'Syntax error while trying to process', \
-                    utils.to_unicode(relpath_in), 'as a Jinja template.'
-                content = utils.get_source(path_in)
+                    u.to_unicode(relpath_in), 'as a Jinja template.'
+                content = u.get_source(path_in)
             
             if real_ext != ext:
                 processed.append([relpath_in, relpath_in_real])
@@ -216,41 +216,45 @@ class Clay(object):
                 content = self._post_process(content)
                 return views.append([relpath_in, path_out, content])
 
-            utils.make_file(path_out, content)
+            u.make_file(path_out, content)
             return
         
-        utils.walk_dir(self.source_dir, callback, config.IGNORE)
-        rx_processed = utils.get_processed_regex(processed)
+        u.walk_dir(self.source_dir, callback, c.IGNORE)
+        rx_processed = u.get_processed_regex(processed)
         views_list = []
 
         for relpath_in, path_out, content in views:
-            content = utils.absolute_to_relative(content, relpath_in,
+            content = u.absolute_to_relative(content, relpath_in,
                 theme_prefix)
-            content = utils.replace_processed_names(content, rx_processed)
-            utils.make_file(path_out, content)
+            content = u.replace_processed_names(content, rx_processed)
+            u.make_file(path_out, content)
             views_list.append(relpath_in.decode('utf8'))
         
         self.build_views_list(views_list)
 
     def build_views_list(self, views):
         ignore = self.settings.views_list_ignore
-        ignore.append(config.VIEWS_INDEX)
+        ignore.append(c.VIEWS_INDEX)
         real_views = []
 
         for v in views:
-            if v in ignore or v.startswith(config.IGNORE):
+            if v in ignore or v.startswith(c.IGNORE):
                 continue
-            mdate = utils.get_file_mdate(os.path.join(self.source_dir, v))
-            fn, ext = os.path.splitext(v)
+            mdate = u.get_file_mdate(join(self.source_dir, v))
+            fn, ext = splitext(v)
             real_ext = self._translate_ext(ext)
             v = '%s%s' % (fn, real_ext)
             real_views.append((v, ' / '.join(v.split('/')), mdate))
         
-        content = self.render.to_string(config.VIEWS_INDEX, views=real_views)
-        relpath = os.path.join(self.settings.theme_prefix, config.VIEWS_INDEX)
+        content = self.render(
+            c.VIEWS_INDEX, 
+            {'views': real_views},
+            to_string=True
+        )
+        relpath = join(self.settings.theme_prefix, c.VIEWS_INDEX)
         print relpath
-        final_path = utils.make_dirs(self.build_dir, relpath)
-        utils.make_file(final_path, content)
+        final_path = u.make_dirs(self.build_dir, relpath)
+        u.make_file(final_path, content)
 
     def not_found(self):
         resp = self.render('notfound.html')
