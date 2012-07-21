@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import glob
 import mimetypes
 from os.path import (isfile, isdir, realpath, abspath, normpath, dirname,
-    join, splitext, exists)
+    join, splitext, exists, sep)
 import socket
 import sys
 
@@ -37,7 +37,8 @@ class Clay(object):
         settings = settings or {}
         self.settings = Settings(c.default_settings, settings)
 
-        theme_prefix = self.settings.get('theme_prefix', '').rstrip('/')
+        theme_prefix = self.settings.get('theme_prefix', u'').rstrip('/')
+        theme_prefix = theme_prefix.replace('/', sep)
         if theme_prefix:
             theme_prefix += u'/'
         self.settings['theme_prefix'] = theme_prefix
@@ -156,6 +157,7 @@ class Clay(object):
         fn, ext = splitext(path)
         real_ext = self._translate_ext(ext)
         fullpath = join(self.source_dir, path.lstrip('/'))
+        fullpath = fullpath.replace('/', sep)
 
         if not exists(fullpath):
             ext, path, fullpath = self._get_alternative(path)
