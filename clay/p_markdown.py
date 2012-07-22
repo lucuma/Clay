@@ -24,6 +24,8 @@ from .utils import to_unicode
 extensions_in = ('.md', '.markdown', '.mdown', '.html.md', '.html.mdown', '.html.markdown',)
 extension_out = '.html'
 
+RX_FIRST_TITLE = re.compile(r'^\s*#\s*(?P<value>.*)\n')
+
 
 def get_metadata(md):
     meta = md.Meta
@@ -46,8 +48,6 @@ def add_extensions(clay):
     from .libs.md_fenced_gh import FencedCodeGhExtension
     from .libs.md_superscript import SuperscriptExtension
     from .libs.md_toc import TocExtension
-
-    RX_FIRST_TITLE = re.compile(r'^\s*#\s*(?P<value>.*)\n')
 
     md_options = {
         'extensions': [
