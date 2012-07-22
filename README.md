@@ -1,4 +1,3 @@
-
 # Clay
 
 **A rapid prototyping tool.**
