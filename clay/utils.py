@@ -87,6 +87,8 @@ def absolute_to_relative(content, relpath, theme_prefix=''):
 
     ## Relativize all absolute URLs
     ## Eg: "/en/bar.html" => "en/bar.html", and "/" => "index.html"
+    if '/' in relpath or '\\' in relpath:
+        assert not relpath
     depth = relpath.count(os.path.sep)
     repl = '../' * depth
     rel_url = r' \1="%s\2"' % repl

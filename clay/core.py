@@ -228,7 +228,6 @@ class Clay(object):
         rx_processed = u.get_processed_regex(processed)
         views_list = []
         
-        assert not views
         for relpath_in, path_out, content in views:
             content = u.absolute_to_relative(content, relpath_in,
                 theme_prefix)
