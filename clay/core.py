@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import glob
 import mimetypes
 from os.path import (isfile, isdir, realpath, abspath, normpath, dirname,
-    join, splitext, exists)
+    join, splitext, exists, sep)
 import socket
 import sys
 
@@ -33,8 +33,6 @@ class Clay(object):
         self.base_dir = u.to_unicode(base_dir)
         self.source_dir = u.make_dirs(base_dir, source_dir)
         self.build_dir = join(base_dir, c.BUILD_DIR)
-        print self.source_dir
-        print self.build_dir
  
         settings = settings or {}
         self.settings = Settings(c.default_settings, settings)
@@ -169,6 +167,7 @@ class Clay(object):
             return send_file(request, fullpath)
 
         try:
+            path = path.replace(sep, '/')
             resp = self.render(path, self.settings)
         except TemplateSyntaxError, e:
             print '-- WARNING:', 'Syntax error while trying to process', \
@@ -208,6 +207,7 @@ class Clay(object):
                 return u.copy_if_has_change(path_in, path_out)
 
             try:
+                relpath_in = relpath_in.replace(sep, '/')
                 content = self.render(relpath_in, self.settings, to_string=True)
             except TemplateSyntaxError:
                 print '-- WARNING:', 'Syntax error while trying to process', \
