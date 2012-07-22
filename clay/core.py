@@ -33,7 +33,9 @@ class Clay(object):
         self.base_dir = u.to_unicode(base_dir)
         self.source_dir = u.make_dirs(base_dir, source_dir)
         self.build_dir = join(base_dir, c.BUILD_DIR)
-
+        print self.source_dir
+        print self.build_dir
+ 
         settings = settings or {}
         self.settings = Settings(c.default_settings, settings)
 
