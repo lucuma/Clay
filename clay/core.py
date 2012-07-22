@@ -35,11 +35,11 @@ class Clay(object):
         self.build_dir = join(base_dir, c.BUILD_DIR)
  
         settings = settings or {}
-        self.settings = Settings(c.default_settings, settings)
+        self.settings = Settings(settings, c.default_settings)
 
-        theme_prefix = self.settings.get('theme_prefix', u'').rstrip('/')
+        theme_prefix = self.settings.get('theme_prefix', '').strip('/')
         if theme_prefix:
-            theme_prefix += u'/'
+            theme_prefix += '/'
         self.settings['theme_prefix'] = theme_prefix
 
         views_ignore = self.settings.get('views_ignore', [])
