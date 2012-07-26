@@ -70,7 +70,7 @@ You can make a single file, (for instance, your header) and included it many tim
     
     {% include "header.html "%}
 
-You can also use a powerful feature called _template imheritance_: inside the `source` folder you'll find a file called `base.html`. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!
+You can also use a powerful feature called _template inheritance_: inside the `source` folder you'll find a file called `base.html`. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!
 
 The rest of the files, like `index.html`, are composed of **blocks**, like
 
