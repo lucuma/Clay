@@ -17,7 +17,8 @@ import sys
 from jinja2 import (PackageLoader, ChoiceLoader, FileSystemLoader)
 from jinja2.exceptions import TemplateSyntaxError
 from shake import (Shake, Settings, Render, Rule, NotFound, send_file,
-    Response)
+    Request, Response, local)
+from werkzeug.test import EnvironBuilder
 
 from . import utils as u, config as c
 from . import p_scss, p_less, p_markdown, p_coffee
@@ -198,6 +199,10 @@ class Clay(object):
             if theme_prefix and not relpath_out.startswith(theme_prefix):
                 relpath_out = join(theme_prefix, relpath_out)
             print relpath_out
+
+            builder = EnvironBuilder(path=relpath_out)
+            env = builder.get_environ()
+            local.request = Request(env)
 
             path_in = join(self.source_dir, relpath_in)
             path_out = u.make_dirs(self.build_dir, relpath_out)
