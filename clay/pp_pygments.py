@@ -22,6 +22,19 @@ RX_CODEBLOCK = re.compile(r'<pre(?: lang="([a-z0-9]+#?)")?><code'
     re.IGNORECASE | re.DOTALL)
 
 
+class CodeHtmlFormatter(HtmlFormatter):
+
+    def wrap(self, source, outfile):
+        return self._wrap_pre(self._wrap_code(source))
+
+    def _wrap_code(self, source):
+        yield 0, ('<code' + (self.cssclass and ' class="%s"' % self.cssclass)
+            + '>')
+        for tup in source:
+            yield tup
+        yield 0, '</code>'
+
+
 def _unescape_html(html):
     html = html.replace('&lt;', '<')
     html = html.replace('&gt;', '>')
@@ -47,7 +60,7 @@ def _highlight_match(match):
     except ClassNotFound:
         return match.group(0)
     
-    formatter = HtmlFormatter(
+    formatter = CodeHtmlFormatter(
         cssclass='highlight ' + lang_or_class,
         linenos=linenos
     )

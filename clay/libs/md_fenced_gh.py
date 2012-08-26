@@ -90,7 +90,6 @@ class FencedBlockPreprocessor(markdown.preprocessors.Preprocessor):
                     CODE_WRAP % (lang, self._escape(m.group('code'))),
                     '{% endraw %}'
                 ])
-
                 placeholder = self.markdown.htmlStash.store(code, safe=True)
                 text = '%s\n%s\n%s'% (text[:m.start()], placeholder, text[m.end():])
             else:

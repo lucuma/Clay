@@ -1,6 +1,11 @@
 # Clay Changelog
 
 
+## Version 1.0.26
+
+- Improved CodeHtmlFormatter for the pygments extension. Now generates `<pre><code class="highlight _language_">` instead of `<div class="highlight _language_"><pre>`.
+
+
 ## Version 1.0.25
 
 - Local Request instance even when building views (so 'request.path` works now).
