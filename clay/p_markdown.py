@@ -32,7 +32,13 @@ def get_metadata(md):
     # Flatten single items lists
     for k, v in meta.items():
         if len(v) == 1:
-            meta[k] = v[0]
+            v = v[0]
+            meta[k] = v
+        if isinstance(v, basestring) and k != 'template':
+            v = md.convert(v.strip()).strip()
+            v = re.sub(r'^\<p\>', '', v)
+            v = re.sub(r'\<\/p\>$', '', v)
+            meta[k] = v
     return meta
 
 
