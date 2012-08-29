@@ -4,4 +4,4 @@
 build
 dist
 *.egg*
-
+_doc
