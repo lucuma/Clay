@@ -57,10 +57,6 @@ EXPECTED_HTML = """
 <p class="coffee"></p>""" % FILENAME_OUT
 
 
-def test_coffeescript_enabled():
-    assert p_coffee.enabled
-
-
 def test_coffeescript_render():
     filepath = make_view(FILENAME_IN, SRC_COFFEESCRIPT)
 

@@ -65,7 +65,7 @@ class Clay(object):
 
         for name in processors:
             pr = globals().get('p_' + name)
-            if pr and pr.enabled:
+            if pr:
                 pr.add_extensions(self)
                 for ext in pr.extensions_in:
                     ext_trans[ext] = pr.extension_out
@@ -118,7 +118,7 @@ class Clay(object):
 
         for name in processors:
             pp = globals().get('pp_' + name)
-            if pp and pp.enabled:
+            if pp:
                 html = pp.process(html)
 
         return html

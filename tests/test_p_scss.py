@@ -33,7 +33,6 @@ SRC_SCSS = """
 }
 """.strip()
 
-
 EXPECTED_SCSS = """
 .selector a {
   display: block;
@@ -43,21 +42,15 @@ EXPECTED_SCSS = """
 }
 """.strip()
 
-
 FILENAME_IN = 'sassy.scss'
 FILENAME_OUT = 'sassy.css'
 
-
-BASE_HTML = """
+HTML = """
 <link rel="stylesheet" href="foo/bar/%s" />
 <p class="scss"></p>"""
 
-SRC_HTML = BASE_HTML % FILENAME_IN
-EXPECTED_HTML = BASE_HTML % FILENAME_OUT
-
-
-def test_scss_enabled():
-    assert p_scss.enabled
+SRC_HTML = HTML % FILENAME_IN
+EXPECTED_HTML = HTML % FILENAME_OUT
 
 
 def test_scss_render():

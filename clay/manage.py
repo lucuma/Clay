@@ -54,7 +54,6 @@ def new(new_app_path='.'):
 @manager.command
 def build(theme_prefix=''):
     """.
-
     Generates a static version of the site
     """
     try:
@@ -68,7 +67,6 @@ def build(theme_prefix=''):
 @manager.command
 def run(theme_prefix='', host=None, port=None):
     """.
-
     Run the development server
     """
     try:
@@ -82,7 +80,6 @@ def run(theme_prefix='', host=None, port=None):
 @manager.command
 def version():
     """.
-
     Prints the current Clay version
     """
     import clay

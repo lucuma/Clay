@@ -15,12 +15,6 @@ from .utils import get_source, remove_file
 
 COMMAND = 'coffee'
 
-try:
-    subprocess.check_output([COMMAND, '--version'])
-    enabled = True
-except Exception:
-    enabled = False
-
 extensions_in = ('.js.coffee',  '.coffee',)
 extension_out = '.js'
 

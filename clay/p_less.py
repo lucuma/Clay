@@ -13,12 +13,6 @@ from jinja2.ext import Extension
 
 COMMAND = 'lessc'
 
-try:
-    subprocess.check_output([COMMAND, '--version'])
-    enabled = True
-except Exception:
-    enabled = False
-
 extensions_in = ('.css.less', '.less',)
 extension_out = '.css'
 

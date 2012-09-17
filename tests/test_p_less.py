@@ -64,10 +64,6 @@ SRC_HTML = BASE_HTML % FILENAME_IN
 EXPECTED_HTML = BASE_HTML % FILENAME_OUT
 
 
-def test_less_enabled():
-    assert p_less.enabled
-
-
 def test_less_render():
     filepath = make_view(FILENAME_IN, SRC_LESS)
     try:
