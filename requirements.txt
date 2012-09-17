@@ -4,8 +4,13 @@
 #
 #     pip install -r requirements.txt
 
-Jinja2
-pyCEO
-pyYAML
-Shake>=1.2.0
-Voodoo
+jinja2>=2.4
+pyceo>=1.0.3
+pyyaml
+shake>=1.2.0
+voodoo>=0.7
+werkzeug>=0.7
+
+# markdown
+# pygments
+# pyscss
