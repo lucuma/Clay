@@ -9,6 +9,8 @@
 
 - Default jQuery updated to 1.8.1
 
+- Merged a README typo fix by @z4y4ts (thanks).
+
 ## Version 1.2
 
 - Several bug fixes
