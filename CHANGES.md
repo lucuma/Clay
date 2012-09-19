@@ -3,7 +3,7 @@
 
 ## Version 1.3
 
-- Fix bug that in some cases prevent it from running when some extra plugin libraries where missing.
+- Fix nasty bug that in some cases prevent it from running when some extra plugin libraries where missing.
 
 - All settings names are upper cased by default (altough lower case versions are supported as well).
 

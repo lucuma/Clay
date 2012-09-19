@@ -43,7 +43,8 @@ class Clay(object):
         self._add_urls()
 
     def _normalize_settings(self, settings):
-        settings = Settings(settings or {}, c.default_settings)
+        settings = settings or {}
+        settings = Settings(settings, c.default_settings)
 
         host = settings.get('HOST', settings.get('host'))
         port = settings.get('PORT', settings.get('port'))
@@ -101,7 +102,6 @@ class Clay(object):
                 pr.add_extensions(self)
                 for ext in pr.extensions_in:
                     ext_trans[ext] = pr.extension_out
-
         self.ext_trans = ext_trans
 
     def _add_urls(self):
@@ -155,7 +155,6 @@ class Clay(object):
                     html = pp.process(html)
                 except:
                     pass
-
         return html
 
     def run(self, host=None, port=None):

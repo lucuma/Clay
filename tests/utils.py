@@ -3,12 +3,14 @@ import io
 import os
 
 from clay import Clay
+from clay.manage import get_settings
 
 
 HTTP_OK = 200
 HTTP_NOT_FOUND = 404
+THIS_DIR = os.path.dirname(__file__)
 
-clay_ = Clay(__file__)
+clay_ = Clay(THIS_DIR, settings=get_settings(THIS_DIR))
 c = clay_.test_client()
 
 

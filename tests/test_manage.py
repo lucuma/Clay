@@ -6,13 +6,11 @@ from clay.manage import new, build, run, get_settings, get_current
 import pytest
 
 
-def get_cwd():
-    return os.path.dirname(os.path.abspath(__file__)) or '.'
+THIS_DIR = os.path.dirname(__file__)
 
 
 def test_get_settings():
-    cwd = get_cwd()
-    settings = get_settings(cwd, filename='_test.yml')
+    settings = get_settings(THIS_DIR, filename='settings.yml')
     assert settings
 
 

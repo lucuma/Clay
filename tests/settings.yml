@@ -1,0 +1,30 @@
+
+# Project settings
+# =================
+
+## Development server
+HOST: 0.0.0.0
+PORT: 8081
+
+## Ignore the views listed here when generating the static files
+VIEWS_IGNORE:
+  - base.html
+
+## Ignore the views listed here in the _index
+VIEWS_LIST_IGNORE:
+  - base.html
+
+## Do not process files with these extensions as jinja templates
+PLAIN_TEXT:
+  - .js
+
+## Enabled pre-processors
+PRE_PROCESSORS: 
+  - scss
+  - less
+  - coffee
+  - markdown
+
+## Enabled post-processors
+POST_PROCESSORS: 
+  - pygments
