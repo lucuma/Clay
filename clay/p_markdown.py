@@ -78,7 +78,7 @@ def add_extensions(clay):
     }
     md = markdown.Markdown(**md_options)
     md.preprocessors['html_block'].markdown_in_raw = True
-    theme_prefix = clay.settings.get('theme_prefix', '')
+    layouts = clay.settings.get('LAYOUTS', '')
 
 
     class MarkdownExtension(Extension):
@@ -96,8 +96,8 @@ def add_extensions(clay):
             template = metadata.pop('template', None)
 
             if template:
-                # Using this you can have multiple themes (HTML, epub, etc.)!
-                template = theme_prefix + template
+                # Using this you can have multiple layouts (HTML, epub, etc.)!
+                template = layouts + template
 
                 page_title = metadata.pop('title', None)
                 if not page_title:

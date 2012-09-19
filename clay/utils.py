@@ -78,7 +78,7 @@ def remove_file(filepath):
         pass
 
 
-def absolute_to_relative(content, relpath, theme_prefix=''):
+def absolute_to_relative(content, relpath, layouts=''):
     # ## Normalize the relative-by-default URLs to absolute
     # ## Eg: "foo.html" => "/foo.html"
     # rx_rel_url = r' (src|href)=[\'"]([a-zA-Z0-9_]+[^\'"\:]+)[\'"]'
@@ -91,9 +91,9 @@ def absolute_to_relative(content, relpath, theme_prefix=''):
     repl = '../' * depth
     rel_url = r' \1="%s\2"' % repl
 
-    if theme_prefix:
-        theme_prefix = theme_prefix.strip('/').replace(r'/', r'\/') + r'\/+'
-        rx_abs_url = r' (src|href)=[\'"]\/+(?:%s)?([^\'"]+)[\'"]' % theme_prefix
+    if layouts:
+        layouts = layouts.strip('/').replace(r'/', r'\/') + r'\/+'
+        rx_abs_url = r' (src|href)=[\'"]\/+(?:%s)?([^\'"]+)[\'"]' % layouts
     else:
         rx_abs_url = r' (src|href)=[\'"]\/+([^\'"]+)[\'"]'
     content = re.sub(rx_abs_url, rel_url, content)

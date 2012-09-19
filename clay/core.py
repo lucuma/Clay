@@ -62,7 +62,7 @@ class Clay(object):
         settings['theme_prefix'] = layouts
         settings['layouts'] = layouts
 
-        views_ignore = tuple(settings.get('VIEWS_IGNORE', settings.get('views_ignore', [])))
+        views_ignore = tuple(settings.get('VIEWS_IGNORE', settings.get('views_ignore'))) or []
         settings['VIEWS_IGNORE'] = views_ignore
         settings['views_ignore'] = views_ignore
 
@@ -70,15 +70,15 @@ class Clay(object):
         settings['VIEWS_LIST_IGNORE'] = views_list_ignore
         settings['views_list_ignore'] = views_list_ignore
 
-        plain_text = settings.get('PLAIN_TEXT', settings.get('plain_text', []))
+        plain_text = settings.get('PLAIN_TEXT', settings.get('plain_text')) or []
         settings['PLAIN_TEXT'] = plain_text
         settings['plain_text'] = plain_text
 
-        pre_processors = settings.get('PRE_PROCESSORS', settings.get('pre_processors', []))
+        pre_processors = settings.get('PRE_PROCESSORS', settings.get('pre_processors')) or []
         settings['PRE_PROCESSORS'] = pre_processors
         settings['pre_processors'] = pre_processors
 
-        post_processors = settings.get('POST_PROCESSORS', settings.get('post_processors', []))
+        post_processors = settings.get('POST_PROCESSORS', settings.get('post_processors')) or []
         settings['POST_PROCESSORS'] = post_processors
         settings['post_processors'] = post_processors
 

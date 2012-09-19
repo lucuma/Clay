@@ -51,12 +51,12 @@ def new(new_app_path='.'):
 
 
 @manager.command
-def build(theme_prefix=''):
+def build(layouts=''):
     """.
     Generates a static version of the site
     """
     try:
-        proto = get_current(theme_prefix)
+        proto = get_current(layouts)
     except SourceDirNotFound:
         print SOURCE_NOT_FOUND_HELP
         return
@@ -64,12 +64,12 @@ def build(theme_prefix=''):
 
 
 @manager.command
-def run(theme_prefix='', host=None, port=None):
+def run(layouts='', host=None, port=None):
     """.
     Run the development server
     """
     try:
-        proto = get_current(theme_prefix)
+        proto = get_current(layouts)
     except SourceDirNotFound:
         print SOURCE_NOT_FOUND_HELP
         return
@@ -86,13 +86,13 @@ def version():
 
 #------------------------------------------------------------------------------
 
-def get_current(theme_prefix='', cwd=None):
+def get_current(layouts='', cwd=None):
     cwd = '.' if cwd is None else cwd
     cwd = os.path.abspath(cwd)
     # print cwd
     source_dir = get_source_dir(cwd)
     settings = get_settings(cwd)
-    settings.setdefault('theme_prefix', theme_prefix)
+    settings.setdefault('LAYOUTS', layouts)
     
     return Clay(cwd, settings, source_dir=source_dir)
 
@@ -118,7 +118,6 @@ def get_settings(cwd, filename='settings.yml'):
 
 def main():
     manager.run()
-    print '\n'
 
 
 if __name__ == "__main__":

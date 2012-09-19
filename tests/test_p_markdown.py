@@ -2,6 +2,7 @@
 import shutil
 
 from clay import p_markdown
+from clay.utils import to_bytestring
 import pytest
 
 from tests.utils import *
@@ -24,12 +25,18 @@ def teardown_module():
 SRC_MARKDOWN = """
 # Introduction
 
+```jinja
+{{ hello }}
+```
+
 Markdown is a text-to-HTML conversion tool for web writers.
 See the [Syntax](http://daringfireball.net/projects/markdown/syntax) page for details.
 """.strip()
 
 EXPECTED_MARKDOWN = """
 <h1 id="introduction"><a class="toclink" href="#introduction">Introduction</a></h1>
+<p><pre><code class="highlight jinja"><span class="cp">{{</span> <span class="nv">hello</span> <span class="cp">}}</span><span class="x"></span>
+</code></pre></p>
 <p>Markdown is a text-to-HTML conversion tool for web writers.<br>
 See the <a href="http://daringfireball.net/projects/markdown/syntax">Syntax</a> page for details.</p>
 """.strip()
@@ -49,6 +56,7 @@ def test_markdown_render():
     try:
         resp = c.get('/' + FILENAME_IN)
         content = resp.data.strip()
+        print to_bytestring(content)
         assert content == EXPECTED_MARKDOWN
     finally:
         remove_file(filepath)
@@ -60,6 +68,7 @@ def test_markdown_build():
     try:
         clay_.build()
         content = read_file(filepath_out).strip()
+        print to_bytestring(content)
         assert content == EXPECTED_MARKDOWN
     finally:
         remove_file(filepath)
@@ -75,6 +84,7 @@ def test_markdown_html_replace():
     try:
         clay_.build()
         content = read_file(html_filepath_out)
+        print to_bytestring(content)
         assert content == EXPECTED_HTML
     finally:
         remove_file(static_filepath)
