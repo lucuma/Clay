@@ -42,7 +42,6 @@ class SourceDirNotFound(Exception):
 @manager.command
 def new(new_app_path='.'):
     """DIR_PATH
-
     Creates a new project
     """
     new_app_path = new_app_path.rstrip(os.path.sep)

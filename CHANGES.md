@@ -1,6 +1,18 @@
 # Clay Changelog
 
 
+## Version 1.3
+
+- Fix bug that in some cases prevent it from running when some extra plugin libraries where missing.
+
+- All settings names are upper cased by default (altough lower case versions are supported as well).
+
+- Default jQuery updated to 1.8.1
+
+## Version 1.2
+
+- Several bug fixes
+
 ## Version 1.1
 
 - All markdown meta data is now processed as markdown source.

@@ -14,8 +14,9 @@ import re
 from jinja2.ext import Extension
 try:
     import markdown
+    enabled = True
 except ImportError:
-    pass
+    enabled = False
 
 from .utils import to_unicode
 

@@ -13,8 +13,9 @@ import os
 from jinja2.ext import Extension
 try:
     import scss
+    enabled = True
 except ImportError:
-    pass
+    enabled = False
 
 extensions_in = ('.css.scss', '.scss',)
 extension_out = '.css'

@@ -12,8 +12,10 @@ try:
     from pygments import highlight
     from pygments.formatters import HtmlFormatter
     from pygments.lexers import get_lexer_by_name, ClassNotFound
+    enabled = True
 except ImportError:
-    pass
+    enabled = False
+    HtmlFormatter = object
 
 
 RX_CODEBLOCK = re.compile(r'<pre(?: lang="([a-z0-9]+#?)")?><code'

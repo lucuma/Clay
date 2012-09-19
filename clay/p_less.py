@@ -12,6 +12,7 @@ from jinja2.ext import Extension
 
 
 COMMAND = 'lessc'
+enabled = True
 
 extensions_in = ('.css.less', '.less',)
 extension_out = '.css'

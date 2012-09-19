@@ -14,6 +14,7 @@ from .utils import get_source, remove_file
 
 
 COMMAND = 'coffee'
+enabled = True
 
 extensions_in = ('.js.coffee',  '.coffee',)
 extension_out = '.js'

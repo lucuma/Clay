@@ -35,21 +35,53 @@ class Clay(object):
         self.source_dir = u.make_dirs(base_dir, source_dir)
         self.build_dir = join(base_dir, c.BUILD_DIR)
  
-        settings = settings or {}
-        self.settings = Settings(settings, c.default_settings)
-
-        theme_prefix = self.settings.get('theme_prefix', '').strip('/')
-        if theme_prefix:
-            theme_prefix += '/'
-        self.settings['theme_prefix'] = theme_prefix
-
-        views_ignore = self.settings.get('views_ignore', [])
-        self.settings['views_ignore'] = tuple(views_ignore)
+        self.settings = self._normalize_settings(settings)
 
         self.app = Shake(__file__, c.app_settings)
         self._make_render()
         self._enable_pre_processors()
         self._add_urls()
+
+    def _normalize_settings(self, settings):
+        settings = Settings(settings or {}, c.default_settings)
+
+        host = settings.get('HOST', settings.get('host'))
+        port = settings.get('PORT', settings.get('port'))
+        settings['HOST'] = host
+        settings['host'] = host
+        settings['PORT'] = port
+        settings['port'] = port
+
+        layouts = layouts = settings.get('LAYOUTS', settings.get('THEME_PREFIX',
+            settings.get('theme_prefix', ''))).strip('/')
+        if layouts:
+            layouts += '/'
+        settings['THEME_PREFIX'] = layouts
+        settings['LAYOUTS'] = layouts
+        settings['theme_prefix'] = layouts
+        settings['layouts'] = layouts
+
+        views_ignore = tuple(settings.get('VIEWS_IGNORE', settings.get('views_ignore', [])))
+        settings['VIEWS_IGNORE'] = views_ignore
+        settings['views_ignore'] = views_ignore
+
+        views_list_ignore = settings.get('VIEWS_LIST_IGNORE', settings.get('views_list_ignore'))
+        settings['VIEWS_LIST_IGNORE'] = views_list_ignore
+        settings['views_list_ignore'] = views_list_ignore
+
+        plain_text = settings.get('PLAIN_TEXT', settings.get('plain_text', []))
+        settings['PLAIN_TEXT'] = plain_text
+        settings['plain_text'] = plain_text
+
+        pre_processors = settings.get('PRE_PROCESSORS', settings.get('pre_processors', []))
+        settings['PRE_PROCESSORS'] = pre_processors
+        settings['pre_processors'] = pre_processors
+
+        post_processors = settings.get('POST_PROCESSORS', settings.get('post_processors', []))
+        settings['POST_PROCESSORS'] = post_processors
+        settings['post_processors'] = post_processors
+
+        return settings
 
     def _make_render(self):
         loader = ChoiceLoader([
@@ -61,11 +93,11 @@ class Clay(object):
 
     def _enable_pre_processors(self):
         ext_trans = {}
-        processors = self.settings.pre_processors
+        processors = self.settings['PRE_PROCESSORS']
 
         for name in processors:
             pr = globals().get('p_' + name)
-            if pr:
+            if pr and pr.enabled:
                 pr.add_extensions(self)
                 for ext in pr.extensions_in:
                     ext_trans[ext] = pr.extension_out
@@ -114,26 +146,25 @@ class Clay(object):
 
     def _post_process(self, html):
         html = u.to_unicode(html)
-        processors = self.settings.post_processors
+        processors = self.settings['POST_PROCESSORS']
 
         for name in processors:
             pp = globals().get('pp_' + name)
-            if pp:
-                html = pp.process(html)
+            if pp and pp.enabled:
+                try:
+                    html = pp.process(html)
+                except:
+                    pass
 
         return html
 
     def run(self, host=None, port=None):
-        host = host if host is not None else self.settings.HOST
-        port = port if port is not None else self.settings.PORT
+        host = host if host is not None else self.settings['HOST']
+        port = port if port is not None else self.settings['PORT']
         try:
             port = int(port)
         except Exception:
-            port = self.settings.PORT
-        ips = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2]
-            if not ip.startswith("127.")][:1]
-        if ips:
-            print ' * Your local IP is:', ips[0]
+            port = self.settings['PORT']
         try:
             self.app.run(host=host, port=port)
         except socket.error, e:
@@ -163,7 +194,7 @@ class Clay(object):
             if not fullpath:
                 return self.not_found()
 
-        plain_text_exts = self.settings.plain_text
+        plain_text_exts = self.settings['PLAIN_TEXT']
         if ext in plain_text_exts or u.is_binary(fullpath):
             return send_file(request, fullpath)
 
@@ -186,8 +217,8 @@ class Clay(object):
     def build_views(self):
         processed = []
         views = []
-        views_ignore = self.settings.views_ignore
-        theme_prefix = self.settings.theme_prefix
+        views_ignore = self.settings['VIEWS_IGNORE']
+        layouts = self.settings['LAYOUTS']
 
         def callback(relpath_in):
             if relpath_in.endswith(views_ignore):
@@ -196,8 +227,8 @@ class Clay(object):
             real_ext = self._translate_ext(ext)
             relpath_in_real = u'%s%s' % (fn, real_ext)
             relpath_out = relpath_in_real
-            if theme_prefix and not relpath_out.startswith(theme_prefix):
-                relpath_out = join(theme_prefix, relpath_out)
+            if layouts and not relpath_out.startswith(layouts):
+                relpath_out = join(layouts, relpath_out)
             print relpath_out
 
             builder = EnvironBuilder(path=relpath_out)
@@ -207,7 +238,7 @@ class Clay(object):
             path_in = join(self.source_dir, relpath_in)
             path_out = u.make_dirs(self.build_dir, relpath_out)
 
-            plain_text_exts = self.settings.plain_text
+            plain_text_exts = self.settings['PLAIN_TEXT']
             if ext in plain_text_exts or u.is_binary(path_in):
                 return u.copy_if_has_change(path_in, path_out)
 
@@ -234,8 +265,7 @@ class Clay(object):
         views_list = []
         
         for relpath_in, path_out, content in views:
-            content = u.absolute_to_relative(content, relpath_in,
-                theme_prefix)
+            content = u.absolute_to_relative(content, relpath_in, layouts)
             content = u.replace_processed_names(content, rx_processed)
             u.make_file(path_out, content)
             views_list.append(u.to_unicode(relpath_in))
@@ -243,7 +273,7 @@ class Clay(object):
         self.build_views_list(views_list)
 
     def build_views_list(self, views):
-        ignore = self.settings.views_list_ignore
+        ignore = self.settings['VIEWS_LIST_IGNORE']
         ignore.append(c.VIEWS_INDEX)
         real_views = []
 
@@ -261,7 +291,8 @@ class Clay(object):
             {'views': real_views},
             to_string=True
         )
-        relpath = join(self.settings.theme_prefix, c.VIEWS_INDEX)
+        
+        relpath = join(self.settings['LAYOUTS'], c.VIEWS_INDEX)
         print relpath
         final_path = u.make_dirs(self.build_dir, relpath)
         u.make_file(final_path, content)
