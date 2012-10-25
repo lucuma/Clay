@@ -76,7 +76,7 @@ class Clay(object):
 
         filter_partials = settings.get('FILTER_PARTIALS', settings.get('filter_partials'))
         if filter_partials is None:
-            filter_partials = True
+            filter_partials = False
         settings['FILTER_PARTIALS'] = filter_partials
         settings['filter_partials'] = filter_partials
 
