@@ -74,7 +74,9 @@ class Clay(object):
         settings['VIEWS_INCLUDE'] = views_include
         settings['views_include'] = views_include
 
-        filter_partials = settings.get('FILTER_PARTIALS', settings.get('filter_partials')) or True
+        filter_partials = settings.get('FILTER_PARTIALS', settings.get('filter_partials'))
+        if filter_partials is None:
+            filter_partials = True
         settings['FILTER_PARTIALS'] = filter_partials
         settings['filter_partials'] = filter_partials
 
@@ -282,12 +284,16 @@ class Clay(object):
             u.make_file(path_out, content)
     
     def prune_build(self):
+        ## Remove ignored
         ignore = self.settings['VIEWS_IGNORE']
         def remove_ignored(relpath):
             if relpath in ignore or relpath.startswith(c.IGNORE):
                 filepath = join(self.build_dir, relpath)
                 u.remove_file(filepath)
 
+        u.walk_dir(self.build_dir, remove_ignored)
+
+        ## Remove partials
         include = self.settings['VIEWS_INCLUDE']
         def remove_partials(relpath):
             fn, ext = splitext(relpath)
@@ -298,7 +304,11 @@ class Clay(object):
             head = source[:500].strip().lower()
             if not (head.startswith('<!doctype ') or head.startswith('<html')):
                 u.remove_file(filepath)
+
+        if self.settings['FILTER_PARTIALS']:
+            u.walk_dir(self.build_dir, remove_partials)
         
+        ## Process views
         ignore = self.settings['VIEWS_LIST_IGNORE']
         final_views = []
         def process_view(relpath):
@@ -313,12 +323,10 @@ class Clay(object):
             mdate = u.get_file_mdate(sourcepath)
 
             final_views.append((relpath, u' / '.join(relpath.split('/')), mdate))
-
-        u.walk_dir(self.build_dir, remove_ignored)
-        if self.settings['FILTER_PARTIALS']:
-            u.walk_dir(self.build_dir, remove_partials)        
+                    
         u.walk_dir(self.build_dir, process_view)
 
+        ## Make _index.html
         content = self.render(
             c.VIEWS_INDEX, 
             {'views': final_views},
