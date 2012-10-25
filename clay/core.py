@@ -264,8 +264,7 @@ class Clay(object):
             if real_ext == u'.html':
                 content = self._post_process(content)
                 return views.append([relpath_in, path_out, content])
-
-            print path_out
+            
             u.make_file(path_out, content)
             return
         
