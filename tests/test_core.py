@@ -16,11 +16,11 @@ def setup_module():
         pass
 
 
-def teardown_module():
-    try:
-        shutil.rmtree(clay_.build_dir)
-    except OSError:
-        pass
+# def teardown_module():
+#     try:
+#         shutil.rmtree(clay_.build_dir)
+#     except OSError:
+#         pass
 
 
 def test_common():

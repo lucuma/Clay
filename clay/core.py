@@ -70,6 +70,14 @@ class Clay(object):
         settings['VIEWS_LIST_IGNORE'] = views_list_ignore
         settings['views_list_ignore'] = views_list_ignore
 
+        views_include = settings.get('VIEWS_INCLUDE', settings.get('views_include')) or []
+        settings['VIEWS_INCLUDE'] = views_include
+        settings['views_include'] = views_include
+
+        filter_partials = settings.get('FILTER_PARTIALS', settings.get('filter_partials')) or True
+        settings['FILTER_PARTIALS'] = filter_partials
+        settings['filter_partials'] = filter_partials
+
         plain_text = settings.get('PLAIN_TEXT', settings.get('plain_text')) or []
         settings['PLAIN_TEXT'] = plain_text
         settings['plain_text'] = plain_text
@@ -90,7 +98,7 @@ class Clay(object):
             PackageLoader('clay', c.SOURCE_DIR),
         ])
         self.render = Render(loader=loader)
-        self.render.env.filters['json'] = u.filter_to_json
+        self.render.env.filters['json'] = u.jinja_filter_to_json
 
     def _enable_pre_processors(self):
         ext_trans = {}
@@ -169,13 +177,6 @@ class Clay(object):
         except socket.error, e:
             print e
 
-    def build(self):
-        """Generates a static version of the site.
-        """
-        print '\nGenerating views...\n', '-' * 20
-        self.build_views()
-        print '\nDone!\n'
-
     def test_client(self):
         return self.app.test_client()
 
@@ -212,6 +213,14 @@ class Clay(object):
 
         resp.mimetype = mimetypes.guess_type('a' + real_ext)[0] or 'text/plain'
         return resp
+
+    def build(self):
+        """Generates a static version of the site.
+        """
+        print '\nGenerating views...\n', '-' * 20
+        self.build_views()
+        self.prune_build()
+        print '\nDone!\n'
 
     def build_views(self):
         processed = []
@@ -256,43 +265,56 @@ class Clay(object):
                 content = self._post_process(content)
                 return views.append([relpath_in, path_out, content])
 
+            print path_out
             u.make_file(path_out, content)
             return
         
         u.walk_dir(self.source_dir, callback, c.IGNORE)
         rx_processed = u.get_processed_regex(processed)
-        views_list = []
         
         for relpath_in, path_out, content in views:
             content = u.absolute_to_relative(content, relpath_in, layouts)
             content = u.replace_processed_names(content, rx_processed)
             u.make_file(path_out, content)
-            views_list.append(u.to_unicode(relpath_in))
-        
-        self.build_views_list(views_list)
+    
+    def prune_build(self):
+        ignore = self.settings['VIEWS_IGNORE']
+        def remove_ignored(relpath):
+            if relpath in ignore or relpath.startswith(c.IGNORE):
+                filepath = join(self.build_dir, relpath)
+                u.remove_file(filepath)
 
-    def build_views_list(self, views):
+        include = self.settings['VIEWS_INCLUDE']
+        def remove_partials(relpath):
+            fn, ext = splitext(relpath)
+            if ext != '.html' or relpath in include:
+                return
+            filepath = join(self.build_dir, relpath)
+            source = u.get_source(filepath)
+            head = source[:500].strip().lower()
+            if not (head.startswith('<!doctype ') or head.startswith('<html')):
+                u.remove_file(filepath)
+        
         ignore = self.settings['VIEWS_LIST_IGNORE']
-        ignore.append(c.VIEWS_INDEX)
-        real_views = []
+        final_views = []
+        def process_view(relpath):
+            if relpath in ignore:
+                return
+            filepath = join(self.build_dir, relpath)
+            mdate = u.get_file_mdate(filepath)
+            final_views.append((relpath, u' / '.join(relpath.split('/')), mdate))
 
-        for v in views:
-            if v in ignore or v.startswith(c.IGNORE):
-                continue
-            mdate = u.get_file_mdate(join(self.source_dir, v))
-            fn, ext = splitext(v)
-            real_ext = self._translate_ext(ext)
-            v = '%s%s' % (fn, real_ext)
-            real_views.append((v, u' / '.join(v.split('/')), mdate))
-        
+        u.walk_dir(self.build_dir, remove_ignored)
+        if self.settings['FILTER_PARTIALS']:
+            u.walk_dir(self.build_dir, remove_partials)        
+        u.walk_dir(self.build_dir, process_view)
+
         content = self.render(
             c.VIEWS_INDEX, 
-            {'views': real_views},
+            {'views': final_views},
             to_string=True
         )
-        
         relpath = join(self.settings['LAYOUTS'], c.VIEWS_INDEX)
-        print relpath
         final_path = u.make_dirs(self.build_dir, relpath)
         u.make_file(final_path, content)
 

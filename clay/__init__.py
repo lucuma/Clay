@@ -13,4 +13,4 @@ License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).
 from .core import *
 
 
-__version__ = '1.3.1'
+__version__ = '1.4'

@@ -66,6 +66,7 @@ def test_scss_render():
 def test_scss_build():
     filepath = make_view(FILENAME_IN, SRC_SCSS)
     filepath_out = get_build_filepath(FILENAME_OUT)
+    clay_.settings['FILTER_PARTIALS'] = False
     try:
         clay_.build()
         content = read_file(filepath_out).strip()

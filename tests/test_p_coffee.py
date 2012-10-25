@@ -67,9 +67,10 @@ def test_coffeescript_render():
     remove_file(filepath)
 
 
-def test_coffeescript_make():
+def test_coffeescript_build():
     filepath = make_view(FILENAME_IN, SRC_COFFEESCRIPT)
     filepath_out = get_build_filepath(FILENAME_OUT)
+    clay_.settings['FILTER_PARTIALS'] = False
     try:
         clay_.build()
         content = read_file(filepath_out).strip()

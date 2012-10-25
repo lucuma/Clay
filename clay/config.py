@@ -20,6 +20,8 @@ default_settings = {
     'PLAIN_TEXT': ['.js', ],
     'VIEWS_IGNORE': ['base.html', ],
     'VIEWS_LIST_IGNORE': ['base.html', ],
+    'FILTER_PARTIALS': True,
+    'VIEWS_INCLUDE': [],
 
     'PRE_PROCESSORS': [], #['scss', 'less', 'coffee', 'markdown']
     'POST_PROCESSORS': [], #['pygments']

@@ -6,13 +6,21 @@
 HOST: 0.0.0.0
 PORT: 8080
 
-## Ignore the views listed here when generating the static files
+## Ignore the views listed here when building
 VIEWS_IGNORE:
   - base.html
 
 ## Ignore the views listed here in the _index
 VIEWS_LIST_IGNORE:
   - base.html
+
+## Do not show HTML fragments in the final build
+FILTER_PARTIALS: True
+
+## When building, include all views listed here, even if it's a HTML fragment
+## and FILTER_PARTIALS is True
+VIEWS_INCLUDE:
+  
 
 ## Do not process files with these extensions as jinja templates
 PLAIN_TEXT:
@@ -28,4 +36,5 @@ PRE_PROCESSORS:
 ## Enabled post-processors
 POST_PROCESSORS: 
   # - pygments
+
 

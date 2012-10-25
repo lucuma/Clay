@@ -27,12 +27,10 @@ SKELETON = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 SKELETON_HELP = """
     Done!
     Now go to %(new_app_path)s, and run `clay run` to start the server.
-    Don't forget to read the README.md
-    """
+    Don't forget to read the README.md """
 
 SOURCE_NOT_FOUND_HELP = """We couldn't found a source dir ('%s' or 'views').
-Are you sure you're in the correct folder?
-""" % SOURCE_DIR
+Are you sure you're in the correct folder? """ % SOURCE_DIR
 
 
 class SourceDirNotFound(Exception):

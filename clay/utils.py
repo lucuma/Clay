@@ -236,6 +236,6 @@ def to_bytestring(s, encoding='utf-8', strings_only=False, errors='strict'):
         return s
 
 
-def filter_to_json(source_dict):
+def jinja_filter_to_json(source_dict):
     return json.dumps(source_dict)
 
