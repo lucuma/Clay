@@ -114,7 +114,6 @@ class Clay(object):
                     ext_trans[ext] = pr.extension_out
 
         self.ext_trans = ext_trans
-        self.ext_trans_rev = dict([(v, k) for k, v in ext_trans.items()])
 
     def _add_urls(self):
         self.app.add_urls([
@@ -135,9 +134,6 @@ class Clay(object):
 
     def _translate_ext(self, old_ext):
         return self.ext_trans.get(old_ext, old_ext)
-
-    def _reverse_ext(self, new_ext):
-        return self.ext_trans_rev.get(new_ext, new_ext)
 
     def _get_alternative(self, path):
         path = path.strip('/')
@@ -225,8 +221,8 @@ class Clay(object):
         """Generates a static version of the site.
         """
         print '\nGenerating views...\n', '-' * 20
-        self.build_views()
-        self.prune_build()
+        views_trans = self.build_views()
+        self.prune_build(views_trans)
         print '\nDone!\n'
 
     def build_views(self):
@@ -282,8 +278,11 @@ class Clay(object):
             content = u.absolute_to_relative(content, relpath_in, layouts)
             content = u.replace_processed_names(content, rx_processed)
             u.make_file(path_out, content)
+
+        views_trans = dict([(path_out, relpath_in) for relpath_in, path_out, content in views])
+        return views_trans
     
-    def prune_build(self):
+    def prune_build(self, views_trans):
         ## Remove ignored
         ignore = self.settings['VIEWS_IGNORE']
         def remove_ignored(relpath):
@@ -317,9 +316,9 @@ class Clay(object):
                 return
             
             # Get the modified date of the source
-            fn, ext = splitext(relpath)
-            src_ext = self._reverse_ext(ext)
-            sourcepath = join(self.source_dir, fn + src_ext)
+            filepath = join(self.build_dir, relpath)
+            sourcepath = views_trans.get(filepath)
+            sourcepath = join(self.source_dir, sourcepath) if sourcepath else filepath
             mdate = u.get_file_mdate(sourcepath)
 
             final_views.append((relpath, u' / '.join(relpath.split('/')), mdate))
