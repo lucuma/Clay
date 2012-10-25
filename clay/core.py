@@ -110,7 +110,9 @@ class Clay(object):
                 pr.add_extensions(self)
                 for ext in pr.extensions_in:
                     ext_trans[ext] = pr.extension_out
+
         self.ext_trans = ext_trans
+        self.ext_trans_rev = dict([(v, k) for k, v in ext_trans.items()])
 
     def _add_urls(self):
         self.app.add_urls([
@@ -131,6 +133,9 @@ class Clay(object):
 
     def _translate_ext(self, old_ext):
         return self.ext_trans.get(old_ext, old_ext)
+
+    def _reverse_ext(self, new_ext):
+        return self.ext_trans_rev.get(new_ext, new_ext)
 
     def _get_alternative(self, path):
         path = path.strip('/')
@@ -300,8 +305,13 @@ class Clay(object):
             fn, ext = splitext(relpath)
             if ext != '.html' or relpath in ignore:
                 return
-            filepath = join(self.build_dir, relpath)
-            mdate = u.get_file_mdate(filepath)
+            
+            # Get the modified date of the source
+            fn, ext = splitext(relpath)
+            src_ext = self._reverse_ext(ext)
+            sourcepath = join(self.source_dir, fn + src_ext)
+            mdate = u.get_file_mdate(sourcepath)
+
             final_views.append((relpath, u' / '.join(relpath.split('/')), mdate))
 
         u.walk_dir(self.build_dir, remove_ignored)
