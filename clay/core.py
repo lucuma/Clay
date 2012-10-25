@@ -264,7 +264,7 @@ class Clay(object):
             if real_ext == u'.html':
                 content = self._post_process(content)
                 return views.append([relpath_in, path_out, content])
-            
+
             u.make_file(path_out, content)
             return
         
@@ -297,7 +297,8 @@ class Clay(object):
         ignore = self.settings['VIEWS_LIST_IGNORE']
         final_views = []
         def process_view(relpath):
-            if relpath in ignore:
+            fn, ext = splitext(relpath)
+            if ext != '.html' or relpath in ignore:
                 return
             filepath = join(self.build_dir, relpath)
             mdate = u.get_file_mdate(filepath)
