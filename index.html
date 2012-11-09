@@ -54,7 +54,11 @@
 <p>and all the templates will be processed and the result stored inside the build folder.</p>
 
 <h3>Not just for HTML</h3>
-<p>Clay can automatically compiles Less, Sass, CleverCSS &amp; CoffeeScript files directly from your static dir (Less and CoffeeScript has to be installed in node first).</p>
+<p>Clay can automatically compile Markdown, Sass, Less and CoffeeScript files directly from your static dir.
+
+<h3>Requirements</h3>
+<p>Clay works (for now) only with Python 2.7</p>
+<p>Sass support needs <a href="https://github.com/Kronuz/pyScss" target="_blank">pyScss</a>, Markdown needs the <a href="http://pypi.python.org/pypi/Markdown" target="_blank">Markdown</a> package, and Less and CoffeeScript has to be installed in Node first.</p>
 
 <h3>How to install</h3>
 <p>Just run</p>
@@ -68,7 +72,7 @@
     
 <pre>{% include "header.html "%}</pre>
 
-<p>You can also use a powerful feature called <em>template imheritance</em>:</p>
+<p>You can also use a powerful feature called <em>template inheritance</em>:</p>
 
 <p>Inside the source folder you'll find a file called base.html. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!</p>
 
@@ -84,6 +88,6 @@
 
 <p><a href="http://jinja.pocoo.org/2/" target="_blank">Jinja2</a> templates are much more than just template inheritance. For more advaced features check the official documentation.</p>
 </section>
-<a id="github" href="http://github.com/lucuma/clay"><img src="forkme-right.png" alt="Fork me on GitHub"></a>
+<a id="github" href="http://github.com/lucuma/clay"><img src="./forkme-right.png" alt="Fork me on GitHub"></a>
 </body>
 </html>
