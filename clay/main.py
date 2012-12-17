@@ -5,7 +5,7 @@ from os.path import isfile, isdir, dirname, join, splitext, split
 from flask import Flask, send_file, make_response
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, TemplateNotFound
 
-from helpers import Render, make_dirs, create_file
+from helpers import Render, make_dirs, create_file, copy_if_updated
 
 
 SOURCE_DIRNAME = 'source'
@@ -108,9 +108,14 @@ class Clay(object):
 
     def build_page(self, path):
         self.make_build_dir()
+        spath = self.get_full_source_path(path)
+        bpath = self.get_full_build_path(path)
+        
+        if not path.endswith(TMPL_EXTS):
+            return copy_if_updated(spath, bpath)
+
         content = self.render(path)
-        fp = self.get_full_build_path(path)
-        create_file(fp, content)
+        create_file(bpath, content)
 
     def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT, _test=False):
         config = {

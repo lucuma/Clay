@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import shutil
 
 from tests.helpers import *
@@ -40,20 +41,6 @@ def test_make_dirs_wrong():
         make_dirs('/etc/bla')
 
 
-def test_build_file(c):
-    name = 'main.css'
-    content = """
-    .icon1 { background-image: url('img/icon1.png'); }
-    .icon2 { background-image: url('img/icon2.png'); }
-    .icon3 { background-image: url('img/icon3.png'); }
-    .icon4 { background-image: url('img/icon4.png'); }
-    """
-    create_file(get_source_path(name), content)
-    c.build_page(name)
-    result = read_content(get_build_path(name))
-    assert result.strip() == content.strip()
-
-
 def test_build_page(c):
     name = 'foo.html'
     create_file(get_source_path(name), u'foo{% include "bar.html" %}')
@@ -61,4 +48,39 @@ def test_build_page(c):
     c.build_page(name)
     result = read_content(get_build_path(name))
     assert result.strip() == 'foobar'
+
+
+def test_build_file_without_process(c):
+    name = 'main.css'
+    content = "/* {% foobar %} */"
+    create_file(get_source_path(name), content)
+    c.build_page(name)
+    result = read_content(get_build_path(name))
+    assert result.strip() == content.strip()
+
+
+def test_do_not_copy_if_build_is_newer(c):
+    name = 'test.txt'
+    spath, bpath = create_test_file(name)
+    t = os.path.getmtime(spath)
+    os.utime(bpath, (-1, t + 1))
+    c.build_page(name)
+    assert read_content(bpath) == 'build'
+
+
+def test_copy_if_source_is_newer(c):
+    name = 'test.txt'
+    spath, bpath = create_test_file(name)
+    t = os.path.getmtime(bpath)
+    os.utime(spath, (-1, t + 1))
+    c.build_page(name)
+    assert read_content(bpath) == 'source'
+
+
+def create_test_file(name):
+    spath = get_source_path(name)
+    bpath = get_build_path(name)
+    create_file(spath, 'source')
+    create_file(bpath, 'build')
+    return spath, bpath
 

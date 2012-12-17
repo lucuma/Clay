@@ -3,6 +3,7 @@ from datetime import datetime
 import errno
 import io
 import os
+import shutil
 
 from flask import request
 import jinja2
@@ -53,4 +54,14 @@ def create_file(path, content, encoding='utf8'):
         content = unicode(content, encoding)
     with io.open(path, 'w+t', encoding=encoding) as f:
         f.write(content)
+
+
+def copy_if_updated(path_in, path_out):
+    if os.path.exists(path_out):
+        newt = os.path.getmtime(path_in)
+        currt = os.path.getmtime(path_out)
+        if currt >= newt:
+            return
+    shutil.copy2(path_in, path_out)
+
 

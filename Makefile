@@ -15,8 +15,9 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} \;
 
 test:
-	/Users/jps/.virtualenvs/clay/bin/py.test --cov clay tests/
+	~/.virtualenvs/clay/bin/py.test --cov clay tests/
 	rm -rf tests/__pycache__
+	mv .coverage clay/.coverage
 
 upload: clean
 	python setup.py sdist upload
