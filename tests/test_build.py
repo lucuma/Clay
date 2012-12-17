@@ -25,6 +25,14 @@ def teardown_module():
         pass
 
 
+def create_test_file(name):
+    spath = get_source_path(name)
+    bpath = get_build_path(name)
+    create_file(spath, 'source')
+    create_file(bpath, 'build')
+    return spath, bpath
+
+
 def test_build_dir_is_made(c):
     name = 'test.html'
     create_file(get_source_path(name), u'')
@@ -76,11 +84,4 @@ def test_copy_if_source_is_newer(c):
     c.build_page(name)
     assert read_content(bpath) == 'source'
 
-
-def create_test_file(name):
-    spath = get_source_path(name)
-    bpath = get_build_path(name)
-    create_file(spath, 'source')
-    create_file(bpath, 'build')
-    return spath, bpath
 
