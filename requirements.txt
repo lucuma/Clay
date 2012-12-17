@@ -1,0 +1,13 @@
+# This file collects all required third-party applications that are needed
+# to run this project. Later you can install all these apps in a row
+# using pip. Example:
+#
+#     pip install -r requirements.txt
+
+Flask==0.9
+Jinja2==2.6
+Werkzeug==0.8.3
+
+# markdown
+# pygments
+# pyscss
