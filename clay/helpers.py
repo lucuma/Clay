@@ -3,6 +3,7 @@ from datetime import datetime
 import errno
 import io
 import os
+import re
 import shutil
 
 from flask import request
@@ -37,6 +38,12 @@ class Render(object):
     # def from_string(self, source, context=None):
     #     tmpl = self.env.from_string(source)
     #     return self.render(tmpl, context)
+
+
+def read_content(path, **kwargs):
+    kwargs.setdefault('mode', 'rt')
+    with io.open(path, **kwargs) as f:
+        return f.read()
 
 
 def make_dirs(*lpath):

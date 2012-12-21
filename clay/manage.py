@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+from os.path import dirname, join, realpath, sep
+
+from pyceo import Manager
+from voodoo import reanimate_skeleton
+
+from . import __version__
+from .main import Clay, DEFAULT_HOST, DEFAULT_PORT
+
+
+manager = Manager()
+
+SKELETON = join(dirname(realpath(__file__)), 'skeleton')
+
+SKELETON_HELP = """
+    Done!
+    Now go to %s, and run `clay run` to start the server.
+"""
+
+
+@manager.command
+def new(path='.'):
+    """[path]
+    Creates a new project
+    """
+    path = path.rstrip(sep)
+    reanimate_skeleton(SKELETON, path)
+    print SKELETON_HELP % (path,)
+
+
+@manager.command
+def run(host=DEFAULT_HOST, port=DEFAULT_PORT, path='.'):
+    """[host] [port] [path]
+    Run the development server
+    """
+    c = Clay(path)
+    c.run(host=host, port=port)
+
+
+@manager.command
+def build(path='.'):
+    """[path]
+    Generates a static copy of the sources
+    """
+    c = Clay(path)
+    c.build()
+
+
+@manager.command
+def version():
+    """.
+    Returns the current Clay version
+    """
+    print __version__
+
+
+if __name__ == "__main__":
+    manager.run()
+

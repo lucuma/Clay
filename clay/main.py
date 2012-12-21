@@ -1,20 +1,33 @@
 # -*- coding: utf-8 -*-
 import mimetypes
-from os.path import isfile, isdir, dirname, join, splitext, split
+import os
+from os.path import (isfile, isdir, dirname, join, splitext, split, exists,
+    relpath, sep)
+import re
 
 from flask import Flask, send_file, make_response
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, TemplateNotFound
+import yaml
 
-from helpers import Render, make_dirs, create_file, copy_if_updated
+from helpers import (Render, read_content, make_dirs, create_file,
+    copy_if_updated)
 
 
 SOURCE_DIRNAME = 'source'
 BUILD_DIRNAME = 'build'
 TMPL_EXTS = ('.html', '.tmpl')
+RX_TMPL = re.compile(r'\.tmpl$')
+
 HTTP_NOT_FOUND = 404
 
 DEFAULT_HOST = '0.0.0.0'
-DEFAULT_PORT = 5000
+DEFAULT_PORT = 8080
+
+SOURCE_NOT_FOUND_HELP = """We couldn't found a "%s" dir.
+Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
+
+rx_abs_url = re.compile(r'\s(?P<attr>src|href)=[\'"]\/(?P<url>([a-z0-9][^\'"]*)?)[\'"]',
+    re.UNICODE | re.IGNORECASE)
 
 
 class Clay(object):
@@ -25,6 +38,7 @@ class Clay(object):
 
         if isfile(root):
             root = dirname(root)
+        self.settings_path = join(root, 'settings.yml')
         self.source_dir = join(root, SOURCE_DIRNAME)
         self.build_dir = join(root, BUILD_DIRNAME)
         self.app = self.make_app()
@@ -52,10 +66,18 @@ class Clay(object):
             path = '/'.join([path, 'index.html'])
         return path
 
+    def get_relpath(self, folder):
+        rel = relpath(folder, self.source_dir)
+        return rel.lstrip('.').lstrip(sep)
+
     def make_build_dir(self):
         if not isdir(self.build_dir):
             make_dirs(self.build_dir)
 
+    def load_settings_from_file(self):
+        source = read_content(self.settings_path)
+        st = yaml.load(source)
+        self.settings.update(st)
 
     def make_app(self):
         app = Flask('clay')
@@ -86,6 +108,34 @@ class Clay(object):
             res = self.render('notfound.html', self.settings)
             return make_response(res, HTTP_NOT_FOUND)
 
+    def get_app_config(self, host, port):
+        port = port or self.settings.get('port', DEFAULT_PORT)
+        return {
+            'host': host or self.settings.get('host', DEFAULT_HOST),
+            'port': int(port),
+            'use_debugger': True,
+            'use_reloader': False,
+        }
+
+    def get_relative_url(self, relpath, currurl):
+        depth = relpath.count('/')
+        url = (ur'../' * depth) + currurl
+        if not url:
+            return 'index.html'
+        path = self.get_full_source_path(url)
+        if isdir(path) or url.endswith('/'):
+            return url.rstrip('/') + '/index.html'
+        return url
+
+    def make_absolute_urls_relative(self, content, relpath):
+        match = rx_abs_url.search(content)
+        if not match:
+            return content
+
+        url = self.get_relative_url(relpath, match.group('url'))
+        repl = ur' %s="%s"' % (match.group('attr'), url)
+        return re.sub(rx_abs_url, repl, content)
+
 
     def render_page(self, path=None):
         path = self.normalize_path(path)
@@ -108,23 +158,36 @@ class Clay(object):
 
     def build_page(self, path):
         self.make_build_dir()
-        spath = self.get_full_source_path(path)
-        bpath = self.get_full_build_path(path)
-        
+        sp = self.get_full_source_path(path)
+        bp = self.get_full_build_path(path)
+
+        make_dirs(dirname(bp))
+
         if not path.endswith(TMPL_EXTS):
-            return copy_if_updated(spath, bpath)
+            return copy_if_updated(sp, bp)
 
-        content = self.render(path)
-        create_file(bpath, content)
+        bp = remove_template_ext(bp)
+        content = self.render(path, self.settings)
+        if bp.endswith('.html'):
+            content = self.make_absolute_urls_relative(content, path)
+        create_file(bp, content)
 
-    def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT, _test=False):
-        config = {
-            'host': host or self.settings.get('host', DEFAULT_HOST),
-            'port': port or self.settings.get('port', DEFAULT_PORT),
-            'use_debugger': True,
-            'use_reloader': False,
-        }
-        if _test:
-            return config
-        self.app.run(**config)
+    def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
+        if not exists(self.source_dir):
+            print SOURCE_NOT_FOUND_HELP
+            return
+
+        config = self.get_app_config(host, port)
+        return self.app.run(**config)
+
+    def build(self):
+        for folder, subs, files in os.walk(self.source_dir):
+            rel = self.get_relpath(folder)
+            for filename in files:
+                path = join(rel, filename)
+                self.build_page(path)
+
+
+def remove_template_ext(path):
+    return RX_TMPL.sub('', path)
 
