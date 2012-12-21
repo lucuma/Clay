@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import io
 import os
-from os.path import dirname, join, isdir
+from os.path import dirname, join, isdir, realpath
 import shutil
 from StringIO import StringIO
 import sys

@@ -20,6 +20,7 @@ def teardown_module():
 
 def assert_page(t, name, content=HTML_PAGE, url=None, encoding='utf8'):
     sp = get_source_path(name)
+    make_dirs(dirname(sp))
     content = content.encode(encoding)
     create_file(sp, content, encoding=encoding)
     url = url or '/' + name
@@ -58,12 +59,10 @@ def test_index_page(t):
 
 
 def test_render_sub_page(t):
-    make_dirs(join(SOURCE_DIR, 'sub'))
     assert_page(t, 'sub/index.html')
 
 
 def test_render_sub_index_page(t):
-    make_dirs(join(SOURCE_DIR, 'sub'))
     assert_page(t, 'sub/index.html', url='sub')
 
 
@@ -77,6 +76,10 @@ def test_i18n_filename(t):
 
 def test_weird_encoding_of_content(t):
     assert_page(t, 'iso-8859-1.txt', TEXT, encoding='iso-8859-1')
+
+
+def test_static_filename(t):
+    assert_page(t, 'static/css/index.css', u'')
 
 
 def test_process_template_files(t):

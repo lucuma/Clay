@@ -3,7 +3,7 @@ import os
 import sys
 
 import clay
-from clay.manage import manager
+from clay.manage import main, manager
 from flask import Flask
 from tests.helpers import *
 
@@ -13,6 +13,10 @@ TEST_DIR = join(dirname(__file__), 'foobar')
 
 def teardown_module():
     remove_dir(TEST_DIR)
+
+
+def test_has_main():
+    main()
 
 
 def test_create_skeleton():

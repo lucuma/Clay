@@ -80,7 +80,7 @@ class Clay(object):
         self.settings.update(st)
 
     def make_app(self):
-        app = Flask('clay')
+        app = Flask('clay', static_folder=None, template_folder=None)
         app.debug = True
         self.add_default_urls(app)
         self.set_not_found_handler(app)
