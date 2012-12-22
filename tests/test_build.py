@@ -5,9 +5,8 @@ import shutil
 from tests.helpers import *
 
 
-def remove_test_dirs():
-    remove_dir(SOURCE_DIR)
-    remove_dir(BUILD_DIR)
+def teardown_module():
+    remove_test_dirs()
 
 
 def get_file_paths(name):
@@ -30,8 +29,8 @@ def test_make_dirs_wrong():
 
 
 def test_build_dir_is_made(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
-    remove_dir(BUILD_DIR)
 
     name = 'test.html'
     sp, bp = get_file_paths(name)
@@ -39,10 +38,9 @@ def test_build_dir_is_made(c):
     c.build_page(name)
     assert isdir(BUILD_DIR)
 
-    remove_test_dirs()
-
 
 def test_build_page(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
     name = 'foo.html'
@@ -55,10 +53,9 @@ def test_build_page(c):
     result = read_content(get_build_path(name))
     assert result.strip() == 'foobar'
 
-    remove_test_dirs()
-
 
 def test_build_file_without_process(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
     name = 'main.css'
@@ -69,10 +66,9 @@ def test_build_file_without_process(c):
     result = read_content(get_build_path(name))
     assert result.strip() == content.strip()
 
-    remove_test_dirs()
-
 
 def test_do_not_copy_if_build_is_newer(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
     name = 'test.txt'
@@ -82,10 +78,9 @@ def test_do_not_copy_if_build_is_newer(c):
     c.build_page(name)
     assert read_content(bp) == 'build'
 
-    remove_test_dirs()
-
 
 def test_copy_if_source_is_newer(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
     name = 'test.txt'
@@ -95,10 +90,9 @@ def test_copy_if_source_is_newer(c):
     c.build_page(name)
     assert read_content(bp) == 'source'
 
-    remove_test_dirs()
-
 
 def test_rename_tmpl_file(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
     name = 'test.txt.tmpl'
@@ -110,13 +104,13 @@ def test_rename_tmpl_file(c):
     assert os.path.exists(bpreal)
     assert not os.path.exists(bp)
 
-    remove_test_dirs()
-
 
 def test_settings_as_template_build_context():
+    remove_test_dirs()
+    make_dirs(SOURCE_DIR)
+
     c = Clay(TESTS, {'who': u'world'})
     t = c.get_test_client()
-    make_dirs(SOURCE_DIR)
 
     name = 'test.txt.tmpl'
     sp = get_source_path(name)
@@ -126,10 +120,9 @@ def test_settings_as_template_build_context():
     c.build_page(name)
     assert read_content(bp) == u'Hello world!'
 
-    remove_test_dirs()
-
 
 def test_build_all(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR, 'sub')
 
     sp1, bp1 = get_file_paths('a.txt')
@@ -146,10 +139,9 @@ def test_build_all(c):
     assert os.path.exists(bp2)
     assert os.path.exists(bp3)
 
-    remove_test_dirs()
-
 
 def test_translate_absolute_to_relative(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR, 'foo')
 
     sp1, bp1 = get_file_paths('wtf.html')
@@ -165,10 +157,9 @@ def test_translate_absolute_to_relative(c):
     c2 = read_content(bp2)
     assert '<link href="../styles/test.css"' in c2
 
-    remove_test_dirs()
-
 
 def test_translate_absolute_to_relative_index(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR, 'bar')
 
     sp1, bp1 = get_file_paths('index.html')
@@ -184,26 +175,74 @@ def test_translate_absolute_to_relative_index(c):
     c2 = read_content(bp2)
     assert '<a href="../index.html">Home</a>' in c2
 
-    remove_test_dirs()
-
 
 def test_ignore_external_urls(c):
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
     sp1, bp1 = get_file_paths('t1.html')
     sp2, bp2 = get_file_paths('t2.html')
     sp3, bp3 = get_file_paths('t3.html')
-    content1 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="//google.com"></a></body></html>"""
-    content2 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="http://example.net/foo/bar"></a></body></html>"""
-    content3 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="mailto:bob@example.com"></a></body></html>"""
-    create_file(sp1, content1)
-    create_file(sp2, content2)
-    create_file(sp3, content3)
+    c1 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="//google.com"></a></body></html>"""
+    c2 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="http://example.net/foo/bar"></a></body></html>"""
+    c3 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="mailto:bob@example.com"></a></body></html>"""
+    create_file(sp1, c1)
+    create_file(sp2, c2)
+    create_file(sp3, c3)
 
     c.build()
-    assert read_content(bp1) == content1
-    assert read_content(bp2) == content2
-    assert read_content(bp3) == content3
-    
+    assert read_content(bp1) == c1
+    assert read_content(bp2) == c2
+    assert read_content(bp3) == c3
+
+
+def test_setting_filter_fragments(c):
     remove_test_dirs()
+    make_dirs(SOURCE_DIR)
+
+    sp1, bp1 = get_file_paths('a.html')
+    sp2, bp2 = get_file_paths('b.html')
+    c1 = u"""<!DOCTYPE html><html><head><title></title></head><body></body></html>"""
+    c2 = u"lalala"
+    create_file(sp1, c1)
+    create_file(sp2, c2)
+
+    c.settings['FILTER_PARTIALS'] = True
+    c.build()
+    assert exists(bp1)
+    assert not exists(bp2)
+
+    c.settings['FILTER_PARTIALS'] = False
+    c.build()
+    assert exists(bp1)
+    assert exists(bp2)
+
+
+def test_setting_force_fragment_inclusion(c):
+    remove_test_dirs()
+    make_dirs(SOURCE_DIR)
+
+    name = 'fragment.html'
+    sp, bp = get_file_paths(name)
+    create_file(sp, u"lalala")
+
+    c.settings['FILTER_PARTIALS'] = True
+    c.settings['VIEWS_INCLUDE'] = [name,]
+    c.build()
+    assert exists(bp)
+
+
+def test_setting_force_ignore(c):
+    remove_test_dirs()
+    make_dirs(SOURCE_DIR)
+
+    name = 'fullpage.html'
+    sp, bp = get_file_paths(name)
+    content = u"""<!DOCTYPE html><html><head><title></title></head><body></body></html>"""
+    create_file(sp, content)
+
+    c.settings['VIEWS_IGNORE'] = [name,]
+    c.build()
+    assert not exists(bp)
+
 

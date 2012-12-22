@@ -11,11 +11,12 @@ Est fait pour inspirer au poète un amour'''
 
 
 def setup_module():
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
 
 def teardown_module():
-    remove_dir(SOURCE_DIR)
+    remove_test_dirs()
 
 
 def assert_page(t, name, content=HTML_PAGE, url=None, encoding='utf8'):

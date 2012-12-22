@@ -136,6 +136,18 @@ class Clay(object):
         repl = ur' %s="%s"' % (match.group('attr'), url)
         return re.sub(rx_abs_url, repl, content)
 
+    def is_html_fragment(self, content):
+        head = content[:500].strip().lower()
+        return not (head.startswith('<!doctype ') or head.startswith('<html'))
+
+    def must_be_filtered(self, path, content):
+        if path in self.settings.get('VIEWS_INCLUDE', []):
+            return False
+
+        r1 = self.settings.get('FILTER_PARTIALS') and self.is_html_fragment(content)
+        r2 = path in self.settings.get('VIEWS_IGNORE', [])
+        return r1 or r2
+
 
     def render_page(self, path=None):
         path = self.normalize_path(path)
@@ -160,7 +172,6 @@ class Clay(object):
         self.make_build_dir()
         sp = self.get_full_source_path(path)
         bp = self.get_full_build_path(path)
-
         make_dirs(dirname(bp))
 
         if not path.endswith(TMPL_EXTS):
@@ -168,6 +179,10 @@ class Clay(object):
 
         bp = remove_template_ext(bp)
         content = self.render(path, self.settings)
+
+        if self.must_be_filtered(path, content):
+            return
+
         if bp.endswith('.html'):
             content = self.make_absolute_urls_relative(content, path)
         create_file(bp, content)

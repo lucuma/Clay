@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import io
 import os
-from os.path import dirname, join, isdir, realpath
+from os.path import dirname, join, isdir, realpath, exists
 import shutil
 from StringIO import StringIO
 import sys
@@ -29,6 +29,11 @@ def t(c):
     return c.get_test_client()
 
 
+def remove_test_dirs():
+    remove_dir(SOURCE_DIR)
+    remove_dir(BUILD_DIR)
+
+
 def get_source_path(path):
     return join(SOURCE_DIR, path)
 
@@ -43,17 +48,13 @@ def read_content(path, encoding='utf8'):
 
 
 def remove_file(path):
-    try:
+    if exists(path):
         os.remove(path)
-    except OSError:
-        pass
 
 
 def remove_dir(path):
-    try:
-        shutil.rmtree(path)
-    except OSError:
-        pass
+    if isdir(path):
+        shutil.rmtree(path, ignore_errors=True)
 
 
 def execute_and_read_stdout(f):

@@ -9,13 +9,13 @@ FILTER_PARTIALS: True
 VIEWS_IGNORE:
   - base.html
 
-## Ignore the views listed here in the _index
-VIEWS_LIST_IGNORE:
-  - base.html
-
 ## When building, force the inclusion of all the HTML fragments listed here.
 VIEWS_INCLUDE:
   #
+
+## Ignore the views listed here in the _index
+VIEWS_LIST_IGNORE:
+  - base.html
 
 ## Enabled pre-processors
 PRE_PROCESSORS: 

@@ -12,8 +12,6 @@ from werkzeug.local import LocalProxy
 
 
 class Render(object):
-    """A thin wrapper arround Jinja2.
-    """
 
     default_globals = {
         'now': LocalProxy(datetime.utcnow),
@@ -31,8 +29,11 @@ class Render(object):
         context = context or {}
         return tmpl.render(context)
 
+    def get_template(self, filename):
+        return self.env.get_template(filename)
+
     def __call__(self, filename, context=None):
-        tmpl = self.env.get_template(filename)
+        tmpl = self.get_template(filename)
         return self.render(tmpl, context)
     
     # def from_string(self, source, context=None):
