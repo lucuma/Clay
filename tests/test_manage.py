@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import os
 import sys
 
 import clay
 from clay.manage import main, manager
 from flask import Flask
-from tests.helpers import *
+
+from .helpers import *
 
 
 TEST_DIR = join(dirname(__file__), 'foobar')

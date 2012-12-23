@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+from datetime import datetime
 import mimetypes
 import os
 from os.path import (isfile, isdir, dirname, join, splitext, split, exists,
     relpath, sep)
 import re
 
-from flask import Flask, send_file, make_response
-from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, TemplateNotFound
+from flask import (Flask, request, has_request_context, render_template,
+    send_file, make_response)
+from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
 import yaml
 
-from helpers import (Render, read_content, make_dirs, create_file,
-    copy_if_updated)
+from .helpers import (read_content, make_dirs, create_file,
+    copy_if_updated, get_updated_datetime)
 
 
 SOURCE_DIRNAME = 'source'
@@ -33,16 +37,55 @@ rx_abs_url = re.compile(r'\s(?P<attr>src|href)=[\'"]\/(?P<url>([a-z0-9][^\'"]*)?
 class Clay(object):
 
     def __init__(self, root, settings=None):
-        settings = settings or {}
-        self.settings = settings
-
         if isfile(root):
             root = dirname(root)
+        settings = settings or {}
+        self.settings = settings
         self.settings_path = join(root, 'settings.yml')
+        self.load_settings_from_file()
         self.source_dir = join(root, SOURCE_DIRNAME)
         self.build_dir = join(root, BUILD_DIRNAME)
         self.app = self.make_app()
-        self.render = self.make_renderer()
+
+    def make_app(self):
+        app = Flask('clay', static_folder=None, template_folder=self.source_dir)
+        app.jinja_loader = self.make_jinja_loader()
+        app.debug = True
+        self.set_template_context_processors(app)
+        self.set_urls(app)
+        return app
+
+    def make_jinja_loader(self):
+        return ChoiceLoader([
+            FileSystemLoader(self.source_dir),
+            PackageLoader('clay', SOURCE_DIRNAME),
+        ])
+
+    def set_template_context_processors(self, app):
+        @app.context_processor
+        def inject_globals():
+            return {
+                'now': datetime.utcnow(),
+                'enumerate': enumerate,
+                'CLAY_URL': 'http://lucuma.github.com/Clay',
+            }
+
+    def set_urls(self, app):
+        app.add_url_rule('/', 'page', self.render_page)
+        app.add_url_rule('/<path:path>', 'page', self.render_page)
+        app.add_url_rule('/_index.html', 'index', self.show__index)
+
+    def load_settings_from_file(self):
+        if isfile(self.settings_path):
+            source = read_content(self.settings_path)
+            st = yaml.load(source)
+            self.settings.update(st)
+
+    def render(self, path, context):
+        if has_request_context():
+            return render_template(path, **context)
+        with self.app.test_request_context('/' + path, method='GET'):
+            return render_template(path, **context)
 
     def get_full_source_path(self, path):
         return join(self.source_dir, path)
@@ -70,45 +113,7 @@ class Clay(object):
         rel = relpath(folder, self.source_dir)
         return rel.lstrip('.').lstrip(sep)
 
-    def make_build_dir(self):
-        if not isdir(self.build_dir):
-            make_dirs(self.build_dir)
-
-    def load_settings_from_file(self):
-        source = read_content(self.settings_path)
-        st = yaml.load(source)
-        self.settings.update(st)
-
-    def make_app(self):
-        app = Flask('clay', static_folder=None, template_folder=None)
-        app.debug = True
-        self.add_default_urls(app)
-        self.set_not_found_handler(app)
-        return app
-
-    def make_renderer(self):
-        loader = self.make_jinja_loader()
-        render = Render(loader)
-        return render
-
-    def make_jinja_loader(self):
-        return ChoiceLoader([
-            FileSystemLoader(self.source_dir),
-            PackageLoader('clay', SOURCE_DIRNAME),
-        ])
-
-    def add_default_urls(self, app):
-        app.add_url_rule('/', 'page', self.render_page)
-        app.add_url_rule('/<path:path>', 'page', self.render_page)
-
-    def set_not_found_handler(self, app):
-        @app.errorhandler(HTTP_NOT_FOUND)
-        @app.errorhandler(TemplateNotFound)
-        def page_not_found(error):
-            res = self.render('notfound.html', self.settings)
-            return make_response(res, HTTP_NOT_FOUND)
-
-    def get_app_config(self, host, port):
+    def get_run_config(self, host, port):
         port = port or self.settings.get('port', DEFAULT_PORT)
         return {
             'host': host or self.settings.get('host', DEFAULT_HOST),
@@ -116,6 +121,9 @@ class Clay(object):
             'use_debugger': True,
             'use_reloader': False,
         }
+
+    def remove_template_ext(self, path):
+        return RX_TMPL.sub('', path)
 
     def get_relative_url(self, relpath, currurl):
         depth = relpath.count('/')
@@ -141,12 +149,41 @@ class Clay(object):
         return not (head.startswith('<!doctype ') or head.startswith('<html'))
 
     def must_be_filtered(self, path, content):
-        if path in self.settings.get('VIEWS_INCLUDE', []):
+        if path in self.settings.get('INCLUDE', []):
             return False
 
         r1 = self.settings.get('FILTER_PARTIALS') and self.is_html_fragment(content)
-        r2 = path in self.settings.get('VIEWS_IGNORE', [])
+        r2 = path in self.settings.get('FILTER', [])
         return r1 or r2
+
+    def get_pages_list(self):
+        pages = []
+        for folder, subs, files in os.walk(self.source_dir):
+            rel = self.get_relpath(folder)
+            for filename in files:
+                pages.append(join(rel, filename))
+        return pages
+
+    def get_pages_index(self):
+        index = []
+        pages = self.get_pages_list()
+        for path in pages:
+            fullpath = self.get_full_source_path(path)
+            updated_at = get_updated_datetime(fullpath)
+
+            if not path.endswith(TMPL_EXTS):
+                index.append((path, updated_at))
+                continue
+
+            content = self.render(path, self.settings)
+            if self.must_be_filtered(path, content):
+                continue
+            index.append((path, updated_at))
+        return index
+
+    def send_file(self, path):
+        fp = self.get_full_source_path(path)
+        return send_file(fp)
 
 
     def render_page(self, path=None):
@@ -160,16 +197,23 @@ class Clay(object):
         response.mimetype = self.guess_mimetype(self.get_real_fn(path))
         return response
 
-    def send_file(self, path):
-        fp = self.get_full_source_path(path)
-        return send_file(fp)
+    def show__index(self):
+        index = self.get_pages_index()
+        context = self.settings.copy()
+        context['index'] = index
+        res = self.render('_index.html', context)
+        return make_response(res)
 
-    def get_test_client(self):
-        self.app.testing = True
-        return self.app.test_client()
+    def build__index(self):
+        path = '_index.html'
+        bp = self.get_full_build_path(path)
+        index = self.get_pages_index()
+        context = self.settings.copy()
+        context['index'] = index
+        content = self.render(path, context)
+        create_file(bp, content)
 
     def build_page(self, path):
-        self.make_build_dir()
         sp = self.get_full_source_path(path)
         bp = self.get_full_build_path(path)
         make_dirs(dirname(bp))
@@ -177,12 +221,12 @@ class Clay(object):
         if not path.endswith(TMPL_EXTS):
             return copy_if_updated(sp, bp)
 
-        bp = remove_template_ext(bp)
         content = self.render(path, self.settings)
 
         if self.must_be_filtered(path, content):
             return
 
+        bp = self.remove_template_ext(bp)
         if bp.endswith('.html'):
             content = self.make_absolute_urls_relative(content, path)
         create_file(bp, content)
@@ -191,18 +235,17 @@ class Clay(object):
         if not exists(self.source_dir):
             print SOURCE_NOT_FOUND_HELP
             return
-
-        config = self.get_app_config(host, port)
+        config = self.get_run_config(host, port)
         return self.app.run(**config)
 
     def build(self):
-        for folder, subs, files in os.walk(self.source_dir):
-            rel = self.get_relpath(folder)
-            for filename in files:
-                path = join(rel, filename)
-                self.build_page(path)
+        pages = self.get_pages_list()
+        for path in pages:
+            self.build_page(path)
+        self.build__index()
 
+    def get_test_client(self):
+        self.app.testing = True
+        return self.app.test_client()
 
-def remove_template_ext(path):
-    return RX_TMPL.sub('', path)
 

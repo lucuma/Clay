@@ -1,44 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from datetime import datetime
 import errno
 import io
 import os
 import re
 import shutil
-
-from flask import request
-import jinja2
-from werkzeug.local import LocalProxy
-
-
-class Render(object):
-
-    default_globals = {
-        'now': LocalProxy(datetime.utcnow),
-        'enumerate': enumerate,
-        'request': request,
-    }
-
-    def __init__(self, loader, **kwargs):
-        kwargs.setdefault('autoescape', True)
-        env = jinja2.Environment(loader=loader, **kwargs)
-        env.globals.update(self.default_globals)
-        self.env = env
-
-    def render(self, tmpl, context=None):
-        context = context or {}
-        return tmpl.render(context)
-
-    def get_template(self, filename):
-        return self.env.get_template(filename)
-
-    def __call__(self, filename, context=None):
-        tmpl = self.get_template(filename)
-        return self.render(tmpl, context)
-    
-    # def from_string(self, source, context=None):
-    #     tmpl = self.env.from_string(source)
-    #     return self.render(tmpl, context)
 
 
 def read_content(path, **kwargs):
@@ -72,4 +40,8 @@ def copy_if_updated(path_in, path_out):
             return
     shutil.copy2(path_in, path_out)
 
+
+def get_updated_datetime(path):
+    ut = os.path.getmtime(path)
+    return datetime.fromtimestamp(ut)
 

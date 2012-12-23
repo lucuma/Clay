@@ -1,21 +1,15 @@
-
 # Project settings
 
-
-## Do not show HTML fragments in the final build
+## Do not show HTML fragments in the final build or in the _index.html
 FILTER_PARTIALS: True
 
-## Ignore the views listed here when building, even if are full HTML pages
-VIEWS_IGNORE:
+## Ignore the views listed here when building, even if they are full HTML pages
+FILTER:
   - base.html
 
-## When building, force the inclusion of all the HTML fragments listed here.
-VIEWS_INCLUDE:
+## When building, force the inclusion of all the HTML partials listed here.
+INCLUDE:
   #
-
-## Ignore the views listed here in the _index
-VIEWS_LIST_IGNORE:
-  - base.html
 
 ## Enabled pre-processors
 PRE_PROCESSORS: 
@@ -32,3 +26,4 @@ POST_PROCESSORS:
 HOST: 0.0.0.0
 PORT: 8080
 
+## Your own settings here
