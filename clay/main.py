@@ -15,6 +15,7 @@ import yaml
 
 from .helpers import (read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime)
+from .tglobals import link_to
 
 
 SOURCE_DIRNAME = 'source'
@@ -49,25 +50,32 @@ class Clay(object):
 
     def make_app(self):
         app = Flask('clay', static_folder=None, template_folder=self.source_dir)
-        app.jinja_loader = self.make_jinja_loader()
+        app.jinja_loader = self.get_jinja_loader()
+        app.jinja_options = self.get_jinja_options()
         app.debug = True
         self.set_template_context_processors(app)
         self.set_urls(app)
         return app
 
-    def make_jinja_loader(self):
+    def get_jinja_loader(self):
         return ChoiceLoader([
             FileSystemLoader(self.source_dir),
             PackageLoader('clay', SOURCE_DIRNAME),
         ])
 
+    def get_jinja_options(self):
+        e = ['jinja2.ext.autoescape', 'jinja2.ext.with_']
+        return {'extensions': e}
+
     def set_template_context_processors(self, app):
         @app.context_processor
         def inject_globals():
             return {
+                'CLAY_URL': 'http://lucuma.github.com/Clay',
+
                 'now': datetime.utcnow(),
                 'enumerate': enumerate,
-                'CLAY_URL': 'http://lucuma.github.com/Clay',
+                'link_to': link_to,
             }
 
     def set_urls(self, app):
@@ -185,7 +193,6 @@ class Clay(object):
         fp = self.get_full_source_path(path)
         return send_file(fp)
 
-
     def render_page(self, path=None):
         path = self.normalize_path(path)
 
@@ -247,5 +254,4 @@ class Clay(object):
     def get_test_client(self):
         self.app.testing = True
         return self.app.test_client()
-
 

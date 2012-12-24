@@ -12,7 +12,7 @@ from clay import Clay
 from clay.helpers import make_dirs, create_file
 
 
-HTML = u'<!DOCTYPE html><html><head><titl)e></title></head><body></body></html>'
+HTML = u'<!DOCTYPE html><html><head><title></title></head><body></body></html>'
 
 HTTP_OK = 200
 HTTP_NOT_FOUND = 404

@@ -11,13 +11,6 @@ FILTER:
 INCLUDE:
   #
 
-## Enabled pre-processors
-PRE_PROCESSORS: 
-  # - scss
-  # - less
-  # - coffee
-  # - markdown
-
 ## Enabled post-processors
 POST_PROCESSORS: 
   # - pygments

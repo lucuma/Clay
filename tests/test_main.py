@@ -14,12 +14,12 @@ Est fait pour inspirer au poète un amour'''
 
 
 def setup_module():
-    remove_dir(SOURCE_DIR)
+    remove_test_dirs()
     make_dirs(SOURCE_DIR)
 
 
 def teardown_module():
-    remove_dir(SOURCE_DIR)
+    remove_test_dirs()
     remove_file(join(TESTS, 'settings.yml'))
 
 
@@ -232,4 +232,17 @@ def test_run_with_custom_host_and_port(c):
     c.app.run = _run
     assert host == config['host']
     assert port == config['port']
+
+
+def test_link_to_in_templates(t):
+    setup_module()
+
+    name = 'hello.html'
+    sp = get_source_path(name)
+    content = u"{{ link_to('Hello', '/hello/', title='click me') }}"
+    create_file(sp, content)
+    
+    resp = t.get('/hello.html')
+    expected = u'<a href="/hello/" title="click me">Hello</a>'
+    assert resp.data == expected
 
