@@ -7,6 +7,7 @@ import os
 from os.path import (isfile, isdir, dirname, join, splitext, split, exists,
     relpath, sep)
 import re
+import socket
 
 from flask import (Flask, request, has_request_context, render_template,
     send_file, make_response, abort)
@@ -27,6 +28,8 @@ HTTP_NOT_FOUND = 404
 
 DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = 8080
+
+WELCOME = """--- Clay - A rapid prototyping tool by Lucuma labs ---"""
 
 SOURCE_NOT_FOUND_HELP = """We couldn't found a "%s" dir.
 Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
@@ -256,13 +259,32 @@ class Clay(object):
 
         create_file(bp, content)
 
+    def print_welcome_msg(self):
+        print WELCOME
+
+    def print_help_msg(self, host, port):
+        print ' - Quit the server with Ctrl+C -'
+        if host == '0.0.0.0':
+            ips = [ip 
+                for ip in socket.gethostbyname_ex(socket.gethostname())[2]
+                if not ip.startswith("127.")
+            ][:1]
+            if ips:
+                print ' * Running on http://%s:%s' % (ips[0], port)
+
     def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
         if not exists(self.source_dir):
             print SOURCE_NOT_FOUND_HELP
             return
-        config = self.get_run_config(host, port)
-        return self.app.run(**config)
 
+        config = self.get_run_config(host, port)
+        self.print_welcome_msg()
+        self.print_help_msg(config['host'], config['port'])
+        try:
+            return self.app.run(**config)
+        except socket.error, e:
+            print e
+    
     def build(self):
         pages = self.get_pages_list()
         print u'Building...\n'
