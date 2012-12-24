@@ -151,11 +151,11 @@ def test_show__index(t):
     assert 'href="ddd.html"' in page
 
 
-def test_include_non_template_files_in__index(t):
+def test_do_not_include_non_template_files_in__index(t):
     setup_module()
     create_file(get_source_path('main.js'), "/* {% foobar %} */")
     resp = t.get('/_index.html')
-    assert 'href="main.js"' in resp.data
+    assert 'href="main.js"' not in resp.data
 
 
 def test_setting_filter_fragments_in__index(c):

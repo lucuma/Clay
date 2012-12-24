@@ -89,7 +89,6 @@ li .date {
   <div class="page">
   <h1>Pages index</h1>
   <ul>
-    <li>Name <span class="date">Updated on</span></li>
   {% for path, updated_on in index -%}
     <li>
       <a href="{{ path }}">{{ path }} <span class="date">{{ updated_on.strftime('%Y/%m/%d %I:%M %p') }}</span></a>

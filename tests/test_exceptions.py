@@ -3,25 +3,35 @@ from __future__ import absolute_import
 
 from clay.main import SOURCE_NOT_FOUND_HELP
 from jinja2 import TemplateNotFound
+from werkzeug.exceptions import HTTPException
 import pytest
 
 from .helpers import *
 
 
+def setup_module():
+    remove_test_dirs()
+    make_dirs(SOURCE_DIR)
+
+ 
 def teardown_module():
-    remove_dir(SOURCE_DIR)
+    remove_test_dirs()
 
 
 def test_notfound(t):
-    remove_dir(SOURCE_DIR)
-    make_dirs(SOURCE_DIR)
-
+    remove_test_dirs()
     with pytest.raises(TemplateNotFound):
         t.get('/lalalala.html')
 
 
+def test_notfound_file(t):
+    remove_test_dirs()
+    resp = t.get('/favicon.io')
+    assert resp.status_code == HTTP_NOT_FOUND
+
+
 def test_fail_if_source_dir_dont_exists(c):
-    remove_dir(SOURCE_DIR)
+    remove_test_dirs()
 
     def fake_run(**kwargs):
         return kwargs

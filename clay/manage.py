@@ -21,7 +21,7 @@ SKELETON_HELP = """
 
 @manager.command
 def new(path='.'):
-    """[path]
+    """[path='.']
     Creates a new project
     """
     path = abspath(path.rstrip(sep))
@@ -31,7 +31,7 @@ def new(path='.'):
 
 @manager.command
 def run(host=DEFAULT_HOST, port=DEFAULT_PORT, path='.'):
-    """[host] [port] [path]
+    """[host] [port] [path='.']
     Run the development server
     """
     path = abspath(path)
@@ -41,7 +41,7 @@ def run(host=DEFAULT_HOST, port=DEFAULT_PORT, path='.'):
 
 @manager.command
 def build(path='.'):
-    """[path]
+    """[path='.']
     Generates a static copy of the sources
     """
     path = abspath(path)

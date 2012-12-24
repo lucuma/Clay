@@ -9,13 +9,13 @@ from os.path import (isfile, isdir, dirname, join, splitext, split, exists,
 import re
 
 from flask import (Flask, request, has_request_context, render_template,
-    send_file, make_response)
+    send_file, make_response, abort)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
 import yaml
 
 from .helpers import (read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime)
-from .tglobals import link_to
+from .tglobals import link_to, to_unicode
 
 
 SOURCE_DIRNAME = 'source'
@@ -31,7 +31,7 @@ DEFAULT_PORT = 8080
 SOURCE_NOT_FOUND_HELP = """We couldn't found a "%s" dir.
 Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
 
-rx_abs_url = re.compile(r'\s(?P<attr>src|href)=[\'"]\/(?P<url>([a-z0-9][^\'"]*)?)[\'"]',
+rx_abs_url = re.compile(r'\s(src|href)=[\'"](\/(?:[a-z0-9][^\'"]*)?)[\'"]',
     re.UNICODE | re.IGNORECASE)
 
 
@@ -135,7 +135,7 @@ class Clay(object):
 
     def get_relative_url(self, relpath, currurl):
         depth = relpath.count('/')
-        url = (ur'../' * depth) + currurl
+        url = (ur'../' * depth) + currurl.lstrip('/')
         if not url:
             return 'index.html'
         path = self.get_full_source_path(url)
@@ -144,25 +144,25 @@ class Clay(object):
         return url
 
     def make_absolute_urls_relative(self, content, relpath):
-        match = rx_abs_url.search(content)
-        if not match:
-            return content
-
-        url = self.get_relative_url(relpath, match.group('url'))
-        repl = ur' %s="%s"' % (match.group('attr'), url)
-        return re.sub(rx_abs_url, repl, content)
+        for attr, url in rx_abs_url.findall(content):
+            newurl = self.get_relative_url(relpath, url)
+            repl = ur' %s="%s"' % (attr, newurl)
+            content = re.sub(rx_abs_url, repl, content, count=1)
+        return content
 
     def is_html_fragment(self, content):
         head = content[:500].strip().lower()
         return not (head.startswith('<!doctype ') or head.startswith('<html'))
 
-    def must_be_filtered(self, path, content):
-        if path in self.settings.get('INCLUDE', []):
-            return False
+    def must_be_included(self, path):
+        return path in self.settings.get('INCLUDE', [])
 
-        r1 = self.settings.get('FILTER_PARTIALS') and self.is_html_fragment(content)
-        r2 = path in self.settings.get('FILTER', [])
-        return r1 or r2
+    def must_be_filtered(self, path):
+        _, filename = split(path)
+        return filename.startswith('.') or path in self.settings.get('FILTER', [])
+
+    def must_filter_fragment(self, content):
+        return self.settings.get('FILTER_PARTIALS') and self.is_html_fragment(content)
 
     def get_pages_list(self):
         pages = []
@@ -176,22 +176,27 @@ class Clay(object):
         index = []
         pages = self.get_pages_list()
         for path in pages:
+            if not path.endswith(TMPL_EXTS):
+                continue
+
+            if not self.must_be_included(path):
+                if self.must_be_filtered(path):
+                    continue
+                content = self.render(path, self.settings)
+                if self.must_filter_fragment(content):
+                    continue
+
             fullpath = self.get_full_source_path(path)
             updated_at = get_updated_datetime(fullpath)
-
-            if not path.endswith(TMPL_EXTS):
-                index.append((path, updated_at))
-                continue
-
-            content = self.render(path, self.settings)
-            if self.must_be_filtered(path, content):
-                continue
             index.append((path, updated_at))
         return index
 
     def send_file(self, path):
         fp = self.get_full_source_path(path)
-        return send_file(fp)
+        try:
+            return send_file(fp)
+        except IOError:
+            raise abort(HTTP_NOT_FOUND)
 
     def render_page(self, path=None):
         path = self.normalize_path(path)
@@ -213,12 +218,17 @@ class Clay(object):
 
     def build__index(self):
         path = '_index.html'
-        bp = self.get_full_build_path(path)
+        self.print_build_message(path)
+        
         index = self.get_pages_index()
+        bp = self.get_full_build_path(path)
         context = self.settings.copy()
         context['index'] = index
         content = self.render(path, context)
         create_file(bp, content)
+
+    def print_build_message(self, path):
+        print ' ', to_unicode(self.remove_template_ext(path))
 
     def build_page(self, path):
         sp = self.get_full_source_path(path)
@@ -226,16 +236,24 @@ class Clay(object):
         make_dirs(dirname(bp))
 
         if not path.endswith(TMPL_EXTS):
+            if self.must_be_filtered(path):
+                return
+            self.print_build_message(path)
             return copy_if_updated(sp, bp)
 
-        content = self.render(path, self.settings)
+        content = u''
+        if not self.must_be_included(path):
+            if self.must_be_filtered(path):
+                return
+            content = self.render(path, self.settings)
+            if self.must_filter_fragment(content):
+                return
 
-        if self.must_be_filtered(path, content):
-            return
-
+        self.print_build_message(path)
         bp = self.remove_template_ext(bp)
         if bp.endswith('.html'):
             content = self.make_absolute_urls_relative(content, path)
+
         create_file(bp, content)
 
     def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
@@ -247,9 +265,11 @@ class Clay(object):
 
     def build(self):
         pages = self.get_pages_list()
+        print u'Building...\n'
         for path in pages:
             self.build_page(path)
         self.build__index()
+        print u'\nDone.'
 
     def get_test_client(self):
         self.app.testing = True
