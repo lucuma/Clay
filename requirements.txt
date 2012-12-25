@@ -4,12 +4,13 @@
 #
 #     pip install -r requirements.txt
 
-jinja2>=2.4
-pyceo>=1.0.3
-pyyaml
-shake>=1.2.0
-voodoo>=0.7
-werkzeug>=0.7
+Colorama
+Flask==0.9
+Jinja2
+pyCEO
+pyYAML
+Voodoo
+Werkzeug
 
 # markdown
 # pygments

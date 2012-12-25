@@ -85,6 +85,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    test_suite = '__main__.run_tests',
+    test_suite = '__main__.runtests',
     entry_points = {'console_scripts': ['clay = clay.manage:main']},
 )

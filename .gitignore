@@ -4,4 +4,10 @@
 build
 dist
 *.egg*
+<<<<<<< HEAD
 _doc
+=======
+
+.idea
+.coverage
+>>>>>>> tdd

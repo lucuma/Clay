@@ -1,123 +1,63 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-# Clay.manage
+from __future__ import absolute_import
 
-Command line scripts.
+from os.path import dirname, join, realpath, sep, abspath
 
-"""
-import io
-import os
-import sys
+from pyceo import Manager
+from voodoo import reanimate_skeleton
 
-from shake import manager, json
-import voodoo
-import yaml
-
-from .config import SOURCE_DIR
-from .core import Clay
+from .main import Clay, DEFAULT_HOST, DEFAULT_PORT
 
 
-WELCOME = """
-\033[1m Clay \033[0m - A rapid prototyping tool by Lucuma labs"""
+manager = Manager()
 
-SKELETON = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-    'skeleton')
+SKELETON = join(dirname(realpath(__file__)), 'skeleton')
 
 SKELETON_HELP = """
     Done!
-    Now go to %(new_app_path)s, and run `clay run` to start the server.
-    Don't forget to read the README.md """
-
-SOURCE_NOT_FOUND_HELP = """We couldn't found a source dir ('%s' or 'views').
-Are you sure you're in the correct folder? """ % SOURCE_DIR
-
-
-class SourceDirNotFound(Exception):
-    pass
+    Now go to %s, and run `clay run` to start the server.
+"""
 
 
 @manager.command
-def new(new_app_path='.'):
-    """DIR_PATH
+def new(path='.'):
+    """[path='.']
     Creates a new project
     """
-    new_app_path = new_app_path.rstrip(os.path.sep)
-    voodoo.reanimate_skeleton(SKELETON, new_app_path)
-
-    print SKELETON_HELP % {'new_app_path': new_app_path}
-
-
-@manager.command
-def build(layouts=''):
-    """.
-    Generates a static version of the site
-    """
-    try:
-        proto = get_current(layouts)
-    except SourceDirNotFound:
-        print SOURCE_NOT_FOUND_HELP
-        return
-    proto.build()
+    path = abspath(path.rstrip(sep))
+    reanimate_skeleton(SKELETON, path)
+    print SKELETON_HELP % (path,)
 
 
 @manager.command
-def run(layouts='', host=None, port=None):
-    """.
+def run(host=DEFAULT_HOST, port=DEFAULT_PORT, path='.'):
+    """[host] [port] [path='.']
     Run the development server
     """
-    try:
-        proto = get_current(layouts)
-    except SourceDirNotFound:
-        print SOURCE_NOT_FOUND_HELP
-        return
-    proto.run(host=host, port=port)
+    path = abspath(path)
+    c = Clay(path)
+    c.run(host=host, port=port)
+
+
+@manager.command
+def build(path='.'):
+    """[path='.']
+    Generates a static copy of the sources
+    """
+    path = abspath(path)
+    c = Clay(path)
+    c.build()
 
 
 @manager.command
 def version():
     """.
-    Prints the current Clay version
+    Returns the current Clay version
     """
-    import clay
-    print clay.__version__
-
-#------------------------------------------------------------------------------
-
-def get_current(layouts='', cwd=None):
-    cwd = '.' if cwd is None else cwd
-    cwd = os.path.abspath(cwd)
-    # print cwd
-    source_dir = get_source_dir(cwd)
-    settings = get_settings(cwd)
-    settings.setdefault('LAYOUTS', layouts)
-    
-    return Clay(cwd, settings, source_dir=source_dir)
-
-
-def get_source_dir(cwd):
-    sources = [SOURCE_DIR, 'views']
-    for source in sources:
-        if os.path.exists(os.path.join(cwd, source)):
-            return source
-    raise SourceDirNotFound
-
-
-def get_settings(cwd, filename='settings.yml'):
-    settings = {}
-    settings_filepath = os.path.join(cwd, filename)
-    if os.path.isfile(settings_filepath):
-        with io.open(settings_filepath) as f:
-            source = f.read()
-        settings = yaml.load(source)
-
-    return settings
+    from . import __version__
+    print __version__
 
 
 def main():
     manager.run()
-
-
-if __name__ == "__main__":
-    main()
 

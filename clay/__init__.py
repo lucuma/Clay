@@ -5,12 +5,12 @@
 A rapid prototyping tool
 
 ------------
-© 2011 by [Lúcuma] (http://lucumalabs.com).  
+© by [Lúcuma] (http://lucumalabs.com).  
 See `AUTHORS.md` for more details.  
 License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).
 
 """
-from .core import *
+from main import Clay
 
 
-__version__ = '1.4'
+__version__ = '2.0'

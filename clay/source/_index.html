@@ -4,102 +4,101 @@
 <meta charset="utf-8">
 <title>Index of pages</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon.ico" />
 <style>
 @import url(http://fonts.googleapis.com/css?family=Pacifico);
 
 body {
-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-font-size: 26px;
-line-height: 1.5;
-color: #333;
-background: #fefefe;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 26px;
+  line-height: 1.5;
+  color: #333;
+  background: #fefefe;
 }
 
 div.page {
-margin: 0 auto;
-position:relative;
-width: 600px;
+  margin: 0 auto;
+  position:relative;
+  width: 600px;
 } 
 
 h1 {
-font-family: 'Pacifico', Georgia, serif;
-font-size: 90px;
-font-weight: normal;
-color: #a3312d;
-letter-spacing: -1px;
-line-height: 1;
-margin: 110px 0 50px;
-border: 20px;
-text-align: left;
+  font-family: 'Pacifico', Georgia, serif;
+  font-size: 90px;
+  font-weight: normal;
+  color: #a3312d;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin: 110px 0 50px;
+  border: 20px;
+  text-align: left;
 }
 
 a, a:visited {
-color: #a3312d;
-text-decoration: none;
+  color: #a3312d;
+  text-decoration: none;
 }
 
 a:hover, a:focus, a:active {
-color: #932c28;
+  color: #932c28;
 }
 
 ul {
-margin: 15px 0 0;
-padding: 0;
-list-style-type: none;
-border: 1px dashed #ddd;
+  margin: 15px 0 0;
+  padding: 0;
+  list-style-type: none;
+  border: 1px dashed #ddd;
 }
 
 li a {
-display: block;
-padding: 5px 20px;
-border-top: 1px dashed #ddd;
-background-color: #fff;
--ms-transition: background .1s ease-in;
--moz-transition: background .1s ease-in;
--webkit-transition: background .1s ease-in;
-transition: background .1s ease-in; 
+  display: block;
+  padding: 5px 20px;
+  border-top: 1px dashed #ddd;
+  background-color: #fff;
+  -ms-transition: background .1s ease-in;
+  -moz-transition: background .1s ease-in;
+  -webkit-transition: background .1s ease-in;
+  transition: background .1s ease-in; 
 }
 
 li:first-child a {
-border-top: none;
+  border-top: none;
 }
 
 li a:hover {
-background-color: #fefef2;
+  background-color: #fefef2;
 }
 
 li .date {
-color: #888;
-font-size: 12px;
-float: right;
-line-height: 42px;
+  color: #888;
+  font-size: 12px;
+  float: right;
+  line-height: 42px;
 }
 
 .✓ {
-display: block;
-text-align: center;
-margin-top: 90px;
-padding: 5px 0;
-font-size: 12px;
-color: #999;
+  display: block;
+  text-align: center;
+  margin-top: 90px;
+  padding: 5px 0;
+  font-size: 12px;
+  color: #999;
 }
 </style>
 </head>
 <body>
-<div class="page">
-<h1>Pages index</h1>
-<ul>
-{% for path, name, date in views -%}
-  <li>
-    <a href="{{ path|e }}" target="_blank">{{ name|e }} <span class="date">{{ date.strftime('%Y/%m/%d %I:%M %p') }}</span></a>
-  </li>
-{% endfor %}
-</ul>
-</div>
+  <div class="page">
+  <h1>Pages index</h1>
+  <ul>
+  {% for path, updated_on in index -%}
+    <li>
+      <a href="{{ path }}">{{ path }} <span class="date">{{ updated_on.strftime('%Y/%m/%d %I:%M %p') }}</span></a>
+    </li>
+  {% endfor %}
+  </ul>
+  </div>
 
-<div class="✓">
-  Powered by <a href="http://lucuma.github.com/Clay">Clay</a>
-</div>
+  <div class="✓">
+    Powered by <a href="{{ CLAY_URL }}">Clay</a>
+  </div>
 </body>
 </html>

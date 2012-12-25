@@ -92,6 +92,6 @@ Jinja2 templates are much more than just template inheritance. For more advaced 
 
 
 ---------------------------------------
-© 2011 by [Lúcuma] (http://lucumalabs.com).<br />
+© by [Lúcuma] (http://lucumalabs.com).<br />
 See `AUTHORS.md` for more details.<br />
 License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).
