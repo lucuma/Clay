@@ -29,9 +29,9 @@ HTTP_NOT_FOUND = 404
 DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = 8080
 
-WELCOME = """--- Clay - A rapid prototyping tool by Lucuma labs ---"""
-
-SOURCE_NOT_FOUND_HELP = """We couldn't found a "%s" dir.
+WELCOME = " # Clay (by Lucuma labs)"
+ADDRINUSE = " ---- Address already in use. Trying another port..."
+SOURCE_NOT_FOUND = """We couldn't found a "%s" dir.
 Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
 
 rx_abs_url = re.compile(r'\s(src|href)=[\'"](\/(?:[a-z0-9][^\'"]*)?)[\'"]',
@@ -272,18 +272,35 @@ class Clay(object):
             if ips:
                 print ' * Running on http://%s:%s' % (ips[0], port)
 
+    def run_in_next_free_port(self, config):
+        current_port = config['port']
+        max_port = current_port + 10
+
+        def run(current_port, config):
+            try:
+                self.print_help_msg(config['host'], current_port)
+                config['port'] = current_port
+                return self.app.run(**config)
+            except socket.error, e:
+                if e.errno != socket.errno.EADDRINUSE:
+                    print e
+                    return
+                print ADDRINUSE
+                current_port += 1
+                if current_port > max_port:
+                    return
+                return run(current_port, config)
+
+        return run(current_port, config)        
+
     def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
         if not exists(self.source_dir):
-            print SOURCE_NOT_FOUND_HELP
+            print SOURCE_NOT_FOUND
             return
 
         config = self.get_run_config(host, port)
         self.print_welcome_msg()
-        self.print_help_msg(config['host'], config['port'])
-        try:
-            return self.app.run(**config)
-        except socket.error, e:
-            print e
+        return self.run_in_next_free_port(config)
     
     def build(self):
         pages = self.get_pages_list()
