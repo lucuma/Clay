@@ -178,6 +178,22 @@ def test_setting_filter_fragments_in__index(c):
     assert 'href="bbb.html"' in page
 
 
+def test_setting_filter_fragments_in__indexs_after_rendering(c):
+    setup_module()
+    t = c.get_test_client()
+
+    create_file(get_source_path('base.html'),
+            u'<!DOCTYPE html><html><body>{% block content %}{% endblock %}</body></html>')
+    create_file(get_source_path('xxx.html'),
+            u'{% extends "base.html" %}{% block content %}Hi!{% endblock %}')
+
+    c.settings['FILTER_PARTIALS'] = True
+    resp = t.get('/_index.html')
+    page = resp.data
+    assert 'href="base.html"' in page
+    assert 'href="xxx.html"' in page
+
+
 def test_setting_force_fragment_inclusion_in__index(c):
     setup_module()
     t = c.get_test_client()

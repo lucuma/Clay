@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import io
 import os
 from os.path import dirname, join, isdir, realpath, exists
@@ -6,10 +8,9 @@ import shutil
 from StringIO import StringIO
 import sys
 
-import pytest
-
 from clay import Clay
 from clay.helpers import make_dirs, create_file
+import pytest
 
 
 HTML = u'<!DOCTYPE html><html><head><title></title></head><body></body></html>'

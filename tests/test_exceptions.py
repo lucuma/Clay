@@ -19,16 +19,30 @@ def teardown_module():
     remove_test_dirs()
 
 
-def test_notfound(t):
-    remove_test_dirs()
-    with pytest.raises(TemplateNotFound):
-        t.get('/lalalala.html')
+def test_friendly_notfound_of_templates(t):
+    setup_module()
 
+    create_file(get_source_path('foo.html'), u'foo{% include "bar.html" %}')
 
-def test_notfound_file(t):
-    remove_test_dirs()
-    resp = t.get('/favicon.io')
+    resp = t.get('/hello.html')
     assert resp.status_code == HTTP_NOT_FOUND
+    assert 'hello.html' in resp.data
+    assert 'jinja2.exceptions' not in resp.data
+
+    resp = t.get('/foo.html')
+    assert resp.status_code == HTTP_NOT_FOUND
+    assert 'bar.html' in resp.data
+    print resp.data
+    assert 'jinja2.exceptions' not in resp.data
+
+
+def test_friendly_notfound_of_files(t):
+    setup_module()
+
+    resp = t.get('/foobar')
+    assert resp.status_code == HTTP_NOT_FOUND
+    assert 'foobar' in resp.data
+    assert 'jinja2.exceptions' not in resp.data
 
 
 def test_fail_if_source_dir_dont_exists(c):

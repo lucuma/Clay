@@ -12,6 +12,7 @@ import socket
 from flask import (Flask, request, has_request_context, render_template,
     send_file, make_response, abort)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
+from jinja2.exceptions import TemplateNotFound
 import yaml
 
 from .helpers import (read_content, make_dirs, create_file,
@@ -199,7 +200,7 @@ class Clay(object):
         try:
             return send_file(fp)
         except IOError:
-            raise abort(HTTP_NOT_FOUND)
+            return self.show_notfound(path)
 
     def render_page(self, path=None):
         path = self.normalize_path(path)
@@ -207,7 +208,11 @@ class Clay(object):
         if not path.endswith(TMPL_EXTS):
             return self.send_file(path)
 
-        res = self.render(path, self.settings)
+        try:
+            res = self.render(path, self.settings)
+        except TemplateNotFound, e:
+            return self.show_notfound(e)
+
         response = make_response(res)
         response.mimetype = self.guess_mimetype(self.get_real_fn(path))
         return response
@@ -309,6 +314,12 @@ class Clay(object):
             self.build_page(path)
         self.build__index()
         print u'\nDone.'
+
+    def show_notfound(self, path):
+        context = self.settings.copy()
+        context['path'] = path
+        res = self.render('_notfound.html', context)
+        return make_response(res, HTTP_NOT_FOUND)
 
     def get_test_client(self):
         self.app.testing = True
