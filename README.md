@@ -48,11 +48,6 @@ To generate a static version of your site, stop the server (with `Control + C`) 
 and all the templates will be processed and the result stored inside the `build` folder.
 
 
-## Not just for HTML
-
-Clay can automatically compiles Less, Sass, CleverCSS & CoffeeScript files directly from your `static` dir (Less and CoffeeScript has to be installed in node first).
-
-
 ## How to install
 
 Just run
@@ -92,6 +87,6 @@ Jinja2 templates are much more than just template inheritance. For more advaced 
 
 
 ---------------------------------------
-© by [Lúcuma] (http://lucumalabs.com).<br />
+© [Lúcuma] (http://lucumalabs.com).<br />
 See `AUTHORS.md` for more details.<br />
 License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).

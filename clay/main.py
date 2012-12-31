@@ -17,7 +17,7 @@ import yaml
 
 from .helpers import (read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime)
-from .tglobals import link_to, to_unicode
+from .tglobals import link_to, active, to_unicode
 
 
 SOURCE_DIRNAME = 'source'
@@ -30,9 +30,9 @@ HTTP_NOT_FOUND = 404
 DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = 8080
 
-WELCOME = " # Clay (by Lucuma labs)"
-ADDRINUSE = " ---- Address already in use. Trying another port..."
-SOURCE_NOT_FOUND = """We couldn't found a "%s" dir.
+WELCOME = u" # Clay (by Lucuma labs)"
+ADDRINUSE = u" ---- Address already in use. Trying another port..."
+SOURCE_NOT_FOUND = u"""We couldn't found a "%s" dir.
 Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
 
 rx_abs_url = re.compile(r'\s(src|href)=[\'"](\/(?:[a-z0-9][^\'"]*)?)[\'"]',
@@ -79,6 +79,7 @@ class Clay(object):
 
                 'now': datetime.utcnow(),
                 'enumerate': enumerate,
+                'active': active,
                 'link_to': link_to,
             }
 

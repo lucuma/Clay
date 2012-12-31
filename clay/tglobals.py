@@ -5,16 +5,30 @@ import re
 from xml.sax.saxutils import quoteattr
 
 from jinja2 import Markup
-from flask import request, url_for
-
-
-rx_url = re.compile(ur'^([a-z]{3,7}:(//)?)?([^/:]+%s|([0-9]{1,3}\.){3}[0-9]{1,3})(:[0-9]+)?(\/.*)?$')
+from flask import request
 
 
 def to_unicode(s, encoding='utf8', errors='strict'):
     if isinstance(s, unicode):
         return s
     return s.decode(encoding, errors)
+
+
+def norm_url(url):
+    return '/' + url.strip('/')
+
+
+def active(url='/', partial=False):
+    path = request.path.rstrip('/')
+    resp = u''
+    patterns = url if isinstance(url, (list, tuple)) else [url]
+
+    for url in patterns:
+        url = norm_url(url)
+        if path == url or (partial and path.startswith(url)):
+            return 'active'
+
+    return resp
 
 
 def format_html_attrs(**kwargs):
@@ -55,7 +69,7 @@ def format_html_attrs(**kwargs):
     return u' '.join(attrs)
 
 
-def link_to(text='', endpoint='', wrapper=None, partial=False, **kwargs):
+def link_to(text='', url='/', wrapper=None, partial=False, **kwargs):
     """Build an HTML anchor element for the provided URL.
     If the url match the beginning of that in the current request, an `active`
     class is added.  This is intended to be use to build navigation links.
@@ -81,10 +95,9 @@ def link_to(text='', endpoint='', wrapper=None, partial=False, **kwargs):
     :param text:
         The text (or HTML) of the link.
 
-    :param endpoint:
-        URL or endpoint name. This can also be a *list* of URLs and/or
-        endpoint names. The first one will be used for the link, the rest only
-        to match the current page
+    :param url:
+        This can also be a *list* of URLs. The first one will be used for the
+        link, the rest only to match the current page
 
     :param wrapper:
         Optional tag name of a wrapper element for the link.
@@ -95,27 +108,18 @@ def link_to(text='', endpoint='', wrapper=None, partial=False, **kwargs):
         u'<li title="Hi"><a href="/hello/">Hello</a></li>'
 
     :param partial:
-        If True, the endpoint will be matched against the beginning of the
+        If True, the url will be matched against the beginning of the
         current URL. For instance, if the current URL is `/foo/bar/123/`,
-        an endpoint like `/foo/bar/` will be considered a match.
+        an url like `/foo/bar/` will be considered a match.
 
     """
-    path = request.path.rstrip('/')
-
-    patterns = endpoint if isinstance(endpoint, (list, tuple)) else [endpoint]
-    patterns = [p
-        if p.startswith('/') or re.match(rx_url, p) else url_for(p)
-        for p in patterns]
-
     classes = kwargs.pop('classes', '').strip()
-    for url in patterns:
-        url = url.rstrip('/')
-        if path == url or (partial and path.startswith(url)):
-            classes += ' active'
-            break
+    active_class = active(url, partial)
+    classes += u' ' + active_class if active_class else u''
+    url = url[0] if isinstance(url, (list, tuple)) else url
 
     data = {
-        'url': patterns[0],
+        'url': url,
         'text': text,
         'attrs': format_html_attrs(classes=classes, **kwargs),
     }

@@ -5,10 +5,10 @@ Clay is written and maintained by the Lúcuma Team and various contributors.
 
 Project Leader / Developer:
 
-- Juan-Pablo Scaletti <juanpablo@lucumalabs.com>
+- Juan-Pablo Scaletti (jpscaletti / lucuma)
 
 
 Contributors:
 
-- Muhammad Alkarouri (https://github.com/malkarouri)
-- Alexander Zayats (https://github.com/z4y4ts)
+- Muhammad Alkarouri (malkarouri)
+- Alexander Zayats (z4y4ts)

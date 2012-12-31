@@ -22,12 +22,12 @@ SOURCE_DIR = join(TESTS, 'source')
 BUILD_DIR = join(TESTS, 'build')
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def c():
     return Clay(TESTS)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def t(c):
     return c.get_test_client()
 
