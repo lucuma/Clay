@@ -15,7 +15,7 @@ SKELETON = join(dirname(realpath(__file__)), 'skeleton')
 
 SKELETON_HELP = """
     Done!
-    Now go to %s, and run `clay run` to start the server.
+    Now go to %s, and do `clay run` to start the server.
 """
 
 

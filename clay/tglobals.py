@@ -14,7 +14,7 @@ def to_unicode(s, encoding='utf8', errors='strict'):
     return s.decode(encoding, errors)
 
 
-def norm_url(url):
+def _norm_url(url):
     return '/' + url.strip('/')
 
 
@@ -24,7 +24,7 @@ def active(url='/', partial=False):
     patterns = url if isinstance(url, (list, tuple)) else [url]
 
     for url in patterns:
-        url = norm_url(url)
+        url = _norm_url(url)
         if path == url or (partial and path.startswith(url)):
             return 'active'
 

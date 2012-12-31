@@ -17,6 +17,7 @@ import yaml
 
 from .helpers import (read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime)
+from .jinja_includewith import IncludeWith
 from .tglobals import link_to, active, to_unicode
 
 
@@ -31,7 +32,9 @@ DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = 8080
 
 WELCOME = u" # Clay (by Lucuma labs)"
+
 ADDRINUSE = u" ---- Address already in use. Trying another port..."
+
 SOURCE_NOT_FOUND = u"""We couldn't found a "%s" dir.
 Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
 
@@ -68,8 +71,10 @@ class Clay(object):
         ])
 
     def get_jinja_options(self):
-        e = ['jinja2.ext.autoescape', 'jinja2.ext.with_']
-        return {'extensions': e}
+        return {
+            'autoescape': True,
+            'extensions': ['jinja2.ext.with_', IncludeWith]
+            }
 
     def set_template_context_processors(self, app):
         @app.context_processor
