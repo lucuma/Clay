@@ -4,10 +4,7 @@
 build
 dist
 *.egg*
-<<<<<<< HEAD
-_doc
-=======
 
-.idea
 .coverage
->>>>>>> tdd
+.coveragerc
+__pycache__

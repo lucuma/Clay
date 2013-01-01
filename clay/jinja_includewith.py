@@ -21,23 +21,32 @@ from jinja2.ext import Extension
 
 __version__ = '0.1'
 
-rx = re.compile(r'\{\%\s*include\s+(?P<tmpl>[^\s]+)\s+with\s+(?P<context>(?:[a-z0-9_-]+\s*=\s*[^%,]+)(?:\s*,\s*[a-z0-9_-]+\s*=\s*[^%,]+)*)\s*\%\}', re.IGNORECASE)
+rx = re.compile(r'\{\%\s*include\s+(?P<tmpl>[^\s]+)\s+with\s+(?P<context>.*)\s*\%\}',
+        re.IGNORECASE)
 
 
 class IncludeWith(Extension):
 
     def preprocess(self, source, name, filename=None):
-        blocks =  rx.finditer(source)
-        for m in blocks:
+        lastpos = 0
+        while 1:
+            m = rx.search(source, lastpos)
+            if not m:
+                break
+            
+            lastpos = m.end()
             d = m.groupdict()
-            d['context'] = d['context'].strip()
+            context = d['context'].strip()
+            if context == 'context':
+                continue
 
             source = ''.join([
                 source[:m.start()],
-                '{% with ', d['context'].strip(), '%}',
+                '{% with ', context, ' %}',
                 '{% include ', d['tmpl'].strip(), ' %}',
                 '{% endwith %}',
                 source[m.end():]
                 ])
+        
         return source
 
