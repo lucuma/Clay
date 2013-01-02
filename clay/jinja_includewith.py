@@ -21,7 +21,7 @@ from jinja2.ext import Extension
 
 __version__ = '0.1'
 
-rx = re.compile(r'\{\%\s*include\s+(?P<tmpl>[^\s]+)\s+with\s+(?P<context>.*)\s*\%\}',
+rx = re.compile(r'\{\%\s*include\s+(?P<tmpl>[^\s]+)\s+with\s+(?P<context>.*?)\s*\%\}',
         re.IGNORECASE)
 
 

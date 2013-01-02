@@ -14,14 +14,8 @@ env = Environment(
 
 
 def test_set_context():
-    tmpl = env.from_string('''
-        {% include "hello" with what='world' %}
-        {% include "hello" with what='world' %}
-    ''')
-    expected = '''
-        Hello world!
-        Hello world!
-    '''
+    tmpl = env.from_string('''{% include "hello" with what='world' %} {% include "hello" with what='world' %}''')
+    expected = '''Hello world! Hello world!'''
     result = tmpl.render()
     assert result == expected
 
@@ -66,14 +60,8 @@ def test_careless_formatting():
 
 
 def test_text():
-    tmpl = env.from_string('''
-        {% include "hello" with what='5%, er %} lalala' %}
-        {% include "hello" with what='world' %}
-    ''')
-    expected = '''
-        Hello 5%, er %} lalala!
-        Hello world!
-    '''
+    tmpl = env.from_string('''{% include "hello" with what='5%, er }} lalala' %} {% include "hello" with what='world' %}''')
+    expected = '''Hello 5%, er }} lalala! Hello world!'''
     result = tmpl.render()
     assert result == expected
 
