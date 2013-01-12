@@ -151,6 +151,27 @@ def test_show__index(t):
     assert 'href="ddd.html"' in page
 
 
+def test__index_is_sorted(t):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'bbb')
+
+    create_file(get_source_path('bbb.html'), HTML)
+    create_file(get_source_path('bbb/aa.html'), HTML)
+    create_file(get_source_path('bbb/ccc.html'), HTML)
+    create_file(get_source_path('aaa.html'), HTML)
+    create_file(get_source_path('ddd.html'), HTML)
+
+    resp = t.get('/_index.html')
+    assert resp.status_code == HTTP_OK
+    assert resp.mimetype == 'text/html'
+
+    page = resp.data
+    assert page.find('href="aaa.html"') <  page.find('href="bbb.html"')
+    assert page.find('href="bbb.html"') <  page.find('href="ddd.html"')
+    assert page.find('href="ddd.html"') <  page.find('href="bbb/aa.html"')
+    assert page.find('href="bbb/aa.html"') <  page.find('href="bbb/ccc.html"')
+
+
 def test_do_not_include_non_template_files_in__index(t):
     setup_module()
     create_file(get_source_path('main.js'), "/* {% foobar %} */")

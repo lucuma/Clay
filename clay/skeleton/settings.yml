@@ -11,10 +11,6 @@ FILTER:
 INCLUDE:
   #
 
-## Enabled post-processors
-POST_PROCESSORS: 
-  # - pygments
-
 ## Server
 HOST: 0.0.0.0
 PORT: 8080

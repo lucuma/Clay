@@ -10,7 +10,7 @@ import re
 import socket
 
 from flask import (Flask, request, has_request_context, render_template,
-    send_file, make_response, abort)
+    make_response, abort, send_file)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
 from jinja2.exceptions import TemplateNotFound
 import yaml
@@ -38,7 +38,7 @@ ADDRINUSE = u" ---- Address already in use. Trying another port..."
 SOURCE_NOT_FOUND = u"""We couldn't found a "%s" dir.
 Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
 
-rx_abs_url = re.compile(r'\s(src|href)=[\'"](\/(?:[a-z0-9][^\'"]*)?)[\'"]',
+rx_abs_url = re.compile(r'\s(src|href|data-[a-z0-9_-]+)\s*=\s*[\'"](\/(?:[a-z0-9_-][^\'"]*)?)[\'"]',
     re.UNICODE | re.IGNORECASE)
 
 

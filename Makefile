@@ -6,14 +6,13 @@ clean: clean-pyc
 	rm -rf build
 	rm -rf dist
 	rm -rf *.egg-info
-	rm -rf tests/res/t
-	find . -name '.DS_Store' -exec rm -f {} \;
+	find . -name '.DS_Store' -delete
 	rm -rf tests/__pycache__
 
 clean-pyc:
-	find . -name '*.pyc' -exec rm -f {} \;
-	find . -name '*.pyo' -exec rm -f {} \;
-	find . -name '*~' -exec rm -f {} \;
+	find . -name '*.pyc' -delete
+	find . -name '*.pyo' -delete
+	find . -name '*~' -delete
 
 test:
 	py.test --cov-config .coveragerc --cov clay tests/

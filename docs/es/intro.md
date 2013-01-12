@@ -21,7 +21,7 @@ Puedes tener una versión "compilada" del sitio en un instante: los HTMLs de tod
 ## Pensamos en todos los detalles
 - Cuando compilas o mientras desarrolla, un "_index.html" también se genera con una lista de todas las páginas, inclusive esas a los que no puedes llegar navegando normalmente, como la 404.html. Así no tienes por que recordar los nombres de las páginas o listarlas en un email. ¡Práctico!
 - ¿Simular la página activa en la navegación principal? Muy fácil.
-- Los valores que pongas en tu `settings.yml` (¿un nombre? ¿el APPID de Facebook?) los podrás usar en todo el sitio.
+- Los valores que pongas en tu `settings.yml` los podrás usar en todo el sitio.
 
 
 
