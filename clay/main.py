@@ -60,9 +60,6 @@ class Clay(object):
         app.jinja_loader = self.get_jinja_loader()
         app.jinja_options = self.get_jinja_options()
         app.debug = True
-        host = self.settings.get('host', DEFAULT_HOST)
-        port = self.settings.get('port', DEFAULT_PORT)
-        app.config['SERVER_NAME'] = '%s:%s' % (host, port)
         self.set_template_context_processors(app)
         self.set_urls(app)
         return app
@@ -358,5 +355,8 @@ class Clay(object):
 
     def get_test_client(self):
         self.app.testing = True
+        host = self.settings.get('host', DEFAULT_HOST)
+        port = self.settings.get('port', DEFAULT_PORT)
+        self.app.config['SERVER_NAME'] = '%s:%s' % (host, port)
         return self.app.test_client()
 
