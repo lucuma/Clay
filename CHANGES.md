@@ -1,6 +1,10 @@
 # Clay Changelog
 
 
+## Version 2.3
+
+- _index.txt lists all the pages that also would appear in _index.html.
+
 ## Version 2.0
 
 TDD rewrite. Most important new features:

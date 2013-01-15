@@ -294,12 +294,48 @@ def test_build__index(c):
     
     bpindex = get_build_path('_index.html')
     page = read_content(bpindex)
-    assert page.find('href="aaa.html"') <  page.find('href="ddd.html"')
-    assert page.find('href="ddd.html"') <  page.find('href="eee.html"')
-    assert page.find('href="eee.html"') <  page.find('href="bbb/aa.html"')
-    assert page.find('href="bbb/aa.html"') <  page.find('href="bbb/bb.html"')
-    assert page.find('href="bbb/bb.html"') <  page.find('href="bbb/ccc.html"')
-    assert page.find('href="bbb/ccc.html"') <  page.find('href="bbb/zz.html"')
+    assert page.find('href="aaa.html"') < page.find('href="ddd.html"')
+    assert page.find('href="ddd.html"') < page.find('href="eee.html"')
+    assert page.find('href="eee.html"') < page.find('href="bbb/aa.html"')
+    assert page.find('href="bbb/aa.html"') < page.find('href="bbb/bb.html"')
+    assert page.find('href="bbb/bb.html"') < page.find('href="bbb/ccc.html"')
+    assert page.find('href="bbb/ccc.html"') < page.find('href="bbb/zz.html"')
+
+
+def test_build__index_txt(c):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'bbb')
+
+    sp1, bp1 = get_file_paths('aaa.html')
+    sp2, bp2 = get_file_paths('eee.html')
+    sp3, bp3 = get_file_paths('bbb/aa.html')
+    sp4, bp4 = get_file_paths('bbb/zz.html')
+    sp5, bp5 = get_file_paths('bbb/ccc.html')
+    sp6, bp6 = get_file_paths('ddd.html')
+    sp7, bp7 = get_file_paths('bbb/bb.html')
+    create_file(sp1, HTML)
+    create_file(sp2, HTML)
+    create_file(sp3, HTML)
+    create_file(sp4, HTML)
+    create_file(sp5, HTML)
+    create_file(sp6, HTML)
+    create_file(sp7, HTML)
+    c.build()
+    
+    bpindex = get_build_path('_index.txt')
+    page = read_content(bpindex)
+    assert page.find('http://0.0.0.0:8080/aaa.html') \
+        < page.find('http://0.0.0.0:8080/ddd.html')
+    assert page.find('http://0.0.0.0:8080/ddd.html') \
+        < page.find('http://0.0.0.0:8080/eee.html')
+    assert page.find('http://0.0.0.0:8080/eee.html') \
+        < page.find('http://0.0.0.0:8080/bbb/aa.html')
+    assert page.find('http://0.0.0.0:8080/bbb/aa.html') \
+        < page.find('http://0.0.0.0:8080/bbb/bb.html')
+    assert page.find('http://0.0.0.0:8080/bbb/bb.html') \
+        < page.find('http://0.0.0.0:8080/bbb/ccc.html')
+    assert page.find('http://0.0.0.0:8080/bbb/ccc.html') \
+        < page.find('http://0.0.0.0:8080/bbb/zz.html')
 
 
 def test_do_not_include_non_template_files_in__index(c):

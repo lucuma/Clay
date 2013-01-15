@@ -45,6 +45,18 @@ def test_setup_with_settings():
     assert 'foo' in c.settings
 
 
+def test_get_real_fn(c):
+    assert c.get_real_fn('foo/bar/test.html') == 'test.html'
+    assert c.get_real_fn('foo/bar/test.txt') == 'test.txt'
+    assert c.get_real_fn('foo/bar/test.txt.tmpl') == 'test.txt'
+
+
+def test_guess_mimetype(c):
+    assert c.guess_mimetype('lalala.html') == 'text/html'
+    assert c.guess_mimetype('lalala.txt') == 'text/plain'
+    assert c.guess_mimetype('whatever') == 'text/plain'
+
+
 def test_load_settings_from_file():
     c = Clay(TESTS)
     assert 'foo' not in c.settings
@@ -131,6 +143,40 @@ def test_settings_as_template_context():
     assert resp.status_code == HTTP_OK
     assert resp.data == 'Hello world!'
     assert resp.mimetype == 'text/html'
+
+
+def test_get_pages_list(c):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'bbb')
+
+    create_file(get_source_path('aaa.html'), HTML)
+    create_file(get_source_path('bbb/ccc.html'), HTML)
+    create_file(get_source_path('lalala.txt'), u'')
+
+    expected = ['aaa.html', 'bbb/ccc.html', 'lalala.txt']
+    expected.sort()
+    result = c.get_pages_list()
+    result.sort()
+    assert expected == result
+
+
+def test_show__index_txt(t):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'bbb')
+
+    create_file(get_source_path('aaa.html'), HTML)
+    create_file(get_source_path('bbb/ccc.html'), HTML)
+    create_file(get_source_path('lalala.txt'), u'')
+
+    resp = t.get('/_index.txt')
+    assert resp.status_code == HTTP_OK
+    assert resp.mimetype == 'text/plain'
+
+    page = resp.data
+    assert 'http://0.0.0.0:8080/aaa.html' in page
+    assert 'http://0.0.0.0:8080/bbb/ccc.html' in page
+    assert 'href="aaa.html"' not in page
+    assert 'lalala.txt' not in page
 
 
 def test_show__index(t):

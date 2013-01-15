@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import mimetypes
 import os
-from os.path import (isfile, isdir, dirname, join, splitext, split, exists,
+from os.path import (isfile, isdir, dirname, join, splitext, basename, exists,
     relpath, sep)
 import re
 import socket
@@ -60,6 +60,9 @@ class Clay(object):
         app.jinja_loader = self.get_jinja_loader()
         app.jinja_options = self.get_jinja_options()
         app.debug = True
+        host = self.settings.get('host', DEFAULT_HOST)
+        port = self.settings.get('port', DEFAULT_PORT)
+        app.config['SERVER_NAME'] = '%s:%s' % (host, port)
         self.set_template_context_processors(app)
         self.set_urls(app)
         return app
@@ -92,6 +95,7 @@ class Clay(object):
         app.add_url_rule('/', 'page', self.render_page)
         app.add_url_rule('/<path:path>', 'page', self.render_page)
         app.add_url_rule('/_index.html', 'index', self.show__index)
+        app.add_url_rule('/_index.txt', 'index_txt', self.show__index_txt)
 
     def load_settings_from_file(self):
         if isfile(self.settings_path):
@@ -99,10 +103,17 @@ class Clay(object):
             st = yaml.load(source)
             self.settings.update(st)
 
+    def _get_base_url(self):
+        host = self.settings.get('host', DEFAULT_HOST)
+        port = self.settings.get('port', DEFAULT_PORT)
+        return 'http://%s:%s' % (host, port)
+
     def render(self, path, context):
         if has_request_context():
             return render_template(path, **context)
-        with self.app.test_request_context('/' + path, method='GET'):
+
+        base_url = self._get_base_url()
+        with self.app.test_request_context('/' + path, base_url=base_url, method='GET'):
             return render_template(path, **context)
 
     def get_full_source_path(self, path):
@@ -112,11 +123,12 @@ class Clay(object):
         return join(self.build_dir, path)
 
     def get_real_fn(self, path):
-        head, tail = split(path)
-        if tail.endswith('.html'):
-            return tail
-        fn, ext = splitext(tail)
-        return fn
+        filename = basename(path)
+        fn, ext = splitext(filename)
+        fn2, ext2 = splitext(fn)
+        if ext2:
+            return fn
+        return filename
 
     def guess_mimetype(self, fn):
         return mimetypes.guess_type(fn)[0] or 'text/plain'
@@ -131,7 +143,7 @@ class Clay(object):
         rel = relpath(folder, self.source_dir)
         return rel.lstrip('.').lstrip(sep)
 
-    def get_run_config(self, host, port):
+    def _get_run_config(self, host, port):
         port = port or self.settings.get('port', DEFAULT_PORT)
         return {
             'host': host or self.settings.get('host', DEFAULT_HOST),
@@ -168,7 +180,7 @@ class Clay(object):
         return path in self.settings.get('INCLUDE', [])
 
     def must_be_filtered(self, path):
-        _, filename = split(path)
+        filename = basename(path)
         return filename.startswith('.') or path in self.settings.get('FILTER', [])
 
     def must_filter_fragment(self, content):
@@ -223,22 +235,38 @@ class Clay(object):
         response.mimetype = self.guess_mimetype(self.get_real_fn(path))
         return response
 
-    def show__index(self):
+    def _make__index(self, path):
         index = self.get_pages_index()
         context = self.settings.copy()
         context['index'] = index
-        res = self.render('_index.html', context)
-        return make_response(res)
+        return self.render(path, context)
+
+    def show__index_txt(self):
+        path = '_index.txt'
+        content = self._make__index(path)
+        resp = make_response(content)
+        resp.mimetype = 'text/plain'
+        return resp
+
+    def build__index_txt(self):
+        path = '_index.txt'
+        self.print_build_message(path)
+        content = self._make__index(path)
+        bp = self.get_full_build_path(path)
+        create_file(bp, content)
+
+    def show__index(self):
+        path = '_index.html'
+        content = self._make__index(path)
+        resp = make_response(content)
+        resp.mimetype = 'text/html'
+        return resp
 
     def build__index(self):
         path = '_index.html'
         self.print_build_message(path)
-        
-        index = self.get_pages_index()
+        content = self._make__index(path)
         bp = self.get_full_build_path(path)
-        context = self.settings.copy()
-        context['index'] = index
-        content = self.render(path, context)
         create_file(bp, content)
 
     def print_build_message(self, path):
@@ -309,7 +337,7 @@ class Clay(object):
             print SOURCE_NOT_FOUND
             return
 
-        config = self.get_run_config(host, port)
+        config = self._get_run_config(host, port)
         self.print_welcome_msg()
         return self.run_in_next_free_port(config)
     
@@ -319,6 +347,7 @@ class Clay(object):
         for path in pages:
             self.build_page(path)
         self.build__index()
+        self.build__index_txt()
         print u'\nDone.'
 
     def show_notfound(self, path):
