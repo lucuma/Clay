@@ -72,7 +72,7 @@ setup(
     zip_safe = False,
     url = 'http://github.com/lucuma/Clay',
     license = 'MIT license (http://www.opensource.org/licenses/mit-license.php)',
-    description = 'A rapid prototyping tool',
+    description = 'An amazing prototyping tool',
     long_description = read_from(get_path('README.rst')),
     install_requires = get_requirements(),
     classifiers = [

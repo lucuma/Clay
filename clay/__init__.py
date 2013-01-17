@@ -2,7 +2,7 @@
 """
 # Clay
 
-A rapid prototyping tool
+An amazing prototyping tool
 
 ------------
 © by [Lúcuma] (http://lucumalabs.com).  
@@ -13,4 +13,4 @@ License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).
 from main import Clay
 
 
-__version__ = '2.3.1'
+__version__ = '2.4'

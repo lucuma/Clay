@@ -5,6 +5,7 @@
 #     pip install -r requirements.txt
 
 Colorama
+Cheroot
 Flask==0.9
 Jinja2
 pyCEO
@@ -14,4 +15,3 @@ Werkzeug
 
 # markdown
 # pygments
-# pyscss

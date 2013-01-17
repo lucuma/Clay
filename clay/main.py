@@ -7,7 +7,6 @@ import os
 from os.path import (isfile, isdir, dirname, join, splitext, basename, exists,
     relpath, sep)
 import re
-import socket
 
 from flask import (Flask, request, has_request_context, render_template,
     make_response, abort, send_file)
@@ -18,7 +17,8 @@ import yaml
 from .helpers import (read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime)
 from .jinja_includewith import IncludeWith
-from .tglobals import link_to, active, to_unicode
+from .server import Server, DEFAULT_HOST, DEFAULT_PORT
+from .tglobals import active, to_unicode
 
 
 SOURCE_DIRNAME = 'source'
@@ -27,13 +27,6 @@ TMPL_EXTS = ('.html', '.tmpl')
 RX_TMPL = re.compile(r'\.tmpl$')
 
 HTTP_NOT_FOUND = 404
-
-DEFAULT_HOST = '0.0.0.0'
-DEFAULT_PORT = 8080
-
-WELCOME = u" # Clay (by Lucuma labs)"
-
-ADDRINUSE = u" ---- Address already in use. Trying another port..."
 
 SOURCE_NOT_FOUND = u"""We couldn't found a "%s" dir.
 Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
@@ -54,6 +47,7 @@ class Clay(object):
         self.source_dir = join(root, SOURCE_DIRNAME)
         self.build_dir = join(root, BUILD_DIRNAME)
         self.app = self.make_app()
+        self.server = Server(self)
 
     def make_app(self):
         app = Flask('clay', static_folder=None, template_folder=self.source_dir)
@@ -81,11 +75,9 @@ class Clay(object):
         def inject_globals():
             return {
                 'CLAY_URL': 'http://lucuma.github.com/Clay',
-
                 'now': datetime.utcnow(),
                 'enumerate': enumerate,
                 'active': active,
-                'link_to': link_to,
             }
 
     def set_urls(self, app):
@@ -139,15 +131,6 @@ class Clay(object):
     def get_relpath(self, folder):
         rel = relpath(folder, self.source_dir)
         return rel.lstrip('.').lstrip(sep)
-
-    def _get_run_config(self, host, port):
-        port = port or self.settings.get('port', DEFAULT_PORT)
-        return {
-            'host': host or self.settings.get('host', DEFAULT_HOST),
-            'port': int(port),
-            'use_debugger': True,
-            'use_reloader': False,
-        }
 
     def remove_template_ext(self, path):
         return RX_TMPL.sub('', path)
@@ -293,50 +276,13 @@ class Clay(object):
         if bp.endswith('.html'):
             content = self.make_absolute_urls_relative(content, path)
 
-        create_file(bp, content)
+        create_file(bp, content)   
 
-    def print_welcome_msg(self):
-        print WELCOME
-
-    def print_help_msg(self, host, port):
-        print ' - Quit the server with Ctrl+C -'
-        if host == '0.0.0.0':
-            ips = [ip 
-                for ip in socket.gethostbyname_ex(socket.gethostname())[2]
-                if not ip.startswith("127.")
-            ][:1]
-            if ips:
-                print ' * Running on http://%s:%s' % (ips[0], port)
-
-    def run_in_next_free_port(self, config):
-        current_port = config['port']
-        max_port = current_port + 10
-
-        def run(current_port, config):
-            try:
-                self.print_help_msg(config['host'], current_port)
-                config['port'] = current_port
-                return self.app.run(**config)
-            except socket.error, e:
-                if e.errno != socket.errno.EADDRINUSE:
-                    print e
-                    return
-                print ADDRINUSE
-                current_port += 1
-                if current_port > max_port:
-                    return
-                return run(current_port, config)
-
-        return run(current_port, config)        
-
-    def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
+    def run(self, host=None, port=None):
         if not exists(self.source_dir):
             print SOURCE_NOT_FOUND
             return
-
-        config = self._get_run_config(host, port)
-        self.print_welcome_msg()
-        return self.run_in_next_free_port(config)
+        return self.server.run(host, port)
     
     def build(self):
         pages = self.get_pages_list()
