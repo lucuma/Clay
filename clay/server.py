@@ -36,7 +36,7 @@ class Server(object):
         try:
             return self._run(host, current_port)
         except socket.error, e:
-            if e.errno != socket.errno.EADDRINUSE:
+            if not self.is_addrinuse_error(e):
                 sys.stdout.write(str(e))
                 return
             sys.stdout.write(ADDRINUSE)
@@ -52,6 +52,11 @@ class Server(object):
             return server.start()
         except KeyboardInterrupt:
             server.stop()
+
+    def is_addrinuse_error(self, e):
+        normal = e.errno == socket.errno.EADDRINUSE
+        cherootbug = e.message == 'No socket could be created'
+        return normal or cherootbug
 
     def _get_wsgi_server(self, host, port):
         return wsgi.WSGIServer((host, port), wsgi_app=self.dispatcher)

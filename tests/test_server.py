@@ -75,6 +75,36 @@ def test_run_port_is_already_in_use(c):
     assert ports == expected
 
 
+def test_run_port_is_already_in_use_bug(c):
+    ports = []
+
+    class FakeBuggyServer(object):
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def start(self):
+            DUMB_MSG = 'No socket could be created'
+            raise socket.error(DUMB_MSG)
+
+        def stop(self):
+            pass
+
+    def get_fake_server(host, port):
+        ports.append(port)
+        return FakeBuggyServer()
+
+    setup_module()
+    _get_wsgi_server = c.server._get_wsgi_server
+    c.server._get_wsgi_server = get_fake_server
+    host = 'localhost'
+    port = 9000
+    c.run(host=host, port=port)
+    c.server._get_wsgi_server = _get_wsgi_server
+
+    expected = [p for p in range(port, port + 11)]
+    assert ports == expected
+
+
 def test_server_stop(c):
     log = []
 
