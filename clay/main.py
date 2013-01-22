@@ -75,9 +75,12 @@ class Clay(object):
         def inject_globals():
             return {
                 'CLAY_URL': 'http://lucuma.github.com/Clay',
-                'now': datetime.utcnow(),
-                'enumerate': enumerate,
                 'active': active,
+                'now': datetime.utcnow(),
+                'dir': dir,
+                'enumerate': enumerate,
+                'map': map,
+                'zip': zip,
             }
 
     def set_urls(self, app):

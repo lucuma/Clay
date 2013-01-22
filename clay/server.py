@@ -36,27 +36,25 @@ class Server(object):
         try:
             return self._run(host, current_port)
         except socket.error, e:
-            if not self.is_addrinuse_error(e):
-                sys.stdout.write(str(e))
-                return
-            sys.stdout.write(ADDRINUSE)
             current_port += 1
             if current_port > max_port:
                 return
+            sys.stdout.write(ADDRINUSE)
             self._testrun(host, current_port, max_port)
 
     def _run(self, host, port):
         self.print_help_msg(host, port)
-        server = self._get_wsgi_server(host, port)
+        self.server = self._get_wsgi_server(host, port)
         try:
-            return server.start()
+            return self.start()
         except KeyboardInterrupt:
-            server.stop()
+            self.stop()
 
-    def is_addrinuse_error(self, e):
-        normal = e.errno == socket.errno.EADDRINUSE
-        cherootbug = e.message == 'No socket could be created'
-        return normal or cherootbug
+    def start(self):
+        return self.server.start()
+
+    def stop(self):
+        self.server.stop()
 
     def _get_wsgi_server(self, host, port):
         return wsgi.WSGIServer((host, port), wsgi_app=self.dispatcher)
