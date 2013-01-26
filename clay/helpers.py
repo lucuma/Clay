@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from datetime import datetime
 import errno
 import io
 import os
 import re
 import shutil
+
+
+def to_unicode(s, encoding='utf8', errors='strict'):
+    return s.decode(encoding, errors)
 
 
 def read_content(path, **kwargs):

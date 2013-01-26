@@ -1,24 +1,19 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import print_function
 
-from datetime import datetime
 import mimetypes
 import os
 from os.path import (isfile, isdir, dirname, join, splitext, basename, exists,
     relpath, sep)
 import re
+import sys
 
-from flask import (Flask, request, has_request_context, render_template,
-    make_response, abort, send_file)
-from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
-from jinja2.exceptions import TemplateNotFound
 import yaml
 
-from .helpers import (read_content, make_dirs, create_file,
+from .helpers import (to_unicode, read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime)
-from .jinja_includewith import IncludeWith
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
-from .tglobals import active, to_unicode
+from .wsgiapp import WSGIApplication, TemplateNotFound
 
 
 SOURCE_DIRNAME = 'source'
@@ -29,7 +24,7 @@ RX_TMPL = re.compile(r'\.tmpl$')
 HTTP_NOT_FOUND = 404
 
 SOURCE_NOT_FOUND = u"""We couldn't found a "%s" dir.
-Are you sure you're in the correct folder? """ % SOURCE_DIRNAME
+Check if you're in the correct folder""" % SOURCE_DIRNAME
 
 rx_abs_url = re.compile(r'\s(src|href|data-[a-z0-9_-]+)\s*=\s*[\'"](\/(?:[a-z0-9_-][^\'"]*)?)[\'"]',
     re.UNICODE | re.IGNORECASE)
@@ -50,38 +45,9 @@ class Clay(object):
         self.server = Server(self)
 
     def make_app(self):
-        app = Flask('clay', static_folder=None, template_folder=self.source_dir)
-        app.jinja_loader = self.get_jinja_loader()
-        app.jinja_options = self.get_jinja_options()
-        app.debug = True
-        self.set_template_context_processors(app)
+        app = WSGIApplication(self.source_dir)
         self.set_urls(app)
         return app
-
-    def get_jinja_loader(self):
-        return ChoiceLoader([
-            FileSystemLoader(self.source_dir),
-            PackageLoader('clay', SOURCE_DIRNAME),
-        ])
-
-    def get_jinja_options(self):
-        return {
-            'autoescape': True,
-            'extensions': ['jinja2.ext.with_', IncludeWith]
-            }
-
-    def set_template_context_processors(self, app):
-        @app.context_processor
-        def inject_globals():
-            return {
-                'CLAY_URL': 'http://lucuma.github.com/Clay',
-                'active': active,
-                'now': datetime.utcnow(),
-                'dir': dir,
-                'enumerate': enumerate,
-                'map': map,
-                'zip': zip,
-            }
 
     def set_urls(self, app):
         app.add_url_rule('/', 'page', self.render_page)
@@ -95,18 +61,10 @@ class Clay(object):
             st = yaml.load(source)
             self.settings.update(st)
 
-    def _get_base_url(self):
+    def render(self, path, context):
         host = self.settings.get('host', DEFAULT_HOST)
         port = self.settings.get('port', DEFAULT_PORT)
-        return 'http://%s:%s' % (host, port)
-
-    def render(self, path, context):
-        if has_request_context():
-            return render_template(path, **context)
-
-        base_url = self._get_base_url()
-        with self.app.test_request_context('/' + path, base_url=base_url, method='GET'):
-            return render_template(path, **context)
+        return self.app.render_template(path, context, host, port)
 
     def get_full_source_path(self, path):
         return join(self.source_dir, path)
@@ -199,7 +157,7 @@ class Clay(object):
     def send_file(self, path):
         fp = self.get_full_source_path(path)
         try:
-            return send_file(fp)
+            return self.app.send_file(fp)
         except IOError:
             return self.show_notfound(path)
 
@@ -210,13 +168,12 @@ class Clay(object):
             return self.send_file(path)
 
         try:
-            res = self.render(path, self.settings)
+            content = self.render(path, self.settings)
         except TemplateNotFound, e:
             return self.show_notfound(e)
 
-        response = make_response(res)
-        response.mimetype = self.guess_mimetype(self.get_real_fn(path))
-        return response
+        mimetype = self.guess_mimetype(self.get_real_fn(path))
+        return self.app.response(content, mimetype=mimetype)
 
     def _make__index(self, path):
         index = self.get_pages_index()
@@ -227,9 +184,7 @@ class Clay(object):
     def show__index_txt(self):
         path = '_index.txt'
         content = self._make__index(path)
-        resp = make_response(content)
-        resp.mimetype = 'text/plain'
-        return resp
+        return self.app.response(content, mimetype='text/plain')
 
     def build__index_txt(self):
         path = '_index.txt'
@@ -241,9 +196,7 @@ class Clay(object):
     def show__index(self):
         path = '_index.html'
         content = self._make__index(path)
-        resp = make_response(content)
-        resp.mimetype = 'text/html'
-        return resp
+        return self.app.response(content, mimetype='text/html')
 
     def build__index(self):
         path = '_index.html'
@@ -253,7 +206,7 @@ class Clay(object):
         create_file(bp, content)
 
     def print_build_message(self, path):
-        print ' ', to_unicode(self.remove_template_ext(path))
+        print(' ', to_unicode(self.remove_template_ext(path)))
 
     def build_page(self, path):
         sp = self.get_full_source_path(path)
@@ -283,29 +236,27 @@ class Clay(object):
 
     def run(self, host=None, port=None):
         if not exists(self.source_dir):
-            print SOURCE_NOT_FOUND
+            print(SOURCE_NOT_FOUND)
             return
         return self.server.run(host, port)
     
     def build(self):
         pages = self.get_pages_list()
-        print u'Building...\n'
+        print('Building...\n')
         for path in pages:
             self.build_page(path)
         self.build__index()
         self.build__index_txt()
-        print u'\nDone.'
+        print('\nDone.')
 
     def show_notfound(self, path):
         context = self.settings.copy()
         context['path'] = path
         res = self.render('_notfound.html', context)
-        return make_response(res, HTTP_NOT_FOUND)
+        return self.app.response(res, status=HTTP_NOT_FOUND, mimetype='text/html')
 
     def get_test_client(self):
-        self.app.testing = True
         host = self.settings.get('host', DEFAULT_HOST)
         port = self.settings.get('port', DEFAULT_PORT)
-        self.app.config['SERVER_NAME'] = '%s:%s' % (host, port)
-        return self.app.test_client()
+        return self.app.get_test_client(host, port)
 

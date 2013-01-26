@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 from datetime import datetime
 import socket
 import sys
@@ -6,14 +8,15 @@ import sys
 from cheroot import wsgi
 
 
-DEFAULT_HOST = '0.0.0.0'
+ALL_HOSTS = '0.0.0.0'
+DEFAULT_HOST = ALL_HOSTS
 DEFAULT_PORT = 8080
 MAX_PORT_DELTA = 10
 
-WELCOME = u' # Clay (by Lucuma labs)\n\n'
-ADDRINUSE = u' ---- Address already in use. Trying another port...\n'
-RUNNING_ON = u' * Running on http://%s:%s\n'
-HOW_TO_QUIT = u' -- Quit the server with Ctrl+C --\n\n'
+WELCOME = u' # Clay (by Lucuma labs)\n'
+ADDRINUSE = u' ---- Address already in use. Trying another port...'
+RUNNING_ON = u' * Running on http://%s:%s'
+HOW_TO_QUIT = u' -- Quit the server with Ctrl+C --\n'
 
 HTTPMSG = '500 Internal Error'
 
@@ -29,26 +32,29 @@ class Server(object):
         port = port or self.clay.settings.get('port', DEFAULT_PORT)
         host = host or self.clay.settings.get('host', DEFAULT_HOST)
         max_port = port + MAX_PORT_DELTA
-        sys.stdout.write(WELCOME)
+        print(WELCOME)
         return self._testrun(host, port, max_port)
 
     def _testrun(self, host, current_port, max_port):
+        self.print_help_msg(host, current_port)
         try:
-            return self._run(host, current_port)
+            return self._run_wsgi_server(host, current_port)
         except socket.error, e:
             current_port += 1
             if current_port > max_port:
                 return
-            sys.stdout.write(ADDRINUSE)
+            print(ADDRINUSE)
             self._testrun(host, current_port, max_port)
 
-    def _run(self, host, port):
-        self.print_help_msg(host, port)
+    def _run_wsgi_server(self, host, port):
         self.server = self._get_wsgi_server(host, port)
         try:
             return self.start()
         except KeyboardInterrupt:
             self.stop()
+
+    def _get_wsgi_server(self, host, port):
+        return wsgi.WSGIServer((host, port), wsgi_app=self.dispatcher)
 
     def start(self):
         return self.server.start()
@@ -56,17 +62,14 @@ class Server(object):
     def stop(self):
         self.server.stop()
 
-    def _get_wsgi_server(self, host, port):
-        return wsgi.WSGIServer((host, port), wsgi_app=self.dispatcher)
-
     def print_help_msg(self, host, port):
-        if host == '0.0.0.0':
-            sys.stdout.write(RUNNING_ON % ('localhost', port))
+        if host == ALL_HOSTS:
+            print(RUNNING_ON % ('localhost', port))
             for ip in socket.gethostbyname_ex(socket.gethostname())[2]:
                 if ip.startswith('192.'):
-                    sys.stdout.write(RUNNING_ON % (ip, port))
+                    print(RUNNING_ON % (ip, port))
                     break
-        sys.stdout.write(HOW_TO_QUIT)
+        print(HOW_TO_QUIT)
 
 
 class RequestLogger(object):
@@ -80,11 +83,10 @@ class RequestLogger(object):
             now.strftime('%H:%M:%S'), ' | ',
             environ.get('REMOTE_ADDR', '?'), '  ',
             environ.get('REQUEST_URI', ''), '  ',
-            '(', environ.get('REQUEST_METHOD', ''), ') \n',
+            '(', environ.get('REQUEST_METHOD', ''), ')',
             ]
-
         msg = ''.join(msg)
-        sys.stdout.write(msg)
+        print(msg)
 
     def __call__(self, environ, start_response):
         self.log_request(environ)

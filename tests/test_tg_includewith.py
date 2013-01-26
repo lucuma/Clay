@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from jinja2 import Environment, DictLoader
 
-from clay.jinja_includewith import IncludeWith
+from clay.tglobals import IncludeWith
 
 
 env = Environment(

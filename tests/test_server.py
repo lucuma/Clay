@@ -113,7 +113,7 @@ def test_request_logger():
     }
     now = datetime.now()
     out = execute_and_read_stdout(lambda: l.log_request(environ, now))
-    expected = ' %s | 192.168.0.25  /lalala  (HEAD) \n' % now.strftime('%H:%M:%S')
+    expected = ' %s | 192.168.0.25  /lalala  (HEAD)\n' % now.strftime('%H:%M:%S')
     assert out == expected
 
 

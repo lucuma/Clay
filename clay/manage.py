@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import print_function
 
 from os.path import dirname, join, realpath, sep, abspath
 
@@ -26,7 +26,7 @@ def new(path='.'):
     """
     path = abspath(path.rstrip(sep))
     reanimate_skeleton(SKELETON, path)
-    print SKELETON_HELP % (path,)
+    print(SKELETON_HELP % (path,))
 
 
 @manager.command
@@ -55,7 +55,7 @@ def version():
     Returns the current Clay version
     """
     from . import __version__
-    print __version__
+    print(__version__)
 
 
 def main():
