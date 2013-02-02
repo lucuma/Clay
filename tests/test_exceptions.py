@@ -66,3 +66,16 @@ def test_make_dirs_wrong():
         make_dirs('/etc/bla')
 
 
+def test_fix_settings():
+    remove_test_dirs()
+    bad_settings = dict(
+        FILTER_PARTIALS = None,
+        FILTER = None,
+        INCLUDE = None,
+        HOST = None,
+        PORT = None,
+    )
+    c = Clay(TESTS, bad_settings)
+    create_page('test.html', HTML)
+    c.get_pages_index()
+

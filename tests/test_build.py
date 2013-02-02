@@ -10,6 +10,7 @@ from .helpers import *
 def setup_module():
     remove_test_dirs()
     make_dirs(SOURCE_DIR)
+    make_dirs(BUILD_DIR)
 
 
 def teardown_module():
@@ -42,6 +43,7 @@ def test_build_dir_is_made(c):
 
 def test_build_page(c):
     setup_module()
+    c.settings['FILTER_PARTIALS'] = False
 
     name = 'foo.html'
     sp1, bp1 = get_file_paths(name)
@@ -89,6 +91,7 @@ def test_copy_if_source_is_newer(c):
 
 
 def test_rename_tmpl_file(c):
+    c.settings['FILTER_PARTIALS'] = False
     setup_module()
 
     name = 'test.txt.tmpl'
@@ -104,7 +107,7 @@ def test_rename_tmpl_file(c):
 def test_settings_as_template_build_context():
     setup_module()
 
-    c = Clay(TESTS, {'who': u'world'})
+    c = Clay(TESTS, {'who': u'world', 'FILTER_PARTIALS': False})
     t = c.get_test_client()
 
     name = 'test.txt.tmpl'
@@ -117,6 +120,7 @@ def test_settings_as_template_build_context():
 
 
 def test_build_all(c):
+    c.settings['FILTER_PARTIALS'] = False
     remove_test_dirs()
     make_dirs(SOURCE_DIR, 'sub')
 

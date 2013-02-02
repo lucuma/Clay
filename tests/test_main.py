@@ -25,15 +25,11 @@ def teardown_module():
 
 def assert_page(t, name, content=HTML, url=None, encoding='utf8'):
     remove_dir(SOURCE_DIR)
-    sp = get_source_path(name)
-    make_dirs(dirname(sp))
-    content = content.encode(encoding)
-    create_file(sp, content, encoding=encoding)
+    create_page(name, content, encoding)
     url = url or '/' + name
-    
     resp = t.get(url)
     assert resp.status_code == HTTP_OK
-    assert content == resp.data
+    assert content.encode(encoding) == resp.data
 
 
 def test_setup_with_filename_as_root():

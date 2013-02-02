@@ -118,14 +118,16 @@ class Clay(object):
         return not (head.startswith('<!doctype ') or head.startswith('<html'))
 
     def must_be_included(self, path):
-        return path in self.settings.get('INCLUDE', [])
+        return path in (self.settings.get('INCLUDE', []) or [])
 
     def must_be_filtered(self, path):
         filename = basename(path)
-        return filename.startswith('.') or path in self.settings.get('FILTER', [])
+        return filename.startswith('.') or path in \
+            (self.settings.get('FILTER', []) or [])
 
     def must_filter_fragment(self, content):
-        return self.settings.get('FILTER_PARTIALS') and self.is_html_fragment(content)
+        return bool(self.settings.get('FILTER_PARTIALS', True)) \
+            and self.is_html_fragment(content)
 
     def get_pages_list(self):
         pages = []
