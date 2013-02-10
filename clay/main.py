@@ -58,7 +58,7 @@ class Clay(object):
     def load_settings_from_file(self):
         if isfile(self.settings_path):
             source = read_content(self.settings_path)
-            st = yaml.load(source)
+            st = yaml.safe_load(source)
             self.settings.update(st)
 
     def render(self, path, context):

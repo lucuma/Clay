@@ -5,6 +5,7 @@ all: clean clean-pyc test
 clean: clean-pyc
 	rm -rf build
 	rm -rf dist
+	rm -rf *.egg
 	rm -rf *.egg-info
 	find . -name '.DS_Store' -delete
 	rm -rf tests/__pycache__
