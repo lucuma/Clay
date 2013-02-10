@@ -11,7 +11,7 @@ import sys
 import yaml
 
 from .helpers import (to_unicode, read_content, make_dirs, create_file,
-    copy_if_updated, get_updated_datetime)
+    copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
 from .wsgiapp import WSGIApplication, TemplateNotFound
 
@@ -154,7 +154,7 @@ class Clay(object):
             fullpath = self.get_full_source_path(path)
             updated_at = get_updated_datetime(fullpath)
             index.append((path, updated_at))
-        return index
+        return sort_paths_dirs_last(index)
 
     def send_file(self, path):
         fp = self.get_full_source_path(path)

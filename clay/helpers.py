@@ -47,3 +47,10 @@ def get_updated_datetime(path):
     ut = os.path.getmtime(path)
     return datetime.fromtimestamp(ut)
 
+
+def sort_paths_dirs_last(paths):
+    def dirs_last(a, b):
+        return cmp(a[0].count('/'), b[0].count('/')) or cmp(a[0], b[0])
+
+    return sorted(paths, cmp=dirs_last)
+
