@@ -3,6 +3,7 @@ from __future__ import absolute_import
 
 import os
 import sys
+from tempfile import mkdtemp
 
 import clay
 from clay.manage import main, manager
@@ -11,23 +12,17 @@ from flask import Flask
 from .helpers import *
 
 
-TEST_DIR = join(dirname(__file__), 'foobar')
-
-
-def teardown_module():
-    remove_dir(TEST_DIR)
-
 
 def test_has_main():
     main()
 
 
 def test_create_skeleton():
-    make_dirs(TEST_DIR)
-    sys.argv = [sys.argv[0], 'new', TEST_DIR]
+    test_dir = mkdtemp()
+    sys.argv = [sys.argv[0], 'new', test_dir]
     manager.run()
-    assert os.path.isdir(join(TEST_DIR, 'source'))
-    remove_dir(TEST_DIR)
+    assert os.path.isdir(join(test_dir, 'source'))
+    remove_dir(test_dir)
 
 
 def test_get_version():
@@ -54,21 +49,20 @@ def test_run_with_custom_host_and_port(c, monkeypatch):
         assert port == config['port']
 
     monkeypatch.setattr(Flask, 'run', fake_run)
-    sys.argv = [sys.argv[0], 'run', dirname(__file__), str(host), str(port)]
+    sys.argv = [sys.argv[0], 'run', mkdtemp(), str(host), str(port)]
     manager.run()
 
 
 def test_can_build(c):
-    make_dirs(TEST_DIR)
-    make_dirs(TEST_DIR, 'source')
-    sp = join(TEST_DIR, 'source', 'foo.txt')
-    bp = join(TEST_DIR, 'build', 'foo.txt')
+    test_dir = mkdtemp()
+    make_dirs(test_dir, 'source')
+    sp = join(test_dir, 'source', 'foo.txt')
+    bp = join(test_dir, 'build', 'foo.txt')
     create_file(sp, u'bar')
 
-    sys.argv = [sys.argv[0], 'build', TEST_DIR]
+    sys.argv = [sys.argv[0], 'build', test_dir]
     manager.run()
     assert os.path.exists(bp)
-
-    remove_dir(TEST_DIR)
+    remove_dir(test_dir)
 
 

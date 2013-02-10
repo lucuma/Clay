@@ -7,6 +7,7 @@ from os.path import dirname, join, isdir, realpath, exists
 import shutil
 from StringIO import StringIO
 import sys
+from tempfile import mkdtemp
 
 from clay import Clay
 from clay.helpers import make_dirs, create_file
@@ -17,7 +18,7 @@ HTML = u'<!DOCTYPE html><html><head><title></title></head><body></body></html>'
 
 HTTP_OK = 200
 HTTP_NOT_FOUND = 404
-TESTS = dirname(__file__)
+TESTS = mkdtemp()
 SOURCE_DIR = join(TESTS, 'source')
 BUILD_DIR = join(TESTS, 'build')
 
