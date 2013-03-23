@@ -7,6 +7,6 @@ dist
 
 .coverage
 .coveragerc
+coverage_html_report
 .tox
-htmlcov
 __pycache__

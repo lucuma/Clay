@@ -14,9 +14,13 @@ clean-pyc:
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
 	find . -name '*~' -delete
+	find . -name '*,cover' -delete
 
 test:
-	py.test --cov-config .coveragerc --cov clay tests/
+	py.test --cov-config .coveragerc --cov clay tests/ 
+
+test-report:
+	py.test --cov-config .coveragerc --cov-report html --cov clay tests/ 
 
 upload: clean
 	python setup.py sdist upload

@@ -65,8 +65,8 @@ class Server(object):
     def print_help_msg(self, host, port):
         if host == ALL_HOSTS:
             print(RUNNING_ON % ('localhost', port))
-            for ip in socket.gethostbyname_ex(socket.gethostname())[2]:
-                if ip.startswith('192.'):
+            for ip in socket.gethostbyname_ex(socket.gethostname())[2]:  # pragma: no branch
+                if ip.startswith('192.'):  # pragma: no branch
                     print(RUNNING_ON % (ip, port))
                     break
         print(HOW_TO_QUIT)
