@@ -1,5 +1,7 @@
 # Clay
 
+[![Build Status](https://travis-ci.org/lucuma/Clay.png)](https://travis-ci.org/lucuma/Clay)
+
 **An amazing prototyping tool.**
 
 http://lucuma.github.com/Clay
