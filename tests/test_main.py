@@ -282,3 +282,44 @@ def test_setting_force_ignore_in__index(c):
     resp = t.get('/_index.html')
     assert not 'href="%s"' % name in resp.data
 
+
+def test_setting_force_ignore_in__index_with_patterns(c):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'b')
+
+    create_file(get_source_path('b.html'), HTML)
+    create_file(get_source_path('b/aa.html'), HTML)
+    create_file(get_source_path('b/c.html'), HTML)
+    create_file(get_source_path('b/ab.html'), HTML)
+    create_file(get_source_path('a.html'), HTML)
+
+    t = c.get_test_client()
+    c.settings['FILTER'] = ['b/a*']
+    resp = t.get('/_index.html')
+
+    assert 'href="a.html"' in resp.data
+    assert 'href="b.html"' in resp.data
+    assert 'href="b/aa.html"' not in resp.data
+    assert 'href="b/c.html"' in resp.data
+    assert 'href="b/ab.html"' not in resp.data
+
+
+def test_setting_force_inclusion_in__index_with_patterns(c):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'b')
+
+    create_file(get_source_path('aaa.html'), HTML)
+    create_file(get_source_path('aab.html'), HTML)
+    create_file(get_source_path('abc.html'), HTML)
+    create_file(get_source_path('add.html'), HTML)
+
+    t = c.get_test_client()
+    c.settings['FILTER'] = ['a*']
+    c.settings['INCLUDE'] = ['aa*']
+    resp = t.get('/_index.html')
+
+    assert 'href="aaa.html"' in resp.data
+    assert 'href="aab.html"' in resp.data
+    assert 'href="abc.html"' not in resp.data
+    assert 'href="add.html"' not in resp.data
+

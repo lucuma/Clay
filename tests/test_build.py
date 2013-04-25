@@ -398,6 +398,54 @@ def test_setting_force_ignore_in__index(c):
     assert 'href="%s"' % name not in page
 
 
+def test_setting_force_ignore_in__index_with_patterns(c):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'b')
+
+    sp1, bp1 = get_file_paths('a.html')
+    sp2, bp2 = get_file_paths('b/aa.html')
+    sp3, bp3 = get_file_paths('b/z.html')
+    sp4, bp4 = get_file_paths('b/ab.html')
+    create_file(sp1, HTML)
+    create_file(sp2, HTML)
+    create_file(sp3, HTML)
+    create_file(sp4, HTML)
+    c.settings['FILTER'] = ['b/a*']
+    c.build()
+    
+    bpindex = get_build_path('_index.html')
+    page = read_content(bpindex)
+    assert page.find('href="a.html"') != -1
+    assert page.find('href="b/z.html"') != -1
+    assert page.find('href="b/aa.html"') == -1
+    assert page.find('href="b/ab.html"') == -1
+
+
+@pytest.mark.fail
+def test_setting_force_inclusion_in__index_with_patterns(c):
+    setup_module()
+    make_dirs(SOURCE_DIR, 'b')
+
+    sp1, bp1 = get_file_paths('aaa.html')
+    sp2, bp2 = get_file_paths('aab.html')
+    sp3, bp3 = get_file_paths('abc.html')
+    sp4, bp4 = get_file_paths('add.html')
+    create_file(sp1, HTML)
+    create_file(sp2, HTML)
+    create_file(sp3, HTML)
+    create_file(sp4, HTML)
+    c.settings['FILTER'] = ['a*.html']
+    c.settings['INCLUDE'] = ['aa*']
+    c.build()
+    
+    bpindex = get_build_path('_index.html')
+    page = read_content(bpindex)
+    assert page.find('href="aaa.html"') != -1
+    assert page.find('href="aab.html"') != -1
+    assert page.find('href="abc.html"') == -1
+    assert page.find('href="add.html"') == -1
+
+
 def test_feedback_message(c):
     setup_module()
 

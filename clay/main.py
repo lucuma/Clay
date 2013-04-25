@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+from fnmatch import fnmatch
 import mimetypes
 import os
 from os.path import (isfile, isdir, dirname, join, splitext, basename, exists,
@@ -118,12 +119,16 @@ class Clay(object):
         return not (head.startswith('<!doctype ') or head.startswith('<html'))
 
     def must_be_included(self, path):
-        return path in (self.settings.get('INCLUDE', []) or [])
+        patterns = self.settings.get('INCLUDE', []) or []
+        return reduce(lambda r, pattern: r or
+            fnmatch(path, pattern), patterns, False)
 
     def must_be_filtered(self, path):
         filename = basename(path)
-        return filename.startswith('.') or path in \
-            (self.settings.get('FILTER', []) or [])
+        patterns = self.settings.get('FILTER', []) or []
+        return (filename.startswith('.') or
+            reduce(lambda r, pattern: r or
+                fnmatch(path, pattern), patterns, False))
 
     def must_filter_fragment(self, content):
         return bool(self.settings.get('FILTER_PARTIALS', True)) \
