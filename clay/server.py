@@ -65,10 +65,9 @@ class Server(object):
     def print_help_msg(self, host, port):
         if host == ALL_HOSTS:
             print(RUNNING_ON % ('localhost', port))
-            for ip in socket.gethostbyname_ex(socket.gethostname())[2]:  # pragma: no branch
-                if ip.startswith('192.'):  # pragma: no branch
-                    print(RUNNING_ON % (ip, port))
-                    break
+            local_ip = get_local_ip()
+            if local_ip:
+                print(RUNNING_ON % (local_ip, port))
         print(HOW_TO_QUIT)
 
 
@@ -95,4 +94,11 @@ class RequestLogger(object):
         except Exception, e:
             start_response(HTTPMSG, [('Content-type', 'text/plain')], sys.exc_info())
             raise
+
+
+def get_local_ip():
+    interfaces = socket.gethostbyname_ex(socket.gethostname())[-1]
+    for ip in interfaces:
+        if isinstance(ip, basestring) and ip.startswith('192.'):
+            return ip
 
