@@ -3,6 +3,7 @@
 ## Version 2.4
 
 - Dropped the Werkzeug's server for the more robust CherryPy's Server (Cheroot).
+- Add pattern matching (UNIX style) to the lists of FILTER and IGNORE.
 
 ## Version 2.3
 
