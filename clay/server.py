@@ -97,8 +97,11 @@ class RequestLogger(object):
 
 
 def get_local_ip():
-    interfaces = socket.gethostbyname_ex(socket.gethostname())[-1]
+    try:
+        interfaces = socket.gethostbyname_ex(socket.gethostname())[-1]
+    except socket.gaierror:
+        return
     for ip in interfaces:
-        if isinstance(ip, basestring) and ip.startswith('192.'):
+        if ip.startswith('192.'):
             return ip
 
