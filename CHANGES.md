@@ -1,17 +1,27 @@
 # Clay Changelog
 
+
 ## Version 2.4
 
 - Dropped the Werkzeug's server for the more robust CherryPy's Server (Cheroot).
 
 - Added pattern matching (UNIX style) to the lists of FILTER and IGNORE.
 
-- Added pattern matching to the `active` helper function.
+- Many improvements to the `active` helper:
 
-- You can now specify many url patterns as arguments in the `active` helper
-  function without having to use a list. Eg:
+    * You can now specify many url patterns as arguments without having to
+      use a list. Eg:
 
-    active('/url1/', '/url2/', '/url3/', partial=True)
+        active('/url1/', '/url2/', '/url3/', partial=True)
+
+    * Added pattern matching
+
+        active('/foo/*')
+
+    * Relative URLs now worg. For example, if the current URL is
+      `/foo/bar.html`, this will match:
+
+        active('bar.html')
 
 
 ## Version 2.3

@@ -13,7 +13,7 @@ def teardown_module():
     remove_test_dirs()
 
 
-ACTIVE_PATH = '/foo/bar/'
+ACTIVE_PATH = '/foo/bar.html'
 
 
 def _test_active():
@@ -26,13 +26,13 @@ def _test_active():
 
 def _test_active_relative():
     assert not active('meh')
-    assert active('bar') == 'active'
+    assert active('bar.html') == 'active'
     assert active('b', partial=True) == 'active'
 
 
 def _test_active_patterns():
-    assert active('/*/bar') == 'active'
-    assert active('/fo?/bar') == 'active'
+    assert active('/*/bar.html') == 'active'
+    assert active('/fo?/bar.html') == 'active'
     assert active('/f*') == 'active'
 
 
