@@ -7,21 +7,21 @@
 
 - Added pattern matching (UNIX style) to the lists of FILTER and IGNORE.
 
-- Many improvements to the `active` helper:
+- Many improvements to the `active` helper function:
 
     * You can now specify many url patterns as arguments without having to
       use a list. Eg:
 
-        active('/url1/', '/url2/', '/url3/', partial=True)
+        {{ active('/url1/', '/url2/', '/url3/', partial=True) }}
 
     * Added pattern matching
 
-        active('/foo/*')
+        {{ active('/foo/*') }}
 
-    * Relative URLs now worg. For example, if the current URL is
+    * Relative URLs now work as well. For example, if the current URL is
       `/foo/bar.html`, this will match:
 
-        active('bar.html')
+        {{ active('bar.html') }}
 
 
 ## Version 2.3
