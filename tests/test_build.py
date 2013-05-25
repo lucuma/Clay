@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-
 import os
-import shutil
 
 from .helpers import *
 
@@ -137,6 +135,30 @@ def test_build_all(c):
     assert os.path.exists(bp1)
     assert os.path.exists(bp2)
     assert os.path.exists(bp3)
+
+
+def test_build_pattern(c):
+    c.settings['FILTER_PARTIALS'] = False
+    remove_test_dirs()
+    make_dirs(SOURCE_DIR, 'sub')
+
+    sp1, bp1 = get_file_paths('a.txt')
+    sp2 = get_source_path('b.txt.tmpl')
+    bp2 = get_build_path('b.txt')
+    sp3, bp3 = get_file_paths('sub/c.txt')
+    sp4, bp4 = get_file_paths('b.html')
+
+    create_file(sp1, u'foo')
+    create_file(sp2, u'bar')
+    create_file(sp3, u'mwahaha')
+    create_file(sp4, HTML)
+
+    c.build('b.*')
+    assert not os.path.exists(bp1)
+    assert os.path.exists(bp2)
+    assert not os.path.exists(bp3)
+    assert os.path.exists(bp4)
+    assert read_content(bp4) == HTML
 
 
 def test_translate_absolute_to_relative(c):

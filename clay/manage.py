@@ -40,13 +40,13 @@ def run(host=DEFAULT_HOST, port=DEFAULT_PORT, path='.'):
 
 
 @manager.command
-def build(path='.'):
+def build(pattern=None, path='.'):
     """[path='.']
     Generates a static copy of the sources
     """
     path = abspath(path)
     c = Clay(path)
-    c.build()
+    c.build(pattern)
 
 
 @manager.command
@@ -60,4 +60,3 @@ def version():
 
 def main():
     manager.run()
-

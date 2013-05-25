@@ -37,6 +37,8 @@ rx_abs_url = re.compile(
 
 class Clay(object):
 
+    _cached_pages_list = None
+
     def __init__(self, root, settings=None):
         if isfile(root):
             root = dirname(root)
@@ -138,12 +140,17 @@ class Clay(object):
         return bool(self.settings.get('FILTER_PARTIALS', True)) \
             and self.is_html_fragment(content)
 
-    def get_pages_list(self):
+    def get_pages_list(self, pattern=None):
+        if self._cached_pages_list:
+            return self._cached_pages_list
         pages = []
         for folder, subs, files in os.walk(self.source_dir):
             rel = self.get_relpath(folder)
             for filename in files:
-                pages.append(join(rel, filename))
+                path = join(rel, filename)
+                if not pattern or fnmatch(path, pattern):
+                    pages.append(path)
+        self._cached_pages_list = pages
         return pages
 
     def get_pages_index(self):
@@ -252,8 +259,9 @@ class Clay(object):
             return
         return self.server.run(host, port)
 
-    def build(self):
-        pages = self.get_pages_list()
+    def build(self, pattern=None):
+        self._cached_pages_list = None
+        pages = self.get_pages_list(pattern)
         print('Building...\n')
         for path in pages:
             self.build_page(path)

@@ -12,7 +12,6 @@ from flask import Flask
 from .helpers import *
 
 
-
 def test_has_main():
     main()
 
@@ -44,6 +43,7 @@ def test_can_run(c, monkeypatch):
 def test_run_with_custom_host_and_port(c, monkeypatch):
     host = 'localhost'
     port = 9000
+
     def fake_run(self, **config):
         assert host == config['host']
         assert port == config['port']
@@ -60,9 +60,26 @@ def test_can_build(c):
     bp = join(test_dir, 'build', 'foo.txt')
     create_file(sp, u'bar')
 
-    sys.argv = [sys.argv[0], 'build', test_dir]
+    sys.argv = [sys.argv[0], 'build', '--path', test_dir]
     manager.run()
     assert os.path.exists(bp)
     remove_dir(test_dir)
 
 
+def test_can_build_pattern(c):
+    test_dir = mkdtemp()
+    make_dirs(test_dir, 'source')
+    sp1 = join(test_dir, 'source', 'foo.txt')
+    bp1 = join(test_dir, 'build', 'foo.txt')
+    create_file(sp1, u'bar')
+
+    sp2 = join(test_dir, 'source', 'bar.txt')
+    bp2 = join(test_dir, 'build', 'bar.txt')
+    create_file(sp2, u'bar')
+
+    sys.argv = [sys.argv[0], 'build', 'bar.txt', '--path', test_dir]
+    manager.run()
+    assert not os.path.exists(bp1)
+    assert os.path.exists(bp2)
+    assert read_content(bp2) == u'bar'
+    remove_dir(test_dir)
