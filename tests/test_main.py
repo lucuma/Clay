@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-import shutil
-
-import pytest
-
 from .helpers import *
 
 
@@ -208,10 +204,10 @@ def test__index_is_sorted(t):
     assert resp.mimetype == 'text/html'
 
     page = resp.data
-    assert page.find('href="aaa.html"') <  page.find('href="bbb.html"')
-    assert page.find('href="bbb.html"') <  page.find('href="ddd.html"')
-    assert page.find('href="ddd.html"') <  page.find('href="bbb/aa.html"')
-    assert page.find('href="bbb/aa.html"') <  page.find('href="bbb/ccc.html"')
+    assert page.find('href="aaa.html"') < page.find('href="bbb.html"')
+    assert page.find('href="bbb.html"') < page.find('href="ddd.html"')
+    assert page.find('href="ddd.html"') < page.find('href="bbb/aa.html"')
+    assert page.find('href="bbb/aa.html"') < page.find('href="bbb/ccc.html"')
 
 
 def test_do_not_include_non_template_files_in__index(t):
@@ -246,9 +242,9 @@ def test_setting_filter_fragments_in__indexs_after_rendering(c):
     t = c.get_test_client()
 
     create_file(get_source_path('base.html'),
-            u'<!DOCTYPE html><html><body>{% block content %}{% endblock %}</body></html>')
+        u'<!DOCTYPE html><html><body>{% block content %}{% endblock %}</body></html>')
     create_file(get_source_path('xxx.html'),
-            u'{% extends "base.html" %}{% block content %}Hi!{% endblock %}')
+        u'{% extends "base.html" %}{% block content %}Hi!{% endblock %}')
 
     c.settings['FILTER_PARTIALS'] = True
     resp = t.get('/_index.html')
@@ -265,7 +261,7 @@ def test_setting_force_fragment_inclusion_in__index(c):
     create_file(get_source_path(name), u'lalala')
 
     c.settings['FILTER_PARTIALS'] = True
-    c.settings['INCLUDE'] = [name,]
+    c.settings['INCLUDE'] = [name, ]
     resp = t.get('/_index.html')
     assert 'href="%s"' % name in resp.data
 
@@ -278,7 +274,7 @@ def test_setting_force_ignore_in__index(c):
     create_file(get_source_path(name), HTML)
 
     c.settings['FILTER_PARTIALS'] = True
-    c.settings['FILTER'] = [name,]
+    c.settings['FILTER'] = [name, ]
     resp = t.get('/_index.html')
     assert not 'href="%s"' % name in resp.data
 
@@ -287,14 +283,19 @@ def test_setting_force_ignore_in__index_with_patterns(c):
     setup_module()
     make_dirs(SOURCE_DIR, 'b')
 
+    create_file(get_source_path('a.html'), HTML)
     create_file(get_source_path('b.html'), HTML)
-    create_file(get_source_path('b/aa.html'), HTML)
+
     create_file(get_source_path('b/c.html'), HTML)
     create_file(get_source_path('b/ab.html'), HTML)
-    create_file(get_source_path('a.html'), HTML)
+    create_file(get_source_path('b/a-a.html'), HTML)
+
+    create_file(get_source_path('zoo.html'), HTML)
+    create_file(get_source_path('foo.html'), HTML)
+    create_file(get_source_path('b/loremipsum-oo.html'), HTML)
 
     t = c.get_test_client()
-    c.settings['FILTER'] = ['b/a*']
+    c.settings['FILTER'] = ['b/a*', '*oo.html']
     resp = t.get('/_index.html')
 
     assert 'href="a.html"' in resp.data
@@ -302,6 +303,10 @@ def test_setting_force_ignore_in__index_with_patterns(c):
     assert 'href="b/aa.html"' not in resp.data
     assert 'href="b/c.html"' in resp.data
     assert 'href="b/ab.html"' not in resp.data
+
+    assert 'href="zoo.html"' not in resp.data
+    assert 'href="foo.html"' not in resp.data
+    assert 'href="b/loremipsum-oo.html"' not in resp.data
 
 
 def test_setting_force_inclusion_in__index_with_patterns(c):
@@ -313,9 +318,13 @@ def test_setting_force_inclusion_in__index_with_patterns(c):
     create_file(get_source_path('abc.html'), HTML)
     create_file(get_source_path('add.html'), HTML)
 
+    create_file(get_source_path('zoo.html'), HTML)
+    create_file(get_source_path('foo.html'), HTML)
+    create_file(get_source_path('b/loremipsum-oo.html'), HTML)
+
     t = c.get_test_client()
-    c.settings['FILTER'] = ['a*']
-    c.settings['INCLUDE'] = ['aa*']
+    c.settings['FILTER'] = ['a*', '*oo.html']
+    c.settings['INCLUDE'] = ['aa*', 'b/loremipsum*']
     resp = t.get('/_index.html')
 
     assert 'href="aaa.html"' in resp.data
@@ -323,3 +332,6 @@ def test_setting_force_inclusion_in__index_with_patterns(c):
     assert 'href="abc.html"' not in resp.data
     assert 'href="add.html"' not in resp.data
 
+    assert 'href="zoo.html"' not in resp.data
+    assert 'href="foo.html"' not in resp.data
+    assert 'href="b/loremipsum-oo.html"' in resp.data

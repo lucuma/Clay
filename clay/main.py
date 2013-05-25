@@ -4,17 +4,20 @@ from __future__ import print_function
 from fnmatch import fnmatch
 import mimetypes
 import os
-from os.path import (isfile, isdir, dirname, join, splitext, basename, exists,
+from os.path import (
+    isfile, isdir, dirname, join, splitext, basename, exists,
     relpath, sep)
 import re
 import sys
 
 import yaml
 
-from .helpers import (to_unicode, read_content, make_dirs, create_file,
+from .helpers import (
+    to_unicode, read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
 from .wsgiapp import WSGIApplication, TemplateNotFound
+from functools import reduce
 
 
 SOURCE_DIRNAME = 'source'
@@ -27,7 +30,8 @@ HTTP_NOT_FOUND = 404
 SOURCE_NOT_FOUND = u"""We couldn't found a "%s" dir.
 Check if you're in the correct folder""" % SOURCE_DIRNAME
 
-rx_abs_url = re.compile(r'\s(src|href|data-[a-z0-9_-]+)\s*=\s*[\'"](\/(?:[a-z0-9_-][^\'"]*)?)[\'"]',
+rx_abs_url = re.compile(
+    r'\s(src|href|data-[a-z0-9_-]+)\s*=\s*[\'"](\/(?:[a-z0-9_-][^\'"]*)?)[\'"]',
     re.UNICODE | re.IGNORECASE)
 
 
@@ -121,13 +125,13 @@ class Clay(object):
     def must_be_included(self, path):
         patterns = self.settings.get('INCLUDE', []) or []
         return reduce(lambda r, pattern: r or
-            fnmatch(path, pattern), patterns, False)
+                      fnmatch(path, pattern), patterns, False)
 
     def must_be_filtered(self, path):
         filename = basename(path)
         patterns = self.settings.get('FILTER', []) or []
         return (filename.startswith('.') or
-            reduce(lambda r, pattern: r or
+                reduce(lambda r, pattern: r or
                 fnmatch(path, pattern), patterns, False))
 
     def must_filter_fragment(self, content):
@@ -176,7 +180,7 @@ class Clay(object):
 
         try:
             content = self.render(path, self.settings)
-        except TemplateNotFound, e:
+        except TemplateNotFound as e:
             return self.show_notfound(e)
 
         mimetype = self.guess_mimetype(self.get_real_fn(path))
@@ -226,27 +230,28 @@ class Clay(object):
             self.print_build_message(path)
             return copy_if_updated(sp, bp)
 
-        content = u''
-        if not self.must_be_included(path):
-            if self.must_be_filtered(path):
-                return
-            content = self.render(path, self.settings)
-            if self.must_filter_fragment(content):
-                return
+        must_be_included = self.must_be_included(path)
+
+        if self.must_be_filtered(path) and not must_be_included:
+            return
+
+        content = self.render(path, self.settings)
+        if self.must_filter_fragment(content) and not must_be_included:
+            return
 
         self.print_build_message(path)
         bp = self.remove_template_ext(bp)
         if bp.endswith('.html'):
             content = self.make_absolute_urls_relative(content, path)
 
-        create_file(bp, content)   
+        create_file(bp, content)
 
     def run(self, host=None, port=None):
         if not exists(self.source_dir):
             print(SOURCE_NOT_FOUND)
             return
         return self.server.run(host, port)
-    
+
     def build(self):
         pages = self.get_pages_list()
         print('Building...\n')
@@ -266,4 +271,3 @@ class Clay(object):
         host = self.settings.get('host', DEFAULT_HOST)
         port = self.settings.get('port', DEFAULT_PORT)
         return self.app.get_test_client(host, port)
-
