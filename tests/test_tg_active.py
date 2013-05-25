@@ -37,9 +37,9 @@ def _test_active_patterns():
 
 
 def _test_active_backward_compatibilty():
-    assert active(['/hello/', ACTIVE_PATH,]) == 'active'
-    assert not active(['/hello/', '/world/',])
-    assert active([ ACTIVE_PATH[:5] ], partial=True) == 'active'
+    assert active(['/hello/', ACTIVE_PATH, ]) == 'active'
+    assert not active(['/hello/', '/world/', ])
+    assert active([ACTIVE_PATH[:5], ], partial=True) == 'active'
 
 
 def test_active(c):
