@@ -1,4 +1,4 @@
-.PHONY: clean clean-pyc test upload
+.PHONY: clean clean-pyc test publish
 
 all: clean clean-pyc test
 
@@ -22,6 +22,6 @@ test:
 test-report:
 	py.test --cov-config .coveragerc --cov-report html --cov clay tests/ 
 
-upload: clean
+publish: clean
 	python setup.py sdist upload
 

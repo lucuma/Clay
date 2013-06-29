@@ -43,8 +43,8 @@ class IncludeWith(Extension):
     You **must** also include 'jinja2.ext.with_' in the extensions list.
     """
 
-    rx = re.compile(r'\{\%\s*include\s+(?P<tmpl>[^\s]+)\s+with\s+(?P<context>.*?)\s*\%\}',
-        re.IGNORECASE)
+    rx = re.compile(r'\{\%\s*include\s+(?P<tmpl>[^\s]+)\s+with\s+'
+                    '(?P<context>.*?)\s*\%\}', re.IGNORECASE)
 
     def preprocess(self, source, name, filename=None):
         lastpos = 0
@@ -52,7 +52,7 @@ class IncludeWith(Extension):
             m = self.rx.search(source, lastpos)
             if not m:
                 break
-            
+
             lastpos = m.end()
             d = m.groupdict()
             context = d['context'].strip()
@@ -65,7 +65,6 @@ class IncludeWith(Extension):
                 '{% include ', d['tmpl'].strip(), ' %}',
                 '{% endwith %}',
                 source[m.end():]
-                ])
-        
-        return source
+            ])
 
+        return source

@@ -1,14 +1,29 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import errno
+from fnmatch import fnmatch
 import io
 import os
-import re
 import shutil
+import unicodedata
 
 
-def to_unicode(s, encoding='utf8', errors='strict'):
-    return s.decode(encoding, errors)
+def to_unicode(txt, encoding='utf8'):
+    if not isinstance(txt, basestring):
+        txt = str(txt)
+    if isinstance(txt, unicode):
+        return txt
+    return unicode(txt, encoding)
+
+
+def unormalize(text, form='NFD'):
+    return unicodedata.normalize(form, text)
+
+
+def fullmatch(path, pattern):
+    path = unormalize(path)
+    name = os.path.basename(path)
+    return fnmatch(name, pattern) or fnmatch(path, pattern)
 
 
 def read_content(path, **kwargs):
@@ -21,7 +36,7 @@ def make_dirs(*lpath):
     path = os.path.join(*lpath)
     try:
         os.makedirs(path)
-    except (OSError), e:
+    except OSError as e:
         if e.errno != errno.EEXIST:
             raise
     return path
@@ -53,4 +68,3 @@ def sort_paths_dirs_last(paths):
         return cmp(a[0].count('/'), b[0].count('/')) or cmp(a[0], b[0])
 
     return sorted(paths, cmp=dirs_last)
-

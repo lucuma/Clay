@@ -78,12 +78,13 @@ class RequestLogger(object):
 
     def log_request(self, environ, now=None):
         now = now or datetime.now()
-        msg = [' ',
+        msg = [
+            ' ',
             now.strftime('%H:%M:%S'), ' | ',
             environ.get('REMOTE_ADDR', '?'), '  ',
             environ.get('REQUEST_URI', ''), '  ',
             '(', environ.get('REQUEST_METHOD', ''), ')',
-            ]
+        ]
         msg = ''.join(msg)
         print(msg)
 
@@ -104,4 +105,3 @@ def get_local_ip():
     for ip in interfaces:
         if ip.startswith('192.'):
             return ip
-

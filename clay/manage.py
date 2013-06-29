@@ -25,7 +25,7 @@ def new(path='.'):
     Creates a new project
     """
     path = abspath(path.rstrip(sep))
-    reanimate_skeleton(SKELETON, path)
+    reanimate_skeleton(SKELETON, path, include_this=['.gitignore'])
     print(SKELETON_HELP % (path,))
 
 

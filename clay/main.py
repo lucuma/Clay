@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-from fnmatch import fnmatch
 import mimetypes
 import os
-from os.path import (
-    isfile, isdir, dirname, join, splitext, basename, exists,
-    relpath, sep)
+from os.path import (isfile, isdir, dirname, join, splitext, basename, exists,
+                     relpath, sep)
 import re
-import sys
 
 import yaml
 
-from .helpers import (
-    to_unicode, read_content, make_dirs, create_file,
-    copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
+from .helpers import (to_unicode, unormalize, fullmatch,
+                      read_content, make_dirs, create_file,
+                      copy_if_updated, get_updated_datetime,
+                      sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
 from .wsgiapp import WSGIApplication, TemplateNotFound
 from functools import reduce
@@ -24,6 +22,9 @@ SOURCE_DIRNAME = 'source'
 BUILD_DIRNAME = 'build'
 TMPL_EXTS = ('.html', '.tmpl')
 RX_TMPL = re.compile(r'\.tmpl$')
+
+DEFAULT_INCLUDE = []
+DEFAULT_FILTER = ['.*']
 
 HTTP_NOT_FOUND = 404
 
@@ -46,8 +47,8 @@ class Clay(object):
         self.settings = settings
         self.settings_path = join(root, 'settings.yml')
         self.load_settings_from_file()
-        self.source_dir = join(root, SOURCE_DIRNAME)
-        self.build_dir = join(root, BUILD_DIRNAME)
+        self.source_dir = to_unicode(join(root, SOURCE_DIRNAME))
+        self.build_dir = to_unicode(join(root, BUILD_DIRNAME))
         self.app = self.make_app()
         self.server = Server(self)
 
@@ -105,7 +106,7 @@ class Clay(object):
 
     def get_relative_url(self, relpath, currurl):
         depth = relpath.count('/')
-        url = (ur'../' * depth) + currurl.lstrip('/')
+        url = (r'../' * depth) + currurl.lstrip('/')
         if not url:
             return 'index.html'
         path = self.get_full_source_path(url)
@@ -116,7 +117,7 @@ class Clay(object):
     def make_absolute_urls_relative(self, content, relpath):
         for attr, url in rx_abs_url.findall(content):
             newurl = self.get_relative_url(relpath, url)
-            repl = ur' %s="%s"' % (attr, newurl)
+            repl = r' %s="%s"' % (attr, newurl)
             content = re.sub(rx_abs_url, repl, content, count=1)
         return content
 
@@ -125,30 +126,34 @@ class Clay(object):
         return not (head.startswith('<!doctype ') or head.startswith('<html'))
 
     def must_be_included(self, path):
-        patterns = self.settings.get('INCLUDE', []) or []
+        patterns = (self.settings.get('INCLUDE', DEFAULT_INCLUDE)
+                    or DEFAULT_INCLUDE)
+        patterns = [unormalize(to_unicode(p)) for p in patterns]
         return reduce(lambda r, pattern: r or
-                      fnmatch(path, pattern), patterns, False)
+                      fullmatch(path, pattern), patterns, False)
 
     def must_be_filtered(self, path):
-        filename = basename(path)
-        patterns = self.settings.get('FILTER', []) or []
-        return (filename.startswith('.') or
-                reduce(lambda r, pattern: r or
-                fnmatch(path, pattern), patterns, False))
+        patterns = (self.settings.get('FILTER', DEFAULT_FILTER)
+                    or DEFAULT_FILTER)
+        patterns = [unormalize(to_unicode(p)) for p in patterns]
+        return reduce(lambda r, pattern: r or
+                      fullmatch(path, pattern), patterns, False)
 
     def must_filter_fragment(self, content):
-        return bool(self.settings.get('FILTER_PARTIALS', True)) \
-            and self.is_html_fragment(content)
+        return (bool(self.settings.get('FILTER_PARTIALS', True))
+                and self.is_html_fragment(content))
 
     def get_pages_list(self, pattern=None):
         if self._cached_pages_list:
             return self._cached_pages_list
+        if pattern:
+            pattern = unormalize(to_unicode(pattern))
         pages = []
         for folder, subs, files in os.walk(self.source_dir):
             rel = self.get_relpath(folder)
             for filename in files:
                 path = join(rel, filename)
-                if not pattern or fnmatch(path, pattern):
+                if not pattern or fullmatch(path, pattern):
                     pages.append(path)
         self._cached_pages_list = pages
         return pages
@@ -227,6 +232,7 @@ class Clay(object):
         print(' ', to_unicode(self.remove_template_ext(path)))
 
     def build_page(self, path):
+        path = to_unicode(path)
         sp = self.get_full_source_path(path)
         bp = self.get_full_build_path(path)
         make_dirs(dirname(bp))

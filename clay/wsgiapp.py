@@ -19,14 +19,14 @@ TEMPLATE_GLOBALS = {
     'enumerate': enumerate,
     'map': map,
     'zip': zip,
-    }
+}
 
 
 class WSGIApplication(Flask):
 
     def __init__(self, source_dir):
-        super(WSGIApplication, self).__init__(APP_NAME, template_folder=source_dir,
-            static_folder=None)
+        super(WSGIApplication, self).__init__(
+            APP_NAME, template_folder=source_dir, static_folder=None)
         self.jinja_loader = get_jinja_loader(source_dir)
         self.jinja_options = get_jinja_options()
         self.context_processor(lambda: TEMPLATE_GLOBALS)
@@ -41,7 +41,8 @@ class WSGIApplication(Flask):
         if has_request_context():
             return render_template(path, **context)
 
-        with self.test_request_context('/' + path, method='GET',
+        with self.test_request_context(
+                '/' + path, method='GET',
                 base_url='http://%s:%s' % (host, port)):
             return render_template(path, **context)
 
@@ -58,12 +59,11 @@ def get_jinja_loader(source_dir):
     return ChoiceLoader([
         FileSystemLoader(source_dir),
         PackageLoader('clay', basename(source_dir)),
-        ])
+    ])
 
 
 def get_jinja_options():
     return {
         'autoescape': True,
         'extensions': ['jinja2.ext.with_', IncludeWith]
-        }
-
+    }

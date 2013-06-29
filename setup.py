@@ -24,7 +24,7 @@ def read_from(filepath):
 def get_version():
     data = read_from(get_path(PACKAGE, '__init__.py'))
     version = re.search(r"__version__\s*=\s*'([^']+)'", data).group(1)
-    return version.encode('utf-8')
+    return version
 
 
 def find_package_data(root, include_files=None):
@@ -72,29 +72,31 @@ class PyTest(TestCommand):
 
 
 setup(
-    name = 'Clay',
-    version = get_version(),
-    author = 'Juan-Pablo Scaletti',
-    author_email = 'juanpablo@lucumalabs.com',
-    packages = [PACKAGE],
-    package_data = find_packages_data(PACKAGE, 'tests'),
-    zip_safe = False,
-    url = 'http://github.com/lucuma/Clay',
-    license = 'MIT license (http://www.opensource.org/licenses/mit-license.php)',
-    description = 'An amazing prototyping tool',
-    long_description = read_from(get_path('README.rst')),
-    install_requires = get_requirements(),
-    classifiers = [
+    name='Clay',
+    version=get_version(),
+    author='Juan-Pablo Scaletti',
+    author_email='juanpablo@lucumalabs.com',
+    packages=[PACKAGE],
+    package_data=find_packages_data(PACKAGE, 'tests'),
+    zip_safe=False,
+    url='http://github.com/lucuma/Clay',
+    license='MIT license (http://www.opensource.org/licenses/mit-license.php)',
+    description='An amazing prototyping tool',
+    long_description=read_from(get_path('README.rst')),
+    install_requires=get_requirements(),
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: pypy',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    tests_require = ['pytest'],
-    cmdclass = {'test': PyTest},
-    entry_points = {'console_scripts': ['clay = clay.manage:main']},
+    tests_require=['pytest'],
+    cmdclass={'test': PyTest},
+    entry_points={'console_scripts': ['clay = clay.manage:main']},
 )
