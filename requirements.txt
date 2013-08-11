@@ -4,15 +4,10 @@
 #
 #     pip install -r requirements.txt
 
-Colorama==0.2.5
+Baker==1.3
 Cheroot==4.0.0beta
 Flask==0.10.1
-Jinja2==2.7
-MarkupSafe==0.18
+Jinja2==2.7.1
 PyYAML==3.10
-Voodoo==1.0.2
-Werkzeug==0.9.1
-pyCEO==1.1
-
-# markdown
-# pygments
+Voodoo==1.1.1
+Werkzeug==0.9.3

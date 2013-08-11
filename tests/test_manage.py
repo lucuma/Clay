@@ -12,10 +12,6 @@ from flask import Flask
 from .helpers import *
 
 
-def test_has_main():
-    main()
-
-
 def test_create_skeleton():
     test_dir = mkdtemp()
     sys.argv = [sys.argv[0], 'new', test_dir]

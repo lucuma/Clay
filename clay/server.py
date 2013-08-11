@@ -38,26 +38,26 @@ class Server(object):
     def _testrun(self, host, current_port, max_port):
         self.print_help_msg(host, current_port)
         try:
-            return self._run_wsgi_server(host, current_port)
-        except socket.error, e:
+            self._run_wsgi_server(host, current_port)
+        except socket.error:
             current_port += 1
             if current_port > max_port:
                 return
             print(ADDRINUSE)
             self._testrun(host, current_port, max_port)
+        except KeyboardInterrupt:
+            self.stop()
+        return host, current_port
 
     def _run_wsgi_server(self, host, port):
         self.server = self._get_wsgi_server(host, port)
-        try:
-            return self.start()
-        except KeyboardInterrupt:
-            self.stop()
+        self.start()
 
     def _get_wsgi_server(self, host, port):
         return wsgi.WSGIServer((host, port), wsgi_app=self.dispatcher)
 
     def start(self):
-        return self.server.start()
+        self.server.safe_start()
 
     def stop(self):
         self.server.stop()
@@ -92,7 +92,7 @@ class RequestLogger(object):
         self.log_request(environ)
         try:
             return self.application(environ, start_response)
-        except Exception, e:
+        except Exception:
             start_response(HTTPMSG, [('Content-type', 'text/plain')], sys.exc_info())
             raise
 

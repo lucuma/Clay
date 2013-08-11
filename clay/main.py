@@ -3,16 +3,15 @@ from __future__ import print_function
 
 import mimetypes
 import os
-from os.path import (isfile, isdir, dirname, join, splitext, basename, exists,
-                     relpath, sep)
+from os.path import (
+    isfile, isdir, dirname, join, splitext, basename, exists, relpath, sep)
 import re
 
 import yaml
 
-from .helpers import (to_unicode, unormalize, fullmatch,
-                      read_content, make_dirs, create_file,
-                      copy_if_updated, get_updated_datetime,
-                      sort_paths_dirs_last)
+from .helpers import (
+    to_unicode, unormalize, fullmatch, read_content, make_dirs, create_file,
+    copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
 from .wsgiapp import WSGIApplication, TemplateNotFound
 from functools import reduce
@@ -262,7 +261,7 @@ class Clay(object):
     def run(self, host=None, port=None):
         if not exists(self.source_dir):
             print(SOURCE_NOT_FOUND)
-            return
+            return None, None
         return self.server.run(host, port)
 
     def build(self, pattern=None):

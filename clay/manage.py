@@ -3,13 +3,11 @@ from __future__ import print_function
 
 from os.path import dirname, join, realpath, sep, abspath
 
-from pyceo import Manager
-from voodoo import reanimate_skeleton
+import baker
+from voodoo import render_skeleton
 
-from .main import Clay, DEFAULT_HOST, DEFAULT_PORT
+from clay.main import Clay, DEFAULT_HOST, DEFAULT_PORT
 
-
-manager = Manager()
 
 SKELETON = join(dirname(realpath(__file__)), 'skeleton')
 
@@ -19,20 +17,21 @@ SKELETON_HELP = """
 """
 
 
+manager = baker.Baker()
+
+
 @manager.command
 def new(path='.'):
-    """[path='.']
-    Creates a new project
+    """Creates a new project
     """
     path = abspath(path.rstrip(sep))
-    reanimate_skeleton(SKELETON, path, include_this=['.gitignore'])
+    render_skeleton(SKELETON, path, include_this=['.gitignore'])
     print(SKELETON_HELP % (path,))
 
 
 @manager.command
 def run(host=DEFAULT_HOST, port=DEFAULT_PORT, path='.'):
-    """[host] [port] [path='.']
-    Run the development server
+    """Run the development server
     """
     path = abspath(path)
     c = Clay(path)
@@ -41,8 +40,7 @@ def run(host=DEFAULT_HOST, port=DEFAULT_PORT, path='.'):
 
 @manager.command
 def build(pattern=None, path='.'):
-    """[path='.']
-    Generates a static copy of the sources
+    """Generates a static copy of the sources
     """
     path = abspath(path)
     c = Clay(path)
@@ -51,10 +49,9 @@ def build(pattern=None, path='.'):
 
 @manager.command
 def version():
-    """.
-    Returns the current Clay version
+    """Returns the current Clay version
     """
-    from . import __version__
+    from clay import __version__
     print(__version__)
 
 

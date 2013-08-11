@@ -3,7 +3,7 @@ from __future__ import absolute_import
 
 import io
 import os
-from os.path import dirname, join, isdir, realpath, exists
+from os.path import dirname, join, isdir, exists
 import shutil
 from StringIO import StringIO
 import sys
