@@ -15,4 +15,4 @@ See `AUTHORS.md` for more details.
 from main import Clay
 
 
-__version__ = '2.5'
+__version__ = '2.5.1'

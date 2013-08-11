@@ -2,13 +2,7 @@
 import io
 import os
 import re
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
-
-PACKAGE = 'clay'
+from setuptools import setup, find_packages
 
 
 def get_path(*args):
@@ -20,34 +14,10 @@ def read_from(filepath):
         return f.read()
 
 
-def get_version():
-    data = read_from(get_path(PACKAGE, '__init__.py'))
+def get_version(package):
+    data = read_from(get_path(package, '__init__.py'))
     version = re.search(r"__version__\s*=\s*u?'([^']+)'", data).group(1)
     return str(version)
-
-
-def find_package_data(root, include_files=('.gitignore', )):
-    files = []
-    src_root = get_path(root).rstrip('/') + '/'
-    for dirpath, subdirs, filenames in os.walk(src_root):
-        path, dirname = os.path.split(dirpath)
-        if dirname.startswith(('.', '_')):
-            continue
-        dirpath = dirpath.replace(src_root, '')
-        for filename in filenames:
-            is_valid_filename = not (
-                filename.startswith('.') or
-                filename.endswith('.pyc')
-            )
-            include_it_anyway = filename in include_files
-
-            if is_valid_filename or include_it_anyway:
-                files.append(os.path.join(dirpath, filename))
-    return files
-
-
-def find_packages_data(*roots):
-    return dict([(root, find_package_data(root)) for root in roots])
 
 
 def get_description():
@@ -62,11 +32,11 @@ def get_requirements(filename='requirements.txt'):
 
 setup(
     name='Clay',
-    version=get_version(),
+    version=get_version('clay'),
     author='Juan-Pablo Scaletti',
     author_email='juanpablo@lucumalabs.com',
-    packages=[PACKAGE],
-    package_data=find_packages_data(PACKAGE, 'tests'),
+    packages=find_packages(),
+    include_package_data=True,
     zip_safe=False,
     url='http://github.com/lucuma/Clay',
     license='MIT license (http://www.opensource.org/licenses/mit-license.php)',
@@ -84,5 +54,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    entry_points={'console_scripts': ['clay = clay.manage:main']},
+    entry_points={
+        'console_scripts': ['clay = clay.manage:main'],
+    },
 )
