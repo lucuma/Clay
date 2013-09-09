@@ -1,5 +1,8 @@
 # Clay Changelog
 
+## Version 2.5
+
+- GET and POST values are automatically added to the context.
 
 ## Version 2.4
 

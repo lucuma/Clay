@@ -2,7 +2,8 @@
 from datetime import datetime
 from os.path import basename
 
-from flask import (Flask, has_request_context, render_template, make_response, send_file)
+from flask import (Flask, request, has_request_context, render_template,
+                   make_response, send_file)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
 from jinja2.exceptions import TemplateNotFound
 
@@ -39,6 +40,7 @@ class WSGIApplication(Flask):
 
     def render_template(self, path, context, host, port):
         if has_request_context():
+            context.update(request.values.to_dict())
             return render_template(path, **context)
 
         with self.test_request_context(

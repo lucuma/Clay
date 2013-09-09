@@ -137,6 +137,18 @@ def test_settings_as_template_context():
     assert resp.mimetype == 'text/html'
 
 
+def test_values_as_template_context():
+    setup_module()
+
+    c = Clay(TESTS)
+    t = c.get_test_client()
+    create_file(get_source_path('hello.html'), u'Hello {{ who }}!')
+    resp = t.get('/hello.html?who=world')
+    assert resp.status_code == HTTP_OK
+    assert resp.data == 'Hello world!'
+    assert resp.mimetype == 'text/html'
+
+
 def test_get_pages_list(c):
     setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
