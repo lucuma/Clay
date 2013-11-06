@@ -2,5 +2,5 @@ language: python
 python:
   - "2.7"
   - "pypy"
-install: pip install pytest git+https://github.com/FSX/misaka.git pygments -r requirements.txt
+install: pip install pytest -r requirements.txt
 script: py.test tests

@@ -1,16 +1,11 @@
 # Clay Changelog
 
-## Version 2.8
 
-- Markdown support
-
-## Version 2.7
+## Version 2.6
 
 - You can now create new projects from Git/Hg URLs or local folders.
     
     clay new myproject git@github.com:lucuma/demo.git
-
-## Version 2.6
 
 - Added Markdown support with automatic source code highlighting. 
 
