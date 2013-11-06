@@ -1,8 +1,24 @@
 # Clay Changelog
 
+## Version 2.8
+
+- Markdown support
+
+## Version 2.7
+
+- You can now create new projects from Git/Hg URLs or local folders.
+    
+    clay new myproject git@github.com:lucuma/demo.git
+
+## Version 2.6
+
+- Added Markdown support with automatic source code highlighting. 
+
+
 ## Version 2.5
 
 - GET and POST values are automatically added to the context.
+
 
 ## Version 2.4
 
@@ -47,5 +63,4 @@ TDD rewrite. Most important new features:
 
 - Adaptative run port (if it is taken, Clay try to use the next one).
 
-- The "not found" page now shows the real missing templates (it could be "imported" inside the current page).
-
+- The "not found" page now shows the real missing templates (for example, when an "imported" template is the one missing).

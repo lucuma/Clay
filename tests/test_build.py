@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 import os
 
+from clay import Clay
+
 from .helpers import *
-
-
-def setup_module():
-    remove_test_dirs()
-    make_dirs(SOURCE_DIR)
-    make_dirs(BUILD_DIR)
-
-
-def teardown_module():
-    remove_test_dirs()
 
 
 def get_file_paths(name):
@@ -22,7 +13,6 @@ def get_file_paths(name):
 
 
 def create_test_file(name):
-    make_dirs(BUILD_DIR)
     sp, bp = get_file_paths(name)
     create_file(sp, 'source')
     create_file(bp, 'build')
@@ -30,17 +20,15 @@ def create_test_file(name):
 
 
 def test_build_dir_is_made(c):
-    setup_module()
-
     name = 'test.html'
     sp, bp = get_file_paths(name)
     create_file(sp, u'')
+    remove_dir(BUILD_DIR)
     c.build_page(name)
     assert isdir(BUILD_DIR)
 
 
 def test_build_page(c):
-    setup_module()
     c.settings['FILTER_PARTIALS'] = False
 
     name = 'foo.html'
@@ -55,7 +43,6 @@ def test_build_page(c):
 
 
 def test_build_file_without_process(c):
-    setup_module()
 
     name = 'main.css'
     sp, bp = get_file_paths(name)
@@ -67,7 +54,6 @@ def test_build_file_without_process(c):
 
 
 def test_do_not_copy_if_build_is_newer(c):
-    setup_module()
 
     name = 'test.txt'
     sp, bp = create_test_file(name)
@@ -78,7 +64,6 @@ def test_do_not_copy_if_build_is_newer(c):
 
 
 def test_copy_if_source_is_newer(c):
-    setup_module()
 
     name = 'test.txt'
     sp, bp = create_test_file(name)
@@ -90,7 +75,6 @@ def test_copy_if_source_is_newer(c):
 
 def test_rename_tmpl_file(c):
     c.settings['FILTER_PARTIALS'] = False
-    setup_module()
 
     name = 'test.txt.tmpl'
     sp, bp = get_file_paths(name)
@@ -103,7 +87,6 @@ def test_rename_tmpl_file(c):
 
 
 def test_settings_as_template_build_context():
-    setup_module()
 
     c = Clay(TESTS, {'who': u'world', 'FILTER_PARTIALS': False})
     t = c.get_test_client()
@@ -112,14 +95,13 @@ def test_settings_as_template_build_context():
     sp = get_source_path(name)
     bp = get_build_path('test.txt')
     create_file(sp, u'Hello {{ who }}!')
-    
+
     c.build_page(name)
     assert read_content(bp) == u'Hello world!'
 
 
 def test_build_all(c):
     c.settings['FILTER_PARTIALS'] = False
-    remove_test_dirs()
     make_dirs(SOURCE_DIR, 'sub')
 
     sp1, bp1 = get_file_paths('a.txt')
@@ -139,7 +121,6 @@ def test_build_all(c):
 
 def test_build_pattern(c):
     c.settings['FILTER_PARTIALS'] = False
-    remove_test_dirs()
     make_dirs(SOURCE_DIR, 'sub')
 
     sp1, bp1 = get_file_paths(u'a.txt')
@@ -162,7 +143,6 @@ def test_build_pattern(c):
 
 
 def test_translate_absolute_to_relative(c):
-    remove_test_dirs()
     make_dirs(SOURCE_DIR, 'foo')
 
     sp1, bp1 = get_file_paths('wtf.html')
@@ -191,7 +171,6 @@ def test_translate_absolute_to_relative(c):
 
 
 def test_translate_absolute_to_relative_index(c):
-    remove_test_dirs()
     make_dirs(SOURCE_DIR, 'bar')
 
     sp1, bp1 = get_file_paths('index.html')
@@ -210,8 +189,6 @@ def test_translate_absolute_to_relative_index(c):
 
 
 def test_translate_ignore_external_urls(c):
-    setup_module()
-
     sp1, bp1 = get_file_paths('t1.html')
     sp2, bp2 = get_file_paths('t2.html')
     sp3, bp3 = get_file_paths('t3.html')
@@ -229,8 +206,6 @@ def test_translate_ignore_external_urls(c):
 
 
 def test_filter_hidden_files(c):
-    setup_module()
-
     sp, bp = get_file_paths('.DS_Store')
     create_file(sp, u'lorem ipsum')
     c.build()
@@ -238,8 +213,6 @@ def test_filter_hidden_files(c):
 
 
 def test_setting_filter_fragments(c):
-    setup_module()
-
     sp, bp = get_file_paths('fragment.html')
     create_file(sp, u"lalala")
 
@@ -253,8 +226,6 @@ def test_setting_filter_fragments(c):
 
 
 def test_setting_force_fragment_inclusion(c):
-    setup_module()
-
     name = 'fragment.html'
     sp, bp = get_file_paths(name)
     create_file(sp, u"lalala")
@@ -266,8 +237,6 @@ def test_setting_force_fragment_inclusion(c):
 
 
 def test_setting_force_ignore(c):
-    setup_module()
-
     name = 'fullpage.html'
     sp, bp = get_file_paths(name)
     content = HTML
@@ -279,7 +248,6 @@ def test_setting_force_ignore(c):
 
 
 def test_build__index(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
 
     sp1, bp1 = get_file_paths('aaa.html')
@@ -290,7 +258,7 @@ def test_build__index(c):
     create_file(sp3, HTML)
 
     c.build()
-    
+
     bpindex = get_build_path('_index.html')
     page = read_content(bpindex)
     assert 'href="aaa.html"' in page
@@ -299,7 +267,6 @@ def test_build__index(c):
 
 
 def test_build__index(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
 
     sp1, bp1 = get_file_paths('aaa.html')
@@ -317,7 +284,7 @@ def test_build__index(c):
     create_file(sp6, HTML)
     create_file(sp7, HTML)
     c.build()
-    
+
     bpindex = get_build_path('_index.html')
     page = read_content(bpindex)
     assert page.find('href="aaa.html"') < page.find('href="ddd.html"')
@@ -329,7 +296,6 @@ def test_build__index(c):
 
 
 def test_build__index_txt(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
 
     sp1, bp1 = get_file_paths('aaa.html')
@@ -347,7 +313,7 @@ def test_build__index_txt(c):
     create_file(sp6, HTML)
     create_file(sp7, HTML)
     c.build()
-    
+
     bpindex = get_build_path('_index.txt')
     page = read_content(bpindex)
     assert page.find('http://0.0.0.0:8080/aaa.html') \
@@ -365,7 +331,6 @@ def test_build__index_txt(c):
 
 
 def test_do_not_include_non_template_files_in__index(c):
-    setup_module()
     bpindex = get_build_path('_index.html')
 
     sp = get_source_path('main.js')
@@ -376,7 +341,6 @@ def test_do_not_include_non_template_files_in__index(c):
 
 
 def test_setting_filter_fragments_in__index(c):
-    setup_module()
     bpindex = get_build_path('_index.html')
 
     create_file(get_source_path('bbb.html'), u'lalala')
@@ -393,7 +357,6 @@ def test_setting_filter_fragments_in__index(c):
 
 
 def test_setting_force_fragment_inclusion_in__index(c):
-    setup_module()
     bpindex = get_build_path('_index.html')
 
     name = 'fragment.html'
@@ -407,7 +370,6 @@ def test_setting_force_fragment_inclusion_in__index(c):
 
 
 def test_setting_force_ignore_in__index(c):
-    setup_module()
     bpindex = get_build_path('_index.html')
 
     name = 'fullpage.html'
@@ -421,7 +383,6 @@ def test_setting_force_ignore_in__index(c):
 
 
 def test_setting_force_ignore_in__index_with_patterns(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'b')
 
     sp1, bp1 = get_file_paths('a.html')
@@ -443,9 +404,7 @@ def test_setting_force_ignore_in__index_with_patterns(c):
     assert page.find('href="b/ab.html"') == -1
 
 
-@pytest.mark.fail
 def test_setting_force_inclusion_in__index_with_patterns(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'b')
 
     sp1, bp1 = get_file_paths('aaa.html')
@@ -482,8 +441,6 @@ def test_setting_force_inclusion_in__index_with_patterns(c):
 
 
 def test_feedback_message(c):
-    setup_module()
-
     n1 = 'aa.html'
     n2 = 'bb.html'
     n3 = 'cc.txt'

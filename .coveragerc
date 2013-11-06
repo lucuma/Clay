@@ -9,4 +9,4 @@ exclude_lines =
     if __name__ == .__main__.:
 
 [html]
-directory = coverage_html_report
+directory = htmlcov

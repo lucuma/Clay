@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import print_function
+
+from clay import Clay
 
 from .helpers import *
 
@@ -9,18 +11,7 @@ Et mon sein, où chacun s'est meurtri tour à tour,
 Est fait pour inspirer au poète un amour'''
 
 
-def setup_module():
-    remove_test_dirs()
-    make_dirs(SOURCE_DIR)
-
-
-def teardown_module():
-    remove_test_dirs()
-    remove_file(join(TESTS, 'settings.yml'))
-
-
 def assert_page(t, name, content=HTML, url=None, encoding='utf8'):
-    remove_dir(SOURCE_DIR)
     create_page(name, content, encoding)
     url = url or '/' + name
     resp = t.get(url)
@@ -52,7 +43,7 @@ def test_guess_mimetype(c):
 def test_load_settings_from_file():
     c = Clay(TESTS)
     assert 'foo' not in c.settings
-    
+
     stpath = join(TESTS, 'settings.yml')
     create_file(stpath, '\nfoo: bar\n')
     c = Clay(TESTS)
@@ -93,8 +84,6 @@ def test_static_filename(t):
 
 
 def test_process_template_files(t):
-    setup_module()
-
     content = """
     {% for i in range(1,5) -%}
     .icon{{ i }} { background-image: url('img/icon{{ i }}.png'); }
@@ -115,8 +104,6 @@ def test_process_template_files(t):
 
 
 def test_page_with_includes(t):
-    setup_module()
-
     create_file(get_source_path('foo.html'), u'foo{% include "bar.html" %}')
     create_file(get_source_path('bar.html'), u'bar')
     resp = t.get('/foo.html')
@@ -126,7 +113,6 @@ def test_page_with_includes(t):
 
 
 def test_settings_as_template_context():
-    setup_module()
 
     c = Clay(TESTS, {'who': u'world'})
     t = c.get_test_client()
@@ -138,8 +124,6 @@ def test_settings_as_template_context():
 
 
 def test_values_as_template_context():
-    setup_module()
-
     c = Clay(TESTS)
     t = c.get_test_client()
     create_file(get_source_path('hello.html'), u'Hello {{ who }}!')
@@ -150,7 +134,6 @@ def test_values_as_template_context():
 
 
 def test_get_pages_list(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
 
     create_file(get_source_path('aaa.html'), HTML)
@@ -161,11 +144,11 @@ def test_get_pages_list(c):
     expected.sort()
     result = c.get_pages_list()
     result.sort()
+    print(result)
     assert expected == result
 
 
 def test_show__index_txt(t):
-    setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
 
     create_file(get_source_path('aaa.html'), HTML)
@@ -184,7 +167,6 @@ def test_show__index_txt(t):
 
 
 def test_show__index(t):
-    setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
 
     create_file(get_source_path('aaa.html'), HTML)
@@ -202,7 +184,6 @@ def test_show__index(t):
 
 
 def test__index_is_sorted(t):
-    setup_module()
     make_dirs(SOURCE_DIR, 'bbb')
 
     create_file(get_source_path('bbb.html'), HTML)
@@ -223,14 +204,12 @@ def test__index_is_sorted(t):
 
 
 def test_do_not_include_non_template_files_in__index(t):
-    setup_module()
     create_file(get_source_path('main.js'), "/* {% foobar %} */")
     resp = t.get('/_index.html')
     assert 'href="main.js"' not in resp.data
 
 
 def test_setting_filter_fragments_in__index(c):
-    setup_module()
     t = c.get_test_client()
 
     create_file(get_source_path('aaa.html'), HTML)
@@ -250,7 +229,6 @@ def test_setting_filter_fragments_in__index(c):
 
 
 def test_setting_filter_fragments_in__indexs_after_rendering(c):
-    setup_module()
     t = c.get_test_client()
 
     create_file(get_source_path('base.html'),
@@ -266,7 +244,6 @@ def test_setting_filter_fragments_in__indexs_after_rendering(c):
 
 
 def test_setting_force_fragment_inclusion_in__index(c):
-    setup_module()
     t = c.get_test_client()
 
     name = 'fragment.html'
@@ -279,7 +256,6 @@ def test_setting_force_fragment_inclusion_in__index(c):
 
 
 def test_setting_force_ignore_in__index(c):
-    setup_module()
     t = c.get_test_client()
 
     name = 'fullpage.html'
@@ -292,7 +268,6 @@ def test_setting_force_ignore_in__index(c):
 
 
 def test_setting_force_ignore_in__index_with_patterns(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'b')
 
     create_file(get_source_path('a.html'), HTML)
@@ -322,7 +297,6 @@ def test_setting_force_ignore_in__index_with_patterns(c):
 
 
 def test_setting_force_inclusion_in__index_with_patterns(c):
-    setup_module()
     make_dirs(SOURCE_DIR, 'b')
 
     create_file(get_source_path('aaa.html'), HTML)

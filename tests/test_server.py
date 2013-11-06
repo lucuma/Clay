@@ -1,19 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from datetime import datetime
 
-from werkzeug.exceptions import HTTPException
+from clay.server import RequestLogger
 import pytest
 import socket
 
-from clay.server import RequestLogger
 from .helpers import *
-
-
-def setup_module():
-    remove_test_dirs()
-    make_dirs(SOURCE_DIR)
 
 
 def test_run_with_custom_host_and_port(c):
@@ -30,7 +22,6 @@ def test_run_with_custom_host_and_port(c):
     def get_fake_server(host, port):
         return FakeServer((host, port))
 
-    setup_module()
     _get_wsgi_server = c.server._get_wsgi_server
     c.server._get_wsgi_server = get_fake_server
     host = 'localhost'
@@ -58,7 +49,6 @@ def test_run_port_is_already_in_use(c):
         ports.append(port)
         return FakeServer()
 
-    setup_module()
     _get_wsgi_server = c.server._get_wsgi_server
     c.server._get_wsgi_server = get_fake_server
     host = 'localhost'
@@ -87,14 +77,13 @@ def test_server_stop(c):
     def get_fake_server(host, port):
         return FakeServer()
 
-    setup_module()
     _get_wsgi_server = c.server._get_wsgi_server
     c.server._get_wsgi_server = get_fake_server
     c.run()
     c.server._get_wsgi_server = _get_wsgi_server
 
     assert log == ['start', 'stop']
-    
+
 
 def test_run_with_invalid_port(c):
     with pytest.raises(Exception):

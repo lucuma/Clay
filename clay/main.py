@@ -7,19 +7,21 @@ from os.path import (
     isfile, isdir, dirname, join, splitext, basename, exists, relpath, sep)
 import re
 
+from jinja2.exceptions import TemplateNotFound
 import yaml
 
 from .helpers import (
     to_unicode, unormalize, fullmatch, read_content, make_dirs, create_file,
     copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
-from .wsgiapp import WSGIApplication, TemplateNotFound
+from .wsgiapp import WSGIApplication
 from functools import reduce
 
 
 SOURCE_DIRNAME = 'source'
 BUILD_DIRNAME = 'build'
-TMPL_EXTS = ('.html', '.tmpl')
+TMPL_EXTS = ('.html', '.tmpl', '.md')
+RX_MD = re.compile(r'\.md$')
 RX_TMPL = re.compile(r'\.tmpl$')
 
 DEFAULT_INCLUDE = []
@@ -80,6 +82,8 @@ class Clay(object):
         return join(self.build_dir, path)
 
     def get_real_fn(self, path):
+        if path.endswith('.md'):
+            return RX_MD.sub('.html', path)
         filename = basename(path)
         fn, ext = splitext(filename)
         fn2, ext2 = splitext(fn)
@@ -101,6 +105,7 @@ class Clay(object):
         return rel.lstrip('.').lstrip(sep)
 
     def remove_template_ext(self, path):
+        path = RX_MD.sub('.html', path)
         return RX_TMPL.sub('', path)
 
     def get_relative_url(self, relpath, currurl):

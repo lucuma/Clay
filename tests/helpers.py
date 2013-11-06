@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 import io
 import os
 from os.path import dirname, join, isdir, exists
@@ -9,33 +7,15 @@ from StringIO import StringIO
 import sys
 from tempfile import mkdtemp
 
-from clay import Clay
 from clay.helpers import make_dirs, create_file
-import pytest
 
 
 HTML = u'<!DOCTYPE html><html><head><title></title></head><body></body></html>'
-
 HTTP_OK = 200
 HTTP_NOT_FOUND = 404
 TESTS = mkdtemp()
 SOURCE_DIR = join(TESTS, 'source')
 BUILD_DIR = join(TESTS, 'build')
-
-
-@pytest.fixture()
-def c():
-    return Clay(TESTS)
-
-
-@pytest.fixture()
-def t(c):
-    return c.get_test_client()
-
-
-def remove_test_dirs():
-    remove_dir(SOURCE_DIR)
-    remove_dir(BUILD_DIR)
 
 
 def get_source_path(path):
@@ -76,3 +56,13 @@ def execute_and_read_stdout(f):
     mystdout.seek(0)
     return mystdout.read()
 
+
+def setup_function(f=None):
+    make_dirs(SOURCE_DIR)
+    make_dirs(BUILD_DIR)
+
+
+def teardown_function(f=None):
+    remove_dir(SOURCE_DIR)
+    remove_dir(BUILD_DIR)
+    remove_file(join(TESTS, 'settings.yml'))

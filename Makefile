@@ -1,27 +1,44 @@
-.PHONY: clean clean-pyc test publish
+.PHONY: clean-pyc clean-build
 
-all: clean clean-pyc test
+help:
+	@echo "clean-build - remove build artifacts"
+	@echo "clean-pyc - remove Python file artifacts"
+	@echo "lint - check style with flake8"
+	@echo "test - run tests quickly with the default Python"
+	@echo "testall - run tests on every Python version with tox"
+	@echo "coverage - check code coverage with the default Python"
+	@echo "publish - package and upload a release"
+	@echo "sdist - package"
 
-clean: clean-pyc
-	rm -rf build
-	rm -rf dist
-	rm -rf *.egg
+clean: clean-build clean-pyc
+
+clean-build:
+	rm -rf build/
+	rm -rf dist/
 	rm -rf *.egg-info
-	find . -name '.DS_Store' -delete
-	rm -rf tests/__pycache__
 
 clean-pyc:
-	find . -name '*.pyc' -delete
-	find . -name '*.pyo' -delete
-	find . -name '*~' -delete
-	find . -name '*,cover' -delete
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -rf {} +
+
+lint:
+	flake8 clay tests
 
 test:
-	py.test --cov-config .coveragerc --cov clay tests/ 
+	py.test tests/
 
-test-report:
+test-all:
+	tox
+
+coverage:
 	py.test --cov-config .coveragerc --cov-report html --cov clay tests/ 
+	open htmlcov/index.html
 
 publish: clean
 	python setup.py sdist upload
 
+sdist: clean
+	python setup.py sdist
+	ls -l dist

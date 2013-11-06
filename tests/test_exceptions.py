@@ -1,27 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
+from clay import Clay
 from clay.main import SOURCE_NOT_FOUND
-from jinja2 import TemplateNotFound
-from werkzeug.exceptions import HTTPException
 import pytest
-import socket
 
 from .helpers import *
 
 
-def setup_module():
-    remove_test_dirs()
-    make_dirs(SOURCE_DIR)
-
- 
-def teardown_module():
-    remove_test_dirs()
-
-
 def test_friendly_notfound_of_templates(t):
-    setup_module()
-
     create_file(get_source_path('foo.html'), u'foo{% include "bar.html" %}')
 
     resp = t.get('/hello.html')
@@ -32,13 +17,10 @@ def test_friendly_notfound_of_templates(t):
     resp = t.get('/foo.html')
     assert resp.status_code == HTTP_NOT_FOUND
     assert 'bar.html' in resp.data
-    print resp.data
     assert 'jinja2.exceptions' not in resp.data
 
 
 def test_friendly_notfound_of_files(t):
-    setup_module()
-
     resp = t.get('/foobar')
     assert resp.status_code == HTTP_NOT_FOUND
     assert 'foobar' in resp.data
@@ -46,7 +28,7 @@ def test_friendly_notfound_of_files(t):
 
 
 def test_fail_if_source_dir_dont_exists(c):
-    remove_test_dirs()
+    remove_dir(SOURCE_DIR)
 
     def fake_run(**kwargs):
         return kwargs
@@ -67,7 +49,6 @@ def test_make_dirs_wrong():
 
 
 def test_fix_settings():
-    remove_test_dirs()
     bad_settings = dict(
         FILTER_PARTIALS = None,
         FILTER = None,

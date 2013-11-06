@@ -7,7 +7,7 @@ An amazing prototyping tool
 ------------
 © 2011 by [Lúcuma](http://lucumalabs.com).
 
-See `AUTHORS.md` for more details.  
+See `AUTHORS.md` for more details.
 
 [MIT License](http://www.opensource.org/licenses/mit-license.php)
 
@@ -15,4 +15,4 @@ See `AUTHORS.md` for more details.
 from main import Clay
 
 
-__version__ = '2.5.1'
+__version__ = '2.8'

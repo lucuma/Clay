@@ -4,15 +4,6 @@ from clay.tglobals import active
 from .helpers import *
 
 
-def setup_module():
-    remove_test_dirs()
-    make_dirs(SOURCE_DIR)
-
-
-def teardown_module():
-    remove_test_dirs()
-
-
 ACTIVE_PATH = '/foo/bar.html'
 
 
@@ -63,9 +54,6 @@ def test_active_backward_compatibilty(c):
 
 
 def test_active_in_templates(t):
-    setup_module()
-    make_dirs(SOURCE_DIR)
-
     path = 'bbbb.html'
     content = u'''class="{{ active('%s') }}"''' % path
     create_file(get_source_path(path), content)
@@ -73,4 +61,3 @@ def test_active_in_templates(t):
     expected = u'class="active"'
     resp = t.get('/' + path)
     assert resp.data == expected
-

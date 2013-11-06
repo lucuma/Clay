@@ -6,7 +6,7 @@ from os.path import dirname, join, realpath, sep, abspath
 import baker
 from voodoo import render_skeleton
 
-from clay.main import Clay, DEFAULT_HOST, DEFAULT_PORT
+from .main import Clay, DEFAULT_HOST, DEFAULT_PORT
 
 
 SKELETON = join(dirname(realpath(__file__)), 'skeleton')
@@ -21,11 +21,12 @@ manager = baker.Baker()
 
 
 @manager.command
-def new(path='.'):
+def new(path='.', template=None):
     """Creates a new project
     """
     path = abspath(path.rstrip(sep))
-    render_skeleton(SKELETON, path, include_this=['.gitignore'])
+    template = template or SKELETON
+    render_skeleton(template, path, include_this=['.gitignore'])
     print(SKELETON_HELP % (path,))
 
 

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 import os
 import sys
 from tempfile import mkdtemp
 
 import clay
-from clay.manage import main, manager
+from clay.manage import manager
 from flask import Flask
 
 from .helpers import *

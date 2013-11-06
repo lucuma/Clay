@@ -5,9 +5,10 @@ from os.path import basename
 from flask import (Flask, request, has_request_context, render_template,
                    make_response, send_file)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
-from jinja2.exceptions import TemplateNotFound
 
-from .tglobals import active, IncludeWith
+from .jinja_includewith import IncludeWith
+from .markdown_ext import MarkdownExtension
+from .tglobals import active
 
 
 APP_NAME = 'clay'
@@ -67,5 +68,5 @@ def get_jinja_loader(source_dir):
 def get_jinja_options():
     return {
         'autoescape': True,
-        'extensions': ['jinja2.ext.with_', IncludeWith]
+        'extensions': [MarkdownExtension, 'jinja2.ext.with_', IncludeWith]
     }
