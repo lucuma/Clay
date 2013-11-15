@@ -53,8 +53,8 @@ def test_load_settings_from_file():
     c = Clay(TESTS)
     assert 'foo' not in c.settings
     
-    stpath = join(TESTS, 'settings.yml')
-    create_file(stpath, '\nfoo: bar\n')
+    stpath = join(TESTS, 'settings.py')
+    create_file(stpath, "\nfoo='bar'\n")
     c = Clay(TESTS)
     remove_file(stpath)
     assert 'foo' in c.settings

@@ -65,7 +65,7 @@ class Clay(object):
     def load_settings_from_file(self):
         if isfile(self.settings_path):
             settings = imp.load_source('settings', self.settings_path)
-            self.settings.update(settings)
+            self.settings.update(settings.__dict__)
 
     def render(self, path, context):
         host = self.settings.get('host', DEFAULT_HOST)
