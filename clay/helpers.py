@@ -26,12 +26,6 @@ def fullmatch(path, pattern):
     return fnmatch(name, pattern) or fnmatch(path, pattern)
 
 
-def read_content(path, **kwargs):
-    kwargs.setdefault('mode', 'rt')
-    with io.open(path, **kwargs) as f:
-        return f.read()
-
-
 def make_dirs(*lpath):
     path = os.path.join(*lpath)
     try:

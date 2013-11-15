@@ -7,10 +7,10 @@ from os.path import (
     isfile, isdir, dirname, join, splitext, basename, exists, relpath, sep)
 import re
 
-import yaml
+import imp
 
 from .helpers import (
-    to_unicode, unormalize, fullmatch, read_content, make_dirs, create_file,
+    to_unicode, unormalize, fullmatch, make_dirs, create_file,
     copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
 from .wsgiapp import WSGIApplication, TemplateNotFound
@@ -44,7 +44,7 @@ class Clay(object):
             root = dirname(root)
         settings = settings or {}
         self.settings = settings
-        self.settings_path = join(root, 'settings.yml')
+        self.settings_path = join(root, 'settings.py')
         self.load_settings_from_file()
         self.source_dir = to_unicode(join(root, SOURCE_DIRNAME))
         self.build_dir = to_unicode(join(root, BUILD_DIRNAME))
@@ -64,9 +64,8 @@ class Clay(object):
 
     def load_settings_from_file(self):
         if isfile(self.settings_path):
-            source = read_content(self.settings_path)
-            st = yaml.safe_load(source)
-            self.settings.update(st)
+            settings = imp.load_source('settings', self.settings_path)
+            self.settings.update(settings)
 
     def render(self, path, context):
         host = self.settings.get('host', DEFAULT_HOST)
