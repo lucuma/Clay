@@ -20,6 +20,15 @@ def test_set_context():
     assert result == expected
 
 
+def test_set_context_linebreak():
+    tmpl = env.from_string('''{% include "hello"
+        with
+        what='world' -%}''')
+    expected = '''Hello world!'''
+    result = tmpl.render()
+    assert result == expected
+
+
 def test_overwrite_context():
     tmpl = env.from_string('''
         {% include "hello" with what='world' %}

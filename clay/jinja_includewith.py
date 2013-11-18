@@ -13,8 +13,8 @@ class IncludeWith(Extension):
     You **must** also include 'jinja2.ext.with_' in the extensions list.
     """
 
-    rx = re.compile(r'\{\%\s*include\s+(?P<tmpl>[^\s]+)\s+with\s+'
-                    '(?P<context>.*?)\s*\%\}', re.IGNORECASE)
+    rx = re.compile(r'\{\%-?[\s\n]*include[\s\n]+(?P<tmpl>[^\s\n]+)[\s\n]+with[\s\n]+'
+                    '(?P<context>.*?)[\s\n]*-?\%\}', re.IGNORECASE)
 
     def preprocess(self, source, name, filename=None):
         lastpos = 0

@@ -9,6 +9,8 @@
 
 - Added Markdown support with automatic source code highlighting. 
 
+- Fix bug with the Jinja IncludeWith extension and line breaks
+
 
 ## Version 2.5
 
