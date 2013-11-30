@@ -195,13 +195,18 @@ class Clay(object):
             return self.send_file(path)
 
         try:
-            content = self.render(path, self.settings)
-        except TemplateNotFound:
-            try:
-                fn, ext = splitext(path)
-                content = self.render(fn + '.md', self.settings)
-            except TemplateNotFound as e:
-                return self.show_notfound(e)
+            content = None
+            fn, ext = splitext(path)
+            if ext == '.html':
+                mdpath = join(self.source_dir, fn + '.md')
+                if isfile(mdpath):
+                    content = self.render(mdpath, self.settings)
+
+            if content is None:
+                content = self.render(path, self.settings)
+
+        except TemplateNotFound as e:
+            return self.show_notfound(e)
 
         mimetype = self.guess_mimetype(self.get_real_fn(path))
         return self.app.response(content, mimetype=mimetype)
