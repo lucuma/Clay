@@ -10,7 +10,7 @@ from .helpers import TESTS
 
 @pytest.fixture()
 def c():
-    return Clay(TESTS)
+    return Clay(TESTS, {'foo': 'bar'})
 
 
 @pytest.fixture()

@@ -25,6 +25,18 @@ Violets are blue.</p>
     assert resp.data.strip() == expected.strip()
 
 
+def test_jinja_variables(t):
+    content = 'Hello {{ foo }}!'
+    expected = '<p>Hello bar!</p>'
+    path = get_source_path('test.md')
+    create_file(path, content)
+    resp = t.get('/test.md')
+    assert resp.status_code == HTTP_OK
+    assert resp.mimetype == 'text/html'
+    print(resp.data)
+    assert resp.data.strip() == expected.strip()
+
+
 def test_layout(t):
     base = '''<!DOCTYPE html>
 <html><head><meta charset="utf-8">

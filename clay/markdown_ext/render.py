@@ -64,10 +64,16 @@ def autolink(html):
     return html
 
 
+BLOCK_OPEN_RE = re.compile(r'({[{%])(%20)+')
+BLOCK_CLOSE_RE = re.compile(r'(%20)+([%}]})')
+
+
 def md_to_jinja(source):
     md.reset()
     tmpl = []
     html = md.convert(source)
+    html = re.sub(BLOCK_OPEN_RE, '\g<1> ', html)
+    html = re.sub(BLOCK_CLOSE_RE, ' \g<2>', html)
     html = autolink(html)
     layout = md.Meta.pop('layout', None)
     if layout:

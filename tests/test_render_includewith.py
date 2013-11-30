@@ -8,6 +8,7 @@ env = Environment(
     loader=DictLoader({
         'hello': 'Hello {{ what }}!',
         'sum': '{{ a }} + {{ b }} makes {{ c }}',
+        'foo/bar.html': '{{ num }}. Hello {{ what }}!',
     }),
     extensions=['jinja2.ext.with_', IncludeWith]
 )
@@ -31,12 +32,16 @@ def test_set_context_linebreak():
 
 def test_overwrite_context():
     tmpl = env.from_string('''
-        {% include "hello" with what='world' %}
-        {% include "hello" with what='world' %}
+        {% include "foo/bar.html" with what="world", num="1" %}
+        {% include "foo/bar.html" with what="world", num="2" %}
+        {% include "foo/bar.html" with what="world", num="3" %}
+        {% include "foo/bar.html" with what="world", num="4" %}
     ''')
     expected = '''
-        Hello world!
-        Hello world!
+        1. Hello world!
+        2. Hello world!
+        3. Hello world!
+        4. Hello world!
     '''
     result = tmpl.render(what='you')
     assert result == expected
