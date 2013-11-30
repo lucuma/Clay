@@ -43,7 +43,6 @@ def test_build_page(c):
 
 
 def test_build_file_without_process(c):
-
     name = 'main.css'
     sp, bp = get_file_paths(name)
     content = "/* {% foobar %} */"
@@ -54,7 +53,6 @@ def test_build_file_without_process(c):
 
 
 def test_do_not_copy_if_build_is_newer(c):
-
     name = 'test.txt'
     sp, bp = create_test_file(name)
     t = os.path.getmtime(sp)
@@ -64,7 +62,6 @@ def test_do_not_copy_if_build_is_newer(c):
 
 
 def test_copy_if_source_is_newer(c):
-
     name = 'test.txt'
     sp, bp = create_test_file(name)
     t = os.path.getmtime(bp)
@@ -87,10 +84,7 @@ def test_rename_tmpl_file(c):
 
 
 def test_settings_as_template_build_context():
-
     c = Clay(TESTS, {'who': u'world', 'FILTER_PARTIALS': False})
-    t = c.get_test_client()
-
     name = 'test.txt.tmpl'
     sp = get_source_path(name)
     bp = get_build_path('test.txt')
@@ -192,9 +186,12 @@ def test_translate_ignore_external_urls(c):
     sp1, bp1 = get_file_paths('t1.html')
     sp2, bp2 = get_file_paths('t2.html')
     sp3, bp3 = get_file_paths('t3.html')
-    c1 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="//google.com"></a></body></html>"""
-    c2 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="http://example.net/foo/bar"></a></body></html>"""
-    c3 = u"""<!DOCTYPE html><html><head><title></title></head><body><a href="mailto:bob@example.com"></a></body></html>"""
+    c1 = (u'<!DOCTYPE html><html><head><title></title></head><body>'
+        '<a href="//google.com"></a></body></html>')
+    c2 = (u'<!DOCTYPE html><html><head><title></title></head><body>'
+        '<a href="http://example.net/foo/bar"></a></body></html>')
+    c3 = (u'<!DOCTYPE html><html><head><title></title></head><body>'
+        '<a href="mailto:bob@example.com"></a></body></html>')
     create_file(sp1, c1)
     create_file(sp2, c2)
     create_file(sp3, c3)
@@ -264,35 +261,6 @@ def test_build__index(c):
     assert 'href="aaa.html"' in page
     assert 'href="bbb/ccc.html"' in page
     assert 'href="ddd.html"' in page
-
-
-def test_build__index(c):
-    make_dirs(SOURCE_DIR, 'bbb')
-
-    sp1, bp1 = get_file_paths('aaa.html')
-    sp2, bp2 = get_file_paths('eee.html')
-    sp3, bp3 = get_file_paths('bbb/aa.html')
-    sp4, bp4 = get_file_paths('bbb/zz.html')
-    sp5, bp5 = get_file_paths('bbb/ccc.html')
-    sp6, bp6 = get_file_paths('ddd.html')
-    sp7, bp7 = get_file_paths('bbb/bb.html')
-    create_file(sp1, HTML)
-    create_file(sp2, HTML)
-    create_file(sp3, HTML)
-    create_file(sp4, HTML)
-    create_file(sp5, HTML)
-    create_file(sp6, HTML)
-    create_file(sp7, HTML)
-    c.build()
-
-    bpindex = get_build_path('_index.html')
-    page = read_content(bpindex)
-    assert page.find('href="aaa.html"') < page.find('href="ddd.html"')
-    assert page.find('href="ddd.html"') < page.find('href="eee.html"')
-    assert page.find('href="eee.html"') < page.find('href="bbb/aa.html"')
-    assert page.find('href="bbb/aa.html"') < page.find('href="bbb/bb.html"')
-    assert page.find('href="bbb/bb.html"') < page.find('href="bbb/ccc.html"')
-    assert page.find('href="bbb/ccc.html"') < page.find('href="bbb/zz.html"')
 
 
 def test_build__index_txt(c):
