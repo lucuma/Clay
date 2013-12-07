@@ -1,6 +1,11 @@
 # Clay Changelog
 
 
+## Version 2.7
+
+- The settings is now a python file for extra flexibility (thanks to @przerull)
+
+
 ## Version 2.6
 
 - You can now create new projects from Git/Hg URLs or local folders.
