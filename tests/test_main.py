@@ -321,3 +321,12 @@ def test_setting_force_inclusion_in__index_with_patterns(c):
     assert 'href="zoo.html"' not in resp.data
     assert 'href="foo.html"' not in resp.data
     assert 'href="b/loremipsum-oo.html"' in resp.data
+
+
+def test_no_build_variable(t):
+    name = u'build-test.html'
+    content = u'foo{% if BUILD %}bar{% endif %}'
+    create_page(name, content, 'utf8')
+    url = '/' + name
+    resp = t.get(url)
+    assert resp.data == u'foo'

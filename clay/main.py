@@ -70,8 +70,8 @@ class Clay(object):
             self.settings.update(settings.__dict__)
 
     def render(self, path, context):
-        host = self.settings.get('host', DEFAULT_HOST)
-        port = self.settings.get('port', DEFAULT_PORT)
+        host = self.settings.get('HOST', DEFAULT_HOST)
+        port = self.settings.get('PORT', DEFAULT_PORT)
         return self.app.render_template(path, context, host, port)
 
     def get_full_source_path(self, path):
@@ -248,7 +248,6 @@ class Clay(object):
         sp = self.get_full_source_path(path)
         bp = self.get_full_build_path(path)
         make_dirs(dirname(bp))
-
         if not path.endswith(TMPL_EXTS):
             if self.must_be_filtered(path):
                 return
@@ -256,10 +255,10 @@ class Clay(object):
             return copy_if_updated(sp, bp)
 
         must_be_included = self.must_be_included(path)
-
         if self.must_be_filtered(path) and not must_be_included:
             return
 
+        self.settings['BUILD'] = True
         content = self.render(path, self.settings)
         if self.must_filter_fragment(content) and not must_be_included:
             return
@@ -268,7 +267,6 @@ class Clay(object):
         bp = self.remove_template_ext(bp)
         if bp.endswith('.html'):
             content = self.make_absolute_urls_relative(content, path)
-
         create_file(bp, content)
 
     def run(self, host=None, port=None):
@@ -294,6 +292,6 @@ class Clay(object):
         return self.app.response(res, status=HTTP_NOT_FOUND, mimetype='text/html')
 
     def get_test_client(self):
-        host = self.settings.get('host', DEFAULT_HOST)
-        port = self.settings.get('port', DEFAULT_PORT)
+        host = self.settings.get('HOST', DEFAULT_HOST)
+        port = self.settings.get('PORT', DEFAULT_PORT)
         return self.app.get_test_client(host, port)

@@ -38,7 +38,7 @@ def test_build_page(c):
     create_file(sp1, u'foo{% include "bar.html" %}')
     create_file(sp2, u'bar')
     c.build_page(name)
-    result = read_content(get_build_path(name))
+    result = read_content(bp1)
     assert result.strip() == 'foobar'
 
 
@@ -48,7 +48,7 @@ def test_build_file_without_process(c):
     content = "/* {% foobar %} */"
     create_file(sp, content)
     c.build_page(name)
-    result = read_content(get_build_path(name))
+    result = read_content(bp)
     assert result.strip() == content.strip()
 
 
@@ -425,3 +425,13 @@ def test_feedback_message(c):
     assert n2 in msg
     assert n3 in msg
     assert n4 not in msg
+
+
+def test_build_variable(c):
+    name = 'test.html'
+    sp, bp = get_file_paths(name)
+    create_file(sp, u'foo{% if BUILD %}bar{% endif %}')
+    c.settings['FILTER_PARTIALS'] = False
+    c.build_page(name)
+    result = read_content(bp)
+    assert result.strip() == 'foobar'
