@@ -11,7 +11,7 @@ from ..test import webtest
 
 pov = 'pPeErRsSiIsStTeEnNcCeE oOfF vViIsSiIoOnN'
 
-from ..test import helper
+from . import helper
 
 
 class ConnectionCloseTests(helper.CherootWebCase):

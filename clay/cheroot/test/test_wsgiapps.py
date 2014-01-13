@@ -1,6 +1,7 @@
+from .. import wsgi
 from .._compat import ntob
-from ..test import helper
-from . import wsgi
+
+from . import helper
 
 
 class WSGIGraftTests(helper.CherootWebCase):

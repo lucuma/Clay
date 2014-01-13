@@ -1,8 +1,9 @@
 import sys
 
 from .._compat import ntob
-from ..test import helper
-from . import wsgi
+from .. import wsgi
+
+from . import helper
 
 
 class WSGITests(helper.CherootWebCase):

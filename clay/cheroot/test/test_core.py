@@ -4,7 +4,8 @@ import socket
 import time
 
 from .._compat import HTTPConnection, HTTPSConnection, ntob, tonative
-from ..test import helper, webtest
+
+from . import helper, webtest
 
 
 class CoreRequestHandlingTest(helper.CherootWebCase):

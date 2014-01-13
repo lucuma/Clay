@@ -10,9 +10,10 @@ import sys
 import time
 import threading
 
+from .. import server, ssllib, wsgi
 from .._compat import basestring, format_exc, HTTPConnection, HTTPSConnection, ntob
-from . import server, ssllib, wsgi
-from ..test import webtest
+
+from . import webtest
 
 import nose
 

@@ -6,9 +6,9 @@ import socket
 import sys
 
 from .._compat import HTTPConnection, HTTPSConnection, ntob, py3k
-from . import wsgi
+from .. import wsgi
 
-from ..test import helper
+from . import helper
 
 
 class HTTPTests(helper.CherootWebCase):
