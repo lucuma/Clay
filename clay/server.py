@@ -5,7 +5,7 @@ from datetime import datetime
 import socket
 import sys
 
-from cheroot import wsgi
+from .cheroot import wsgi
 
 
 ALL_HOSTS = '0.0.0.0'
