@@ -27,7 +27,8 @@ def get_description():
 def get_requirements(filename='requirements.txt'):
     data = read_from(get_path(filename))
     lines = map(lambda s: s.strip(), data.splitlines())
-    return [l for l in lines if l and not l.startswith('#')]
+    requirements = [l for l in lines if l and not l.startswith('#')]
+    return requirements
 
 
 setup(
