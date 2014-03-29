@@ -5,9 +5,11 @@
 #     pip install -r requirements.txt
 
 Baker>=1.3
+CherryPy>=3.2.4
 Flask>=0.10.1
 Jinja2>=2.7.1
 Pygments>=1.6
 Voodoo>=1.3.1
 Werkzeug>=0.9.3
 Markdown>=2.3.1
+DynPool>=1.0.2.

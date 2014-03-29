@@ -13,7 +13,7 @@ def test_run_with_custom_host_and_port(c):
         def __init__(self, hp, **kwargs):
             self.hp = hp
 
-        def safe_start(self):
+        def start(self):
             return self.hp
 
         def stop(self):
@@ -39,7 +39,7 @@ def test_run_port_is_already_in_use(c):
         def __init__(self, *args, **kwargs):
             pass
 
-        def safe_start(self):
+        def start(self):
             raise socket.error()
 
         def stop(self):
@@ -67,7 +67,7 @@ def test_server_stop(c):
         def __init__(self, *args, **kwargs):
             pass
 
-        def safe_start(self):
+        def start(self):
             log.append('start')
             raise KeyboardInterrupt
 

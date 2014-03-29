@@ -3,7 +3,7 @@ from datetime import datetime
 from os.path import basename
 
 from flask import (Flask, request, has_request_context, render_template,
-                   make_response, send_file)
+                   make_response)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
 
 from .jinja_includewith import IncludeWith
@@ -53,9 +53,6 @@ class WSGIApplication(Flask):
         resp = make_response(content, status)
         resp.mimetype = mimetype
         return resp
-
-    def send_file(self, *args, **kwargs):
-        return send_file(*args, **kwargs)
 
 
 def get_jinja_loader(source_dir):

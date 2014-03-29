@@ -5,8 +5,9 @@ from datetime import datetime
 import socket
 import sys
 
-from .cheroot import wsgi
-
+import cherrypy
+from cherrypy import wsgiserver
+from cherrypy.lib import static
 
 ALL_HOSTS = '0.0.0.0'
 DEFAULT_HOST = ALL_HOSTS
@@ -26,7 +27,7 @@ class Server(object):
     def __init__(self, clay):
         self.clay = clay
         app = RequestLogger(clay.app)
-        self.dispatcher = wsgi.WSGIPathInfoDispatcher({'/': app})
+        self.dispatcher = wsgiserver.WSGIPathInfoDispatcher({'/': app})
 
     def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
         port = port or self.clay.settings.get('port', DEFAULT_PORT)
@@ -54,10 +55,13 @@ class Server(object):
         self.start()
 
     def _get_wsgi_server(self, host, port):
-        return wsgi.WSGIServer((host, port), wsgi_app=self.dispatcher)
+        return wsgiserver.CherryPyWSGIServer(
+            (host, port),
+            wsgi_app=self.dispatcher
+        )
 
     def start(self):
-        self.server.safe_start()
+        self.server.start()
 
     def stop(self):
         self.server.stop()
@@ -69,6 +73,14 @@ class Server(object):
             if local_ip:
                 print(RUNNING_ON % (local_ip, port))
         print(HOW_TO_QUIT)
+
+    def serve_file(self, path, **kwargs):
+        try:
+            body = static.serve_file(path, **kwargs)
+            headers = cherrypy.serving.response.headers
+            return body, headers
+        except cherrypy.NotFound:
+            raise IOError
 
 
 class RequestLogger(object):

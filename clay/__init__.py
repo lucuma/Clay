@@ -12,7 +12,7 @@ See `AUTHORS.md` for more details.
 [MIT License](http://www.opensource.org/licenses/mit-license.php)
 
 """
-from main import Clay
+from .main import Clay
 
 
-__version__ = '2.7.2'
+__version__ = '2.8'

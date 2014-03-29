@@ -180,10 +180,12 @@ class Clay(object):
             index.append((path, updated_at))
         return sort_paths_dirs_last(index)
 
-    def send_file(self, path):
+    def serve_file(self, path):
         fp = self.get_full_source_path(path)
         try:
-            return self.app.send_file(fp)
+            body, headers = self.server.serve_file(fp)
+            return self.app.response_class(body, headers=headers,
+                direct_passthrough=True)
         except IOError:
             return self.show_notfound(path)
 
@@ -191,7 +193,7 @@ class Clay(object):
         path = self.normalize_path(path)
 
         if not path.endswith(TMPL_EXTS):
-            return self.send_file(path)
+            return self.serve_file(path)
 
         try:
             content = None
