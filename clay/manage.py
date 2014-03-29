@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-from os.path import dirname, join, realpath, sep, abspath
+from os.path import sep, abspath
 
 import baker
 from voodoo import render_skeleton
@@ -9,9 +9,9 @@ from voodoo import render_skeleton
 from .main import Clay, DEFAULT_HOST, DEFAULT_PORT
 
 
-SKELETON = join(dirname(realpath(__file__)), 'skeleton')
+DEFAULT_TEMPLATE_URL = 'git@github.com:lucuma/clay-template.git'
 
-SKELETON_HELP = """
+HELP_MSG = """
     Done!
     Now go to %s, and do `clay run` to start the server.
 """
@@ -25,9 +25,9 @@ def new(path='.', template=None):
     """Creates a new project
     """
     path = abspath(path.rstrip(sep))
-    template = template or SKELETON
+    template = template or DEFAULT_TEMPLATE_URL
     render_skeleton(template, path, include_this=['.gitignore'])
-    print(SKELETON_HELP % (path,))
+    print(HELP_MSG % (path,))
 
 
 @manager.command
