@@ -7,7 +7,7 @@ import sys
 
 import cherrypy
 from cherrypy import wsgiserver
-from cherrypy.lib import static
+
 
 ALL_HOSTS = '0.0.0.0'
 DEFAULT_HOST = ALL_HOSTS
@@ -74,15 +74,6 @@ class Server(object):
                 print(RUNNING_ON % (local_ip, port))
         print(HOW_TO_QUIT)
 
-    def serve_file(self, path, **kwargs):
-        try:
-            body = static.serve_file(path, **kwargs)
-            headers = cherrypy.serving.response.headers.copy()
-            cherrypy.serving.response.headers = {}
-            cherrypy.serving.response.boyd = ''
-            return body, headers
-        except cherrypy.NotFound:
-            raise IOError
 
 
 class RequestLogger(object):

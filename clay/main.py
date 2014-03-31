@@ -14,6 +14,7 @@ from .helpers import (
     to_unicode, unormalize, fullmatch, make_dirs, create_file,
     copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
+from .static import serve_file
 from .wsgiapp import WSGIApplication
 from functools import reduce
 
@@ -183,10 +184,16 @@ class Clay(object):
     def serve_file(self, path):
         fp = self.get_full_source_path(path)
         try:
-            body, headers = self.server.serve_file(fp)
-            return self.app.response_class(body, headers=headers,
-                direct_passthrough=True)
-        except IOError:
+            body, headers, status_code = serve_file(fp)
+            rsp = self.app.response_class(
+                body,
+                headers=headers,
+                mimetype=headers.get('Content-Type', 'text/plain'),
+                direct_passthrough=True
+            )
+            rsp.status_code = status_code
+            return rsp
+        except (IOError, OSError):
             return self.show_notfound(path)
 
     def render_page(self, path=None):
