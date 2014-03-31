@@ -77,7 +77,9 @@ class Server(object):
     def serve_file(self, path, **kwargs):
         try:
             body = static.serve_file(path, **kwargs)
-            headers = cherrypy.serving.response.headers
+            headers = cherrypy.serving.response.headers.copy()
+            cherrypy.serving.response.headers = {}
+            cherrypy.serving.response.boyd = ''
             return body, headers
         except cherrypy.NotFound:
             raise IOError
