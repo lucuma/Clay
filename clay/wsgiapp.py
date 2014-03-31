@@ -5,6 +5,7 @@ from os.path import basename
 from flask import (Flask, request, has_request_context, render_template,
                    make_response)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
+from moar import Thumbnailer
 
 from .jinja_includewith import IncludeWith
 from .markdown_ext import MarkdownExtension
@@ -31,6 +32,8 @@ class WSGIApplication(Flask):
             APP_NAME, template_folder=source_dir, static_folder=None)
         self.jinja_loader = get_jinja_loader(source_dir)
         self.jinja_options = get_jinja_options()
+        self.thumbnailer = Thumbnailer(source_dir, '/')
+        TEMPLATE_GLOBALS['thumbnail'] = self.thumbnailer
         self.context_processor(lambda: TEMPLATE_GLOBALS)
         self.debug = True
 
@@ -65,5 +68,5 @@ def get_jinja_loader(source_dir):
 def get_jinja_options():
     return {
         'autoescape': True,
-        'extensions': [MarkdownExtension, 'jinja2.ext.with_', IncludeWith]
+        'extensions': [MarkdownExtension, 'jinja2.ext.with_', IncludeWith],
     }
