@@ -21,6 +21,7 @@ from functools import reduce
 
 SOURCE_DIRNAME = 'source'
 BUILD_DIRNAME = 'build'
+THUMBS_URL = '/_thumbs:'
 TMPL_EXTS = ('.html', '.tmpl', '.md')
 RX_MD = re.compile(r'\.md$')
 RX_TMPL = re.compile(r'\.tmpl$')
@@ -55,7 +56,7 @@ class Clay(object):
         self.server = Server(self)
 
     def make_app(self):
-        app = WSGIApplication(self.source_dir)
+        app = WSGIApplication(self.source_dir, self.build_dir, THUMBS_URL)
         self.set_urls(app)
         return app
 
@@ -64,6 +65,7 @@ class Clay(object):
         app.add_url_rule('/<path:path>', 'page', self.render_page)
         app.add_url_rule('/_index.html', 'index', self.show__index)
         app.add_url_rule('/_index.txt', 'index_txt', self.show__index_txt)
+        app.add_url_rule(THUMBS_URL + '/<path:path>', 'thumb', self.show_thumb)
 
     def load_settings_from_file(self):
         if isfile(self.settings_path):
@@ -100,8 +102,8 @@ class Clay(object):
             path = '/'.join([path, 'index.html'])
         return path
 
-    def get_relpath(self, folder):
-        rel = relpath(folder, self.source_dir)
+    def get_relpath(self, fullpath):
+        rel = relpath(fullpath, self.source_dir)
         return rel.lstrip('.').lstrip(sep)
 
     def remove_template_ext(self, path):
@@ -181,10 +183,9 @@ class Clay(object):
             index.append((path, updated_at))
         return sort_paths_dirs_last(index)
 
-    def serve_file(self, path):
-        fp = self.get_full_source_path(path)
+    def serve_file(self, fullpath):
         try:
-            body, headers, status_code = serve_file(fp)
+            body, headers, status_code = serve_file(fullpath)
             rsp = self.app.response_class(
                 body,
                 headers=headers,
@@ -194,13 +195,15 @@ class Clay(object):
             rsp.status_code = status_code
             return rsp
         except (IOError, OSError):
+            path = self.get_relpath(fullpath)
             return self.show_notfound(path)
 
     def render_page(self, path=None):
         path = self.normalize_path(path)
 
         if not path.endswith(TMPL_EXTS):
-            return self.serve_file(path)
+            fullpath = self.get_full_source_path(path)
+            return self.serve_file(fullpath)
 
         try:
             content = None
@@ -229,6 +232,10 @@ class Clay(object):
         path = '_index.txt'
         content = self._make__index(path)
         return self.app.response(content, mimetype='text/plain')
+
+    def show_thumb(self, path):
+        fullpath = self.app.get_thumb_fullpath(path)
+        return self.serve_file(fullpath)
 
     def build__index_txt(self):
         path = '_index.txt'

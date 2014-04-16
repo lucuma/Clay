@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from os.path import basename
+from os.path import basename, join
+import tempfile
 
 from flask import (Flask, request, has_request_context, render_template,
                    make_response)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
-from moar import Thumbnailer
+from moar import FileStorage, Thumbnailer
 
 from .jinja_includewith import IncludeWith
 from .markdown_ext import MarkdownExtension
@@ -27,13 +28,19 @@ TEMPLATE_GLOBALS = {
 
 class WSGIApplication(Flask):
 
-    def __init__(self, source_dir):
+    def __init__(self, source_dir, build_dir, thumbs_url):
         super(WSGIApplication, self).__init__(
             APP_NAME, template_folder=source_dir, static_folder=None)
         self.jinja_loader = get_jinja_loader(source_dir)
         self.jinja_options = get_jinja_options()
-        self.thumbnailer = Thumbnailer(source_dir, '/')
+
+        tempdir = tempfile.gettempdir()
+        self.tempdir = tempdir
+        storage = FileStorage(tempdir, base_url=thumbs_url)
+        self.thumbnailer = Thumbnailer(source_dir, storage=storage)
         TEMPLATE_GLOBALS['thumbnail'] = self.thumbnailer
+        self.build_dir = build_dir
+
         self.context_processor(lambda: TEMPLATE_GLOBALS)
         self.debug = True
 
@@ -47,10 +54,16 @@ class WSGIApplication(Flask):
             context.update(request.values.to_dict())
             return render_template(path, **context)
 
+        self.thumbnailer.echo = True
+        self.thumbnailer.storage.base_url = '/'
+        self.thumbnailer.storage.out_path = self.build_dir
         with self.test_request_context(
                 '/' + path, method='GET',
                 base_url='http://%s:%s' % (host, port)):
             return render_template(path, **context)
+
+    def get_thumb_fullpath(self, thumbpath):
+        return join(self.thumbnailer.storage.out_path, thumbpath)
 
     def response(self, content, status=200, mimetype='text/plain'):
         resp = make_response(content, status)
