@@ -38,6 +38,23 @@ def test_active(c):
         _test_active()
 
 
+def test_active_index(c):
+    with c.app.test_request_context('/index.html', method='GET'):
+        assert active('/') == 'active'
+        assert active('/index.html') == 'active'
+        assert active('') == 'active'
+
+    with c.app.test_request_context('/foo/bar/index.html', method='GET'):
+        assert active('/foo/bar') == 'active'
+        assert active('/foo/bar/') == 'active'
+        assert active('/foo/bar/index.html') == 'active'
+
+    with c.app.test_request_context('/', method='GET'):
+        assert active('/') == 'active'
+        assert active('/index.html') == 'active'
+        assert active('') == 'active'
+
+
 def test_active_relative(c):
     with c.app.test_request_context(ACTIVE_PATH, method='GET'):
         _test_active_relative()

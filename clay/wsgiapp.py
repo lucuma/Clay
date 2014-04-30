@@ -54,7 +54,7 @@ class WSGIApplication(Flask):
             context.update(request.values.to_dict())
             return render_template(path, **context)
 
-        self.thumbnailer.echo = True
+        self.thumbnailer.echo = not path.startswith('_index')
         self.thumbnailer.storage.base_url = '/'
         self.thumbnailer.storage.out_path = self.build_dir
         with self.test_request_context(
