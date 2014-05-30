@@ -60,7 +60,7 @@ Example:
     FILTER_PARTIALS=True
     FILTER=['base.html']
     INCLUDE=[]
-
+    
     host='0.0.0.0'
     port=8080
 
