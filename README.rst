@@ -57,23 +57,20 @@ Warning: This file is not created yet by template, so you have to create it your
 
 Example:
 
-```
-FILTER_PARTIALS=True
-FILTER=['base.html']
-INCLUDE=[]
+    FILTER_PARTIALS=True
+    FILTER=['base.html']
+    INCLUDE=[]
 
-host='0.0.0.0'
-port=8080
-```
+    host='0.0.0.0'
+    port=8080
 
 In case you are including a template you don't want to be "browseable", just included you can make this:
 
 
-```
-FILTER=['base.html', 'footer.html']
-```
+    FILTER=['base.html', 'footer.html']
 
-This also solves a *variable not found error* when using variables inside included templates.
+
+This also solves a ``variable not found error`` when using variables inside included templates.
 
 For an advanced settings example see Issue #16
 
