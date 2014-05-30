@@ -51,11 +51,11 @@ and all the templates will be processed and the result stored inside the
 
 Settings
 --------
-Since latest versions Clay uses a settings.py file which is considered as a full python module.
-Warning: This file is not created yet by template, so you have to create it yourself (and ignore or delete settings.yml file)
+Since latest versions Clay uses a ``settings.py`` file which is considered as a full python module.
+Warning: This file is not created yet by template, so you have to create it yourself (and ignore or delete ``settings.yml`` file)
 
 
-Example:
+Example::
 
     FILTER_PARTIALS=True
     FILTER=['base.html']
@@ -64,7 +64,7 @@ Example:
     host='0.0.0.0'
     port=8080
 
-In case you are including a template you don't want to be "browseable", just included you can make this:
+In case you are including a template you don't want to be "browseable", just included you can make this::
 
 
     FILTER=['base.html', 'footer.html']
