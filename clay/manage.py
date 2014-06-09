@@ -9,7 +9,7 @@ from voodoo import render_skeleton
 from .main import Clay, DEFAULT_HOST, DEFAULT_PORT
 
 
-DEFAULT_TEMPLATE_URL = 'git@github.com:lucuma/clay-template.git'
+DEFAULT_TEMPLATE_URL = 'https://github.com/lucuma/clay-template.git'
 
 HELP_MSG = """
     Done!
