@@ -10,7 +10,7 @@
 
 - You can now create new projects from Git/Hg URLs or local folders.
     
-    clay new myproject git@github.com:lucuma/demo.git
+    clay new myproject https://github.com/lucuma/clay-template.git
 
 - Added Markdown support with automatic source code highlighting. 
 
