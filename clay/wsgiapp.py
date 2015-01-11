@@ -3,14 +3,16 @@ from datetime import datetime
 from os.path import basename, join
 import tempfile
 
-from flask import (Flask, request, has_request_context, render_template,
-                   make_response)
+from flask import (
+    Flask, request, has_request_context, render_template, make_response
+)
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
+from markupsafe import Markup
 from moar import FileStorage, Thumbnailer
 
 from .jinja_includewith import IncludeWith
 from .markdown_ext import MarkdownExtension
-from .tglobals import active
+from .tglobals import active, ToC
 
 
 APP_NAME = 'clay'
@@ -39,8 +41,16 @@ class WSGIApplication(Flask):
         storage = FileStorage(tempdir, base_url=thumbs_url)
         self.thumbnailer = Thumbnailer(source_dir, storage=storage)
         TEMPLATE_GLOBALS['thumbnail'] = self.thumbnailer
-        self.build_dir = build_dir
 
+        toc = ToC(source_dir)
+
+        def render_toc(*args, **kwargs):
+            html = toc(*args, **kwargs)
+            return Markup(html)
+
+        TEMPLATE_GLOBALS['toc'] = render_toc
+
+        self.build_dir = build_dir
         self.context_processor(lambda: TEMPLATE_GLOBALS)
         self.debug = True
 

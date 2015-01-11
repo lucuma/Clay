@@ -231,10 +231,14 @@ def test_setting_filter_fragments_in__index(c):
 def test_setting_filter_fragments_in__indexs_after_rendering(c):
     t = c.get_test_client()
 
-    create_file(get_source_path('base.html'),
-        u'<!DOCTYPE html><html><body>{% block content %}{% endblock %}</body></html>')
-    create_file(get_source_path('xxx.html'),
-        u'{% extends "base.html" %}{% block content %}Hi!{% endblock %}')
+    create_file(
+        get_source_path('base.html'),
+        u'<!DOCTYPE html><html><body>{% block content %}{% endblock %}</body></html>'
+    )
+    create_file(
+        get_source_path('xxx.html'),
+        u'{% extends "base.html" %}{% block content %}Hi!{% endblock %}'
+    )
 
     c.settings['FILTER_PARTIALS'] = True
     resp = t.get('/_index.html')

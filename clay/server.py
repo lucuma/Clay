@@ -5,7 +5,6 @@ from datetime import datetime
 import socket
 import sys
 
-import cherrypy
 from cherrypy import wsgiserver
 
 
@@ -73,7 +72,6 @@ class Server(object):
             if local_ip:
                 print(RUNNING_ON % (local_ip, port))
         print(HOW_TO_QUIT)
-
 
 
 class RequestLogger(object):

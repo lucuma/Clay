@@ -10,4 +10,5 @@ dist
 htmlcov
 .tox
 __pycache__
-
+*.sublime-*
+.idea

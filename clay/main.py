@@ -43,15 +43,15 @@ class Clay(object):
 
     _cached_pages_list = None
 
-    def __init__(self, root, settings=None):
+    def __init__(self, root, settings=None, source_dir=None, build_dir=None):
         if isfile(root):
             root = dirname(root)
         settings = settings or {}
         self.settings = settings
         self.settings_path = join(root, 'settings.py')
         self.load_settings_from_file()
-        self.source_dir = to_unicode(join(root, SOURCE_DIRNAME))
-        self.build_dir = to_unicode(join(root, BUILD_DIRNAME))
+        self.source_dir = to_unicode(source_dir or join(root, SOURCE_DIRNAME))
+        self.build_dir = to_unicode(build_dir or join(root, BUILD_DIRNAME))
         self.app = self.make_app()
         self.server = Server(self)
 
