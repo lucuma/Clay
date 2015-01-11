@@ -4,8 +4,8 @@
 #
 #     pip install -r requirements.txt
 
-#pypy: hg+ssh://hg@bitbucket.org/lucuma/cherrypy/#egg=cherrypy
-CherryPy==3.2.5
+hg+ssh://hg@bitbucket.org/lucuma/cherrypy/#egg=cherrypy
+#CherryPy>3.2.5
 Baker>=1.3
 Flask>=0.10.1
 Jinja2>=2.7.1

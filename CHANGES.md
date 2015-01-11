@@ -1,5 +1,7 @@
 # Clay Changelog
 
+## Version 2.10
+{{ toc(maxdepth=1, folders_first=False) }}
 
 ## Version 2.7
 
