@@ -61,10 +61,10 @@ and you're ready to go.
 
 ## Templates
 
-The real power of Clay comes by using the Jinja2 template syntax. 
+The real power of Clay comes by using the Jinja2 template syntax.
 
 You can make a single file, (for instance, your header) and included it many times using:
-    
+
     {% include "header.html "%}
 
 You can also use a powerful feature called _template inheritance_: inside the `source` folder you'll find a file called `base.html`. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!
@@ -89,6 +89,5 @@ Jinja2 templates are much more than just template inheritance. For more advaced 
 
 
 ---------------------------------------
-© [Lúcuma] (http://lucumalabs.com).<br />
-See `AUTHORS.md` for more details.<br />
+© [Juan-Pablo Scaletti] (http://jpscaletti.com).<br />
 License: [MIT License] (http://www.opensource.org/licenses/mit-license.php).

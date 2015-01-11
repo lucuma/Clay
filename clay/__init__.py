@@ -5,15 +5,11 @@
 An amazing prototyping tool
 
 ------------
-© 2011 by [Lúcuma](http://lucumalabs.com).
-
-See `AUTHORS.md` for more details.
-
+© [Juan-Pablo Scaletti](http://jpscaletti.com).
 [MIT License](http://www.opensource.org/licenses/mit-license.php)
 
 """
-from .main import Clay
+from .main import Clay  # noqa
 
 
-__version__ = '2.9.8'
-
+__version__ = '2.10.0'
