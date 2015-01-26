@@ -82,6 +82,7 @@ def test_toc_render_maxdepth1():
             <li><a href="/markdown_ext/__init__.py">__init__.py</a></li>
             <li><a href="/markdown_ext/jinja.py">jinja.py</a></li>
             <li><a href="/markdown_ext/md_admonition.py">md_admonition.py</a></li>
+            <li><a href="/markdown_ext/md_captions.py">md_captions.py</a></li>
             <li><a href="/markdown_ext/md_delinsmark.py">md_delinsmark.py</a></li>
             <li><a href="/markdown_ext/md_fencedcode.py">md_fencedcode.py</a></li>
             <li><a href="/markdown_ext/md_superscript.py">md_superscript.py</a></li>
@@ -115,6 +116,7 @@ def test_toc_render_folders_first():
             <li><a href="/markdown_ext/__init__.py">__init__.py</a></li>
             <li><a href="/markdown_ext/jinja.py">jinja.py</a></li>
             <li><a href="/markdown_ext/md_admonition.py">md_admonition.py</a></li>
+            <li><a href="/markdown_ext/md_captions.py">md_captions.py</a></li>
             <li><a href="/markdown_ext/md_delinsmark.py">md_delinsmark.py</a></li>
             <li><a href="/markdown_ext/md_fencedcode.py">md_fencedcode.py</a></li>
             <li><a href="/markdown_ext/md_superscript.py">md_superscript.py</a></li>

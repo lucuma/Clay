@@ -3,6 +3,7 @@ import markdown as m
 import re
 
 from .md_admonition import AdmonitionExtension
+from .md_captions import FigcaptionExtension
 from .md_delinsmark import DelInsMarkExtension
 from .md_fencedcode import FencedCodeExtension
 from .md_superscript import SuperscriptExtension
@@ -13,11 +14,16 @@ TMPL_BLOCK = u'{%% block %s %%}%s{%% endblock %%}'
 
 
 md = m.Markdown(
-    extensions=['meta',
-        AdmonitionExtension(), FencedCodeExtension(),
-        DelInsMarkExtension(), SuperscriptExtension(),
-        'abbr', 'attr_list', 'def_list', 'footnotes', 'smart_strong',
-        'tables', 'headerid', 'nl2br', 'sane_lists',
+    extensions=[
+        'meta',
+        AdmonitionExtension(),
+        FigcaptionExtension(),
+        FencedCodeExtension(),
+        DelInsMarkExtension(),
+        SuperscriptExtension(),
+        'abbr', 'attr_list', 'def_list',
+        'footnotes', 'smart_strong', 'tables',
+        'headerid', 'nl2br', 'sane_lists',
     ],
     output_format='html5',
     smart_emphasis=True,
@@ -38,6 +44,7 @@ URL_RE = re.compile(
     ])
     + r'(">|</a>)?'
 )
+
 
 def autolink(html):
     urls = URL_RE.findall(html)
