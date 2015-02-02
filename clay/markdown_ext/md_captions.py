@@ -42,7 +42,7 @@ FIGURES = [IMAGE_LINK_RE, IMAGE_REFERENCE_RE]
 class FigcaptionProcessor(BlockProcessor):
     """ Process figure captions."""
 
-    RE = re.compile(r'(^|\n)[ ]{0,3}:[ ]{1,3}(?P<caption>.*?)(\n|$)')
+    RE = re.compile(r'(^|\n)(\{[^\}]*\}\n)?[ ]{0,3}:[ ]{1,3}(?P<caption>.*?)(\n|$)')
     FIGURES_RE = re.compile('|'.join(f for f in FIGURES))
     NO_INDENT_RE = re.compile(r'^[ ]{0,3}[^ :]')
 

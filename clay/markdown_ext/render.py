@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-import markdown as m
 import re
+
+import markdown as m
+from markupsafe import Markup
 
 from .md_admonition import AdmonitionExtension
 from .md_captions import FigcaptionExtension
@@ -9,21 +11,20 @@ from .md_fencedcode import FencedCodeExtension
 from .md_superscript import SuperscriptExtension
 
 
-TMPL_LAYOUT = u'{%% extends "%s" %%}'
-TMPL_BLOCK = u'{%% block %s %%}%s{%% endblock %%}'
+TMPL_LAYOUT = u'{{% extends "{tmpl}" %}}'
 
 
 md = m.Markdown(
     extensions=[
         'meta',
+        'abbr', 'attr_list', 'def_list',
+        'footnotes', 'smart_strong', 'tables',
+        'headerid', 'nl2br', 'sane_lists',
         AdmonitionExtension(),
         FigcaptionExtension(),
         FencedCodeExtension(),
         DelInsMarkExtension(),
         SuperscriptExtension(),
-        'abbr', 'attr_list', 'def_list',
-        'footnotes', 'smart_strong', 'tables',
-        'headerid', 'nl2br', 'sane_lists',
     ],
     output_format='html5',
     smart_emphasis=True,
@@ -84,10 +85,12 @@ def md_to_jinja(source):
     html = autolink(html)
     layout = md.Meta.pop('layout', None)
     if layout:
-        tmpl.append(TMPL_LAYOUT % (layout[0], ))
+        layout_fragment = TMPL_LAYOUT.format(tmpl=layout[0])
+        tmpl.append(layout_fragment)
+    else:
+        tmpl.append(html)
 
-    for name, value in md.Meta.items():
-        tmpl.append(TMPL_BLOCK % (name, value[0]))
-
-    tmpl.append(TMPL_BLOCK % (u'content', html))
-    return '\n'.join(tmpl)
+    meta = dict((name, Markup(value[0])) for name, value in md.Meta.items())
+    meta['content'] = Markup(html)
+    _source = '\n'.join(tmpl)
+    return _source, meta

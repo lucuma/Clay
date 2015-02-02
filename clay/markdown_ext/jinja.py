@@ -15,7 +15,10 @@ class MarkdownExtension(jinja2.ext.Extension):
     def preprocess(self, source, name, filename=None):
         if name is None or os.path.splitext(name)[1] != MARKDOWN_EXTENSION:
             return source
-        return md_to_jinja(source)
+        _source, meta = md_to_jinja(source)
+        self.meta = meta or {}
+        self.environment.globals.update(meta)
+        return _source
 
     def _from_string(self, source, globals=None, template_class=None):
         env = self.environment

@@ -61,11 +61,26 @@ class Clay(object):
         return app
 
     def set_urls(self, app):
-        app.add_url_rule('/', 'page', self.render_page)
-        app.add_url_rule('/<path:path>', 'page', self.render_page)
-        app.add_url_rule('/_index.html', 'index', self.show__index)
-        app.add_url_rule('/_index.txt', 'index_txt', self.show__index_txt)
-        app.add_url_rule(THUMBS_URL + '/<path:path>', 'thumb', self.show_thumb)
+        app.add_url_rule(
+            '/', 'page', self.render_page,
+            methods=['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+        )
+        app.add_url_rule(
+            '/<path:path>', 'page', self.render_page,
+            methods=['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+        )
+        app.add_url_rule(
+            '/_index.html', 'index', self.show__index,
+            methods=['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+        )
+        app.add_url_rule(
+            '/_index.txt', 'index_txt', self.show__index_txt,
+            methods=['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+        )
+        app.add_url_rule(
+            THUMBS_URL + '/<path:path>', 'thumb', self.show_thumb,
+            methods=['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+        )
 
     def load_settings_from_file(self):
         if isfile(self.settings_path):

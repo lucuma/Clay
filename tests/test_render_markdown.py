@@ -40,9 +40,9 @@ def test_jinja_variables(t):
 def test_layout(t):
     base = '''<!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<title>{% block title %}{% endblock %}</title>
+<title>{{ title }}</title>
 </head>
-<body>{% block content %}{% endblock %}</body>
+<body>{{ content }}</body>
 </html>
 '''
 
