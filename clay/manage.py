@@ -26,7 +26,7 @@ def new(path='.', template=None):
     """
     path = abspath(path.rstrip(sep))
     template = template or DEFAULT_TEMPLATE_URL
-    render_skeleton(template, path, include_this=['.gitignore'])
+    render_skeleton(template, path, include_this=['.gitignore'], filter_this=[])
     print(HELP_MSG % (path,))
 
 
