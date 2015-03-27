@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from __future__ import print_function
 
 import imp
@@ -320,7 +320,9 @@ class Clay(object):
         context = self.settings.copy()
         context['path'] = path
         res = self.render('_notfound.html', context)
-        return self.app.response(res, status=HTTP_NOT_FOUND, mimetype='text/html')
+        return self.app.response(
+            res, status=HTTP_NOT_FOUND, mimetype='text/html'
+        )
 
     def get_test_client(self):
         host = self.settings.get('HOST', DEFAULT_HOST)

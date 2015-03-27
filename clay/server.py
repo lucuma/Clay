@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from __future__ import print_function
 
 from datetime import datetime
@@ -96,7 +96,11 @@ class RequestLogger(object):
         try:
             return self.application(environ, start_response)
         except Exception:
-            start_response(HTTPMSG, [('Content-type', 'text/plain')], sys.exc_info())
+            start_response(
+                HTTPMSG,
+                [('Content-type', 'text/plain')],
+                sys.exc_info()
+            )
             raise
 
 

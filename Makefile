@@ -27,13 +27,13 @@ lint:
 	flake8 clay tests
 
 test:
-	py.test tests/
+	py.test -x tests/
 
 test-all:
 	tox
 
 coverage:
-	py.test --cov-config .coveragerc --cov-report html --cov clay tests/ 
+	py.test --cov-config .coveragerc --cov-report html --cov clay tests/
 	open htmlcov/index.html
 
 publish: clean

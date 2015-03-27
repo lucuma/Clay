@@ -1,13 +1,17 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from clay import Clay
 from clay.main import SOURCE_NOT_FOUND
 import pytest
 
-from .helpers import *
+from .conftest import setup_function, teardown_function  # noqa
+from .helpers import (
+    create_file, get_source_path, remove_dir, execute_and_read_stdout,
+    make_dirs, create_page, SOURCE_DIR, HTTP_NOT_FOUND, TESTS, HTML
+)
 
 
 def test_friendly_notfound_of_templates(t):
-    create_file(get_source_path('foo.html'), u'foo{% include "bar.html" %}')
+    create_file(get_source_path('foo.html'), u'foo{% include "barbar.html" %}')
 
     resp = t.get('/hello.html')
     assert resp.status_code == HTTP_NOT_FOUND
@@ -15,8 +19,9 @@ def test_friendly_notfound_of_templates(t):
     assert 'jinja2.exceptions' not in resp.data
 
     resp = t.get('/foo.html')
+    print resp.data
     assert resp.status_code == HTTP_NOT_FOUND
-    assert 'bar.html' in resp.data
+    assert 'barbar.html' in resp.data
     assert 'jinja2.exceptions' not in resp.data
 
 
@@ -50,13 +55,12 @@ def test_make_dirs_wrong():
 
 def test_fix_settings():
     bad_settings = dict(
-        FILTER_PARTIALS = None,
-        FILTER = None,
-        INCLUDE = None,
-        HOST = None,
-        PORT = None,
+        FILTER_PARTIALS=None,
+        FILTER=None,
+        INCLUDE=None,
+        HOST=None,
+        PORT=None,
     )
     c = Clay(TESTS, bad_settings)
     create_page('test.html', HTML)
     c.get_pages_index()
-

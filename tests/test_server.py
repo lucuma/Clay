@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from datetime import datetime
 
 from clay.server import RequestLogger
 import pytest
 import socket
 
-from .helpers import *
+from .helpers import execute_and_read_stdout
 
 
 def test_run_with_custom_host_and_port(c):
@@ -133,5 +133,3 @@ def test_request_logger_as_middleware_fail():
     with pytest.raises(ValueError):
         l({}, start_response)
     assert called
-
-

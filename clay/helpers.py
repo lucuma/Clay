@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from datetime import datetime
 import errno
 from fnmatch import fnmatch
@@ -39,6 +39,7 @@ def make_dirs(*lpath):
 def create_file(path, content, encoding='utf8'):
     if not isinstance(content, unicode):
         content = unicode(content, encoding)
+    make_dirs(os.path.dirname(path))
     with io.open(path, 'w+t', encoding=encoding) as f:
         f.write(content)
 

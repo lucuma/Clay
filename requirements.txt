@@ -10,5 +10,5 @@ Flask>=0.10.1
 Moar>=1.2.2
 Pillow
 Pygments>=1.6
-Voodoo>=1.4.0
+Voodoo>=1.4.1
 Markdown>=2.3.1

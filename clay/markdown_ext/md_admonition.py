@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 """
 Admonition extension for Python-Markdown
 =========================================
@@ -35,9 +35,9 @@ class AdmonitionProcessor(BlockProcessor):
 
     def test(self, parent, block):
         sibling = self.lastChild(parent)
-        return RX.search(block) or \
-            (block.startswith(' ' * self.tab_length) and sibling and \
-                sibling.get('class', '').find(CLASSNAME) != -1)
+        return RX.search(block) or (
+            block.startswith(' ' * self.tab_length) and sibling and
+            sibling.get('class', '').find(CLASSNAME) != -1)
 
     def run(self, parent, blocks):
         sibling = self.lastChild(parent)

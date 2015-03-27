@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from __future__ import print_function
 
-from .helpers import *
+from .helpers import create_file, get_source_path, HTTP_OK
 
 
 def test_basic_md(t):
@@ -84,6 +84,7 @@ Highlighted:
 print('hi')
 ```
 '''
+
     expected = '''
 <p>Plain:</p>
 <pre><code>pip install clay
@@ -93,7 +94,8 @@ print('hi')
 <p>Highlighted:</p>
 <pre><code class="language-python"><span class="k">print</span><span class="p">(</span><span class="s">&#39;hi&#39;</span><span class="p">)</span>
 </code></pre>
-'''
+'''  # noqa
+
     path = get_source_path('test.md')
     create_file(path, content)
     resp = t.get('/test.md')
@@ -109,10 +111,12 @@ def test_protect_jinja_code(t):
 {{ protect_me }}
 ```
 '''
-    expected = '''
-<pre><code class="language-jinja"><span class="cp">{{</span> <span class="nv">protect_me</span> <span class="cp">}}</span><span class="x"></span>
-</code></pre>
-'''
+    expected = (
+        '''\n<pre><code class="language-jinja">'''
+        '''<span class="cp">{{</span> <span class="nv">protect_me</span> '''
+        '''<span class="cp">}}</span><span class="x"></span>\n'''
+        '''</code></pre>'''
+    )
     path = get_source_path('test.md')
     create_file(path, content)
     resp = t.get('/test.md')
@@ -169,12 +173,15 @@ lorem ipsum^1 sit.
 
 
 def test_delinsmark(t):
-    content = '''
-This is ++added content++, this is ~~deleted content~~ and this is ==marked==.
-'''
-    expected = '''
-<p>This is <ins>added content</ins>, this is <del>deleted content</del> and this is <mark>marked</mark>.</p>
-'''
+    content = (
+        '''\nThis is ++added content++, this is ~~deleted content~~ '''
+        '''and this is ==marked==.'''
+    )
+    expected = (
+        '''\n<p>This is <ins>added content</ins>, this is '''
+        '''<del>deleted content</del> and this is <mark>marked</mark>.</p>'''
+    )
+
     path = get_source_path('test.md')
     create_file(path, content)
     resp = t.get('/test.md')

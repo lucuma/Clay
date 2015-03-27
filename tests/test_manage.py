@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 import os
 import sys
 from tempfile import mkdtemp
@@ -7,14 +7,17 @@ import clay
 from clay.manage import manager
 from flask import Flask
 
-from .helpers import *
+from .helpers import (
+    create_file, remove_dir, execute_and_read_stdout,
+    make_dirs, read_content,
+)
 
 
 def test_create_skeleton():
     test_dir = mkdtemp()
     sys.argv = [sys.argv[0], 'new', test_dir]
     manager.run()
-    assert os.path.isdir(join(test_dir, 'source'))
+    assert os.path.isdir(os.path.join(test_dir, 'source'))
     remove_dir(test_dir)
 
 
@@ -50,8 +53,8 @@ def test_run_with_custom_host_and_port(c, monkeypatch):
 def test_can_build(c):
     test_dir = mkdtemp()
     make_dirs(test_dir, 'source')
-    sp = join(test_dir, 'source', 'foo.txt')
-    bp = join(test_dir, 'build', 'foo.txt')
+    sp = os.path.join(test_dir, 'source', 'foo.txt')
+    bp = os.path.join(test_dir, 'build', 'foo.txt')
     create_file(sp, u'bar')
 
     sys.argv = [sys.argv[0], 'build', '--path', test_dir]
@@ -63,12 +66,12 @@ def test_can_build(c):
 def test_can_build_pattern(c):
     test_dir = mkdtemp()
     make_dirs(test_dir, 'source')
-    sp1 = join(test_dir, 'source', 'foo.txt')
-    bp1 = join(test_dir, 'build', 'foo.txt')
+    sp1 = os.path.join(test_dir, 'source', 'foo.txt')
+    bp1 = os.path.join(test_dir, 'build', 'foo.txt')
     create_file(sp1, u'bar')
 
-    sp2 = join(test_dir, 'source', 'bar.txt')
-    bp2 = join(test_dir, 'build', 'bar.txt')
+    sp2 = os.path.join(test_dir, 'source', 'bar.txt')
+    bp2 = os.path.join(test_dir, 'build', 'bar.txt')
     create_file(sp2, u'bar')
 
     sys.argv = [sys.argv[0], 'build', 'bar.txt', '--path', test_dir]

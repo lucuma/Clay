@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 """
 Del/Ins/Mark Extension for Markdown
 ====================================
@@ -10,8 +10,10 @@ Example:
 >>> import markdown
 >>> md = markdown.Markdown(extensions=[DelInsMarkExtension()])
 
->>> md.convert('This is ++added content++, this is ~~deleted content~~ and this is ==marked==.')
-u'<p>This is <ins>added content</ins>, this is <del>deleted content</del> and this is <mark>marked</mark>.</p>'
+>>> md.convert('This is ++added content++, this is ~~deleted content~~
+    and this is ==marked==.')
+u'<p>This is <ins>added content</ins>, this is <del>deleted content</del>
+pand this is <mark>marked</mark>.</p>'
 
 """
 import markdown

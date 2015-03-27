@@ -1,9 +1,15 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from __future__ import print_function
+
+import os
 
 from clay import Clay
 
-from .helpers import *
+from .conftest import setup_function, teardown_function  # noqa
+from .helpers import (
+    create_file, get_source_path, make_dirs, create_page, remove_file,
+    HTTP_OK, SOURCE_DIR, TESTS, HTML
+)
 
 
 TEXT = u'''Je suis belle, ô mortels! comme un rêve de pierre,
@@ -44,7 +50,7 @@ def test_load_settings_from_file():
     c = Clay(TESTS)
     assert 'foo' not in c.settings
 
-    stpath = join(TESTS, 'settings.py')
+    stpath = os.path.join(TESTS, 'settings.py')
     create_file(stpath, "\nfoo='bar'\n")
     c = Clay(TESTS)
     remove_file(stpath)

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 """
 Fenced Code Extension for Markdown
 ===================================
@@ -57,8 +57,8 @@ FENCED_BLOCK_RE = re.compile(
     (r'(?P<fence>^(?:~{3,}|`{3,}))[ ]*'
      r'(?P<lang>[a-z0-9_+-]*)(?P<linenums>#)?[ ]*\n'
      r'(?P<code>.*?)'
-     r'(?<=\n)(?P=fence)[ ]*$'
-    ), re.MULTILINE|re.DOTALL|re.IGNORECASE
+     r'(?<=\n)(?P=fence)[ ]*$'),
+    re.MULTILINE | re.DOTALL | re.IGNORECASE
 )
 OPEN_CODE = u'<pre><code%s>{%% raw %%}'
 LANG_TAG = u' class="language-%s"'
@@ -106,7 +106,11 @@ class FencedBlockPreprocessor(Preprocessor):
             linenums = bool(m.group('linenums'))
             html = highlight_syntax(m.group('code'), lang, linenums=linenums)
             placeholder = self.markdown.htmlStash.store(html, safe=True)
-            text = '%s\n%s\n%s'% (text[:m.start()], placeholder, text[m.end():])
+            text = '{}\n{}\n{}'.format(
+                text[:m.start()],
+                placeholder,
+                text[m.end():]
+            )
 
         return text.split("\n")
 

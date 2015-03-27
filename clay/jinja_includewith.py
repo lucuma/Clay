@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 import re
 from jinja2.ext import Extension
 
@@ -13,8 +13,10 @@ class IncludeWith(Extension):
     You **must** also include 'jinja2.ext.with_' in the extensions list.
     """
 
-    rx = re.compile(r'\{\%-?[\s\n]*include[\s\n]+(?P<tmpl>[^\s\n]+)[\s\n]+with[\s\n]+'
-                    '(?P<context>.*?)[\s\n]*-?\%\}', re.IGNORECASE)
+    rx = re.compile(
+        r'\{\%-?[\s\n]*include[\s\n]+(?P<tmpl>[^\s\n]+)[\s\n]+with[\s\n]+'
+        '(?P<context>.*?)[\s\n]*-?\%\}',
+        re.IGNORECASE)
 
     def preprocess(self, source, name, filename=None):
         lastpos = 0

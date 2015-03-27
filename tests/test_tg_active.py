@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from clay.tglobals import active
 
-from .helpers import *
+from .helpers import create_file, get_source_path
 
 
 ACTIVE_PATH = '/foo/bar.html'

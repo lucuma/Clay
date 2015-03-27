@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from jinja2 import Environment, DictLoader
 
 from clay.jinja_includewith import IncludeWith
@@ -15,7 +15,9 @@ env = Environment(
 
 
 def test_set_context():
-    tmpl = env.from_string('''{% include "hello" with what='world' %} {% include "hello" with what='world' %}''')
+    tmpl = env.from_string(
+        '''{% include "hello" with what='world' %} '''
+        '''{% include "hello" with what='world' %}''')
     expected = '''Hello world! Hello world!'''
     result = tmpl.render()
     assert result == expected
@@ -74,7 +76,9 @@ def test_careless_formatting():
 
 
 def test_text():
-    tmpl = env.from_string('''{% include "hello" with what='5%, er }} lalala' %} {% include "hello" with what='world' %}''')
+    tmpl = env.from_string(
+        '''{% include "hello" with what='5%, er }} lalala' %} '''
+        '''{% include "hello" with what='world' %}''')
     expected = '''Hello 5%, er }} lalala! Hello world!'''
     result = tmpl.render()
     assert result == expected
@@ -99,4 +103,3 @@ def test_unobstrusiveness():
     tmpl = env.from_string('''{% include "hello" with context %}''')
     r2 = tmpl.render(what='you')
     assert r1 == r2 == 'Hello you!'
-

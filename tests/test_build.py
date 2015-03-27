@@ -1,9 +1,14 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 import os
 
 from clay import Clay
 
-from .helpers import *
+from .conftest import setup_function, teardown_function  # noqa
+from .helpers import (
+    create_file, get_source_path, get_build_path, remove_dir, read_content,
+    execute_and_read_stdout, make_dirs, isdir, exists,
+    SOURCE_DIR, BUILD_DIR, TESTS, HTML
+)
 
 
 def get_file_paths(name):
@@ -187,11 +192,11 @@ def test_translate_ignore_external_urls(c):
     sp2, bp2 = get_file_paths('t2.html')
     sp3, bp3 = get_file_paths('t3.html')
     c1 = (u'<!DOCTYPE html><html><head><title></title></head><body>'
-        '<a href="//google.com"></a></body></html>')
+          '<a href="//google.com"></a></body></html>')
     c2 = (u'<!DOCTYPE html><html><head><title></title></head><body>'
-        '<a href="http://example.net/foo/bar"></a></body></html>')
+          '<a href="http://example.net/foo/bar"></a></body></html>')
     c3 = (u'<!DOCTYPE html><html><head><title></title></head><body>'
-        '<a href="mailto:bob@example.com"></a></body></html>')
+          '<a href="mailto:bob@example.com"></a></body></html>')
     create_file(sp1, c1)
     create_file(sp2, c2)
     create_file(sp3, c3)
@@ -228,7 +233,7 @@ def test_setting_force_fragment_inclusion(c):
     create_file(sp, u"lalala")
 
     c.settings['FILTER_PARTIALS'] = True
-    c.settings['INCLUDE'] = [name,]
+    c.settings['INCLUDE'] = [name, ]
     c.build()
     assert exists(bp)
 
@@ -239,7 +244,7 @@ def test_setting_force_ignore(c):
     content = HTML
     create_file(sp, content)
 
-    c.settings['FILTER'] = [name,]
+    c.settings['FILTER'] = [name, ]
     c.build()
     assert not exists(bp)
 
@@ -331,7 +336,7 @@ def test_setting_force_fragment_inclusion_in__index(c):
     create_file(get_source_path(name), u'lalala')
 
     c.settings['FILTER_PARTIALS'] = True
-    c.settings['INCLUDE'] = [name,]
+    c.settings['INCLUDE'] = [name, ]
     c.build()
     page = read_content(bpindex)
     assert 'href="%s"' % name in page
@@ -344,7 +349,7 @@ def test_setting_force_ignore_in__index(c):
     create_file(get_source_path(name), HTML)
 
     c.settings['FILTER_PARTIALS'] = True
-    c.settings['FILTER'] = [name,]
+    c.settings['FILTER'] = [name, ]
     c.build()
     page = read_content(bpindex)
     assert 'href="%s"' % name not in page

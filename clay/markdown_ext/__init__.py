@@ -1,1 +1,1 @@
-from .jinja import MarkdownExtension
+from .jinja import MarkdownExtension  # noqa

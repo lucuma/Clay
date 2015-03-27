@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 from collections import OrderedDict
 from fnmatch import fnmatch
 from functools import partial
