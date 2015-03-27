@@ -29,7 +29,12 @@ def new(path='.', template=None):
     render_skeleton(
         template, path,
         include_this=['.gitignore'],
-        filter_this=['.git/*', '.hg/*', '.svn/*', ]
+        filter_this=[
+            '~*', '*.py[co]',
+            '.git', '.git/*',
+            '.hg', '.hg/*',
+            '.svn', '.svn/*',
+        ]
     )
     print(HELP_MSG % (path,))
 
