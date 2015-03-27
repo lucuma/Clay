@@ -31,6 +31,7 @@ def new(path='.', template=None):
         include_this=['.gitignore'],
         filter_this=[
             '~*', '*.py[co]',
+            '__pycache__', '__pycache__/*',
             '.git', '.git/*',
             '.hg', '.hg/*',
             '.svn', '.svn/*',

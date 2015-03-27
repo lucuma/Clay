@@ -2,12 +2,20 @@
 from __future__ import print_function
 
 from os.path import dirname, join
+import shutil
 
 from clay.tglobals import ToC
 
 
 CLAY_SOURCE_PATH = join(dirname(__file__), u'..', u'clay')
 FILTER = ('.*', '*.pyc', )
+
+
+def setup_function(function):
+    try:
+        shutil.rmtree(join(CLAY_SOURCE_PATH, '__pycache__'))
+    except OSError:
+        pass
 
 
 def test_toc_build():

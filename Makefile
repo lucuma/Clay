@@ -27,6 +27,7 @@ lint:
 	flake8 clay tests
 
 test:
+	find . -name '__pycache__' -exec rm -rf {} +
 	py.test -x tests/
 
 test-all:
