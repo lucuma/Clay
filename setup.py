@@ -40,7 +40,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     url='http://github.com/lucuma/Clay',
-    license='MIT license (http://www.opensource.org/licenses/mit-license.php)',
+    license='MIT license (see LICENSE)',
     description='An amazing prototyping tool',
     long_description=get_description(),
     install_requires=get_requirements(),

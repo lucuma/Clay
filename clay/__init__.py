@@ -4,10 +4,8 @@
 
 An amazing prototyping tool
 
-------------
-© [Juan-Pablo Scaletti](http://jpscaletti.com).
-[MIT License](http://www.opensource.org/licenses/mit-license.php)
-
+:copyright: `Juan-Pablo Scaletti <http://jpscaletti.com>`_.
+:license: MIT, see LICENSE for more details.
 """
 from .main import Clay  # noqa
 

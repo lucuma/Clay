@@ -6,7 +6,7 @@ Clay
 
 With Clay you can forget about making changes to dozens of HTML files
 just because you need to add a link in the footer.
- 
+
 You can also use it to prototype your AJAX-driven application or the
 responses of sending forms, because it acts like a real server.
 
@@ -61,3 +61,9 @@ and you're ready to go.
 
 
 Happy coding!
+
+
+______
+
+:copyright: `Juan-Pablo Scaletti <http://jpscaletti.com>`_.
+:license: MIT, see LICENSE for more details.
