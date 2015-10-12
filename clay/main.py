@@ -90,6 +90,7 @@ class Clay(object):
     def render(self, path, context):
         host = self.settings.get('HOST', DEFAULT_HOST)
         port = self.settings.get('PORT', DEFAULT_PORT)
+        path = path.replace('\\', '/')  # Windows fail otherwise
         return self.app.render_template(path, context, host, port)
 
     def get_full_source_path(self, path):
