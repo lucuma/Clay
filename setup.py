@@ -34,8 +34,8 @@ def get_requirements(filename='requirements.txt'):
 setup(
     name='Clay',
     version=get_version('clay'),
-    author='Juan-Pablo Scaletti',
-    author_email='juanpablo@lucumalabs.com',
+    author='Lucuma labs',
+    author_email='info@lucumalabs.com',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,

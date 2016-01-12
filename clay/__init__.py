@@ -4,7 +4,7 @@
 
 An amazing prototyping tool
 
-:copyright: `Juan-Pablo Scaletti <http://jpscaletti.com>`_.
+:copyright: `Lúcuma labs <http://lucumalabs.com>`_.
 :license: MIT, see LICENSE for more details.
 """
 from .main import Clay  # noqa

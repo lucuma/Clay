@@ -66,5 +66,5 @@ Happy coding!
 
 ______
 
-:copyright: `Juan-Pablo Scaletti <http://jpscaletti.com>`_.
+:copyright: `Lúcuma labs <http://lucumalabs.com>`_.
 :license: MIT, see LICENSE for more details.
