@@ -66,5 +66,5 @@ Happy coding!
 
 ______
 
-:copyright: `Lúcuma labs S.A.C. <http://lucumalabs.com>`_.
+:copyright: `Lúcuma labs S.A.C. <http://lucumalabs.com>`_
 :license: MIT, see LICENSE for more details.
