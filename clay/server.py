@@ -5,7 +5,7 @@ from datetime import datetime
 import socket
 import sys
 
-from cherrypy import wsgiserver
+from cheroot.wsgi import WSGIPathInfoDispatcher, WSGIServer
 
 
 ALL_HOSTS = '0.0.0.0'
@@ -26,7 +26,7 @@ class Server(object):
     def __init__(self, clay):
         self.clay = clay
         app = RequestLogger(clay.app)
-        self.dispatcher = wsgiserver.WSGIPathInfoDispatcher({'/': app})
+        self.dispatcher = WSGIPathInfoDispatcher({'/': app})
 
     def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
         port = port or self.clay.settings.get('port', DEFAULT_PORT)
@@ -54,7 +54,7 @@ class Server(object):
         self.start()
 
     def _get_wsgi_server(self, host, port):
-        return wsgiserver.CherryPyWSGIServer(
+        return WSGIServer(
             (host, port),
             wsgi_app=self.dispatcher
         )

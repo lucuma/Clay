@@ -65,15 +65,15 @@ class WSGIApplication(Flask):
             return render_template(path, **context)
 
         self.thumbnailer.echo = not path.startswith('_index')
-        self.thumbnailer.storage.base_url = '/'
-        self.thumbnailer.storage.out_path = self.build_dir
+        self.thumbnailer.thumbs_storage.base_url = '/'
+        self.thumbnailer.thumbs_storage.out_path = self.build_dir
         with self.test_request_context(
                 '/' + path, method='GET',
                 base_url='http://%s:%s' % (host, port)):
             return render_template(path, **context)
 
     def get_thumb_fullpath(self, thumbpath):
-        return join(self.thumbnailer.storage.out_path, thumbpath)
+        return join(self.thumbnailer.thumbs_storage.out_path, thumbpath)
 
     def response(self, content, status=200, mimetype='text/plain'):
         resp = make_response(content, status)
