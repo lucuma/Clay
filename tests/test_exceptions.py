@@ -15,21 +15,23 @@ def test_friendly_notfound_of_templates(t):
 
     resp = t.get('/hello.html')
     assert resp.status_code == HTTP_NOT_FOUND
-    assert 'hello.html' in resp.data
-    assert 'jinja2.exceptions' not in resp.data
+    data = resp.data.decode()
+    assert 'hello.html' in data
+    assert 'jinja2.exceptions' not in data
 
     resp = t.get('/foo.html')
-    print resp.data
+    data = resp.data.decode()
     assert resp.status_code == HTTP_NOT_FOUND
-    assert 'barbar.html' in resp.data
-    assert 'jinja2.exceptions' not in resp.data
+    assert 'barbar.html' in data
+    assert 'jinja2.exceptions' not in data
 
 
 def test_friendly_notfound_of_files(t):
     resp = t.get('/foobar')
+    data = resp.data.decode()
     assert resp.status_code == HTTP_NOT_FOUND
-    assert 'foobar' in resp.data
-    assert 'jinja2.exceptions' not in resp.data
+    assert 'foobar' in data
+    assert 'jinja2.exceptions' not in data
 
 
 def test_fail_if_source_dir_dont_exists(c):

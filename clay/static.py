@@ -109,7 +109,7 @@ def serve_fileobj(fileobj, headers, content_length):
 
             gen = file_generator_limited(fileobj, stop - start)
             for chunk in gen:
-                yield chunk
+                yield chunk.decode()
             yield "\r\n"
 
         yield "--" + boundary + "--"

@@ -77,4 +77,4 @@ def test_active_in_templates(t):
 
     expected = u'class="active"'
     resp = t.get('/' + path)
-    assert resp.data == expected
+    assert resp.data.decode() == expected

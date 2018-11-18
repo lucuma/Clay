@@ -7,7 +7,6 @@ from markupsafe import Markup
 from .md_admonition import AdmonitionExtension
 from .md_captions import FigcaptionExtension
 from .md_delinsmark import DelInsMarkExtension
-from .md_fencedcode import FencedCodeExtension
 from .md_superscript import SuperscriptExtension
 
 
@@ -20,9 +19,9 @@ md = m.Markdown(
         'abbr', 'attr_list', 'def_list',
         'footnotes', 'tables',
         'toc', 'nl2br', 'sane_lists',
+        'fenced_code',
         AdmonitionExtension(),
         FigcaptionExtension(),
-        FencedCodeExtension(),
         DelInsMarkExtension(),
         SuperscriptExtension(),
     ],

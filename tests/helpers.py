@@ -32,13 +32,13 @@ def get_build_path(path):
 def create_page(name, content, encoding='utf8'):
     sp = get_source_path(name)
     make_dirs(dirname(sp))
-    content = content.encode(encoding)
+    content = content
     create_file(sp, content, encoding=encoding)
 
 
 def read_content(path, encoding='utf8'):
     with io.open(path, 'r', encoding=encoding) as f:
-        return f.read().encode(encoding)
+        return f.read()
 
 
 def remove_file(path):

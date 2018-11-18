@@ -1,14 +1,11 @@
-# coding=utf-8
-from __future__ import print_function
-
 from os.path import dirname, join
 import shutil
 
 from clay.tglobals import ToC
 
 
-CLAY_SOURCE_PATH = join(dirname(__file__), u'..', u'clay')
-FILTER = ('.*', '*.pyc', )
+CLAY_SOURCE_PATH = join(dirname(__file__), '..', 'clay')
+FILTER = ('.*', '*.pyc', '__pycache__' )
 
 
 def setup_function(function):
@@ -21,38 +18,38 @@ def setup_function(function):
 def test_toc_build():
     toc = ToC(CLAY_SOURCE_PATH, filter=FILTER)
 
-    assert toc._leafs.items() == [
-        (u'__init__.py', u'/__init__.py'),
-        (u'helpers.py', u'/helpers.py'),
-        (u'jinja_includewith.py', u'/jinja_includewith.py'),
-        (u'main.py', u'/main.py'),
-        (u'manage.py', u'/manage.py'),
-        (u'server.py', u'/server.py'),
-        (u'static.py', u'/static.py'),
-        (u'tglobals.py', u'/tglobals.py'),
-        (u'wsgiapp.py', u'/wsgiapp.py')
+    assert list(toc._leafs.items()) == [
+        ('__init__.py', '/__init__.py'),
+        ('helpers.py', '/helpers.py'),
+        ('jinja_includewith.py', '/jinja_includewith.py'),
+        ('main.py', '/main.py'),
+        ('manage.py', '/manage.py'),
+        ('server.py', '/server.py'),
+        ('static.py', '/static.py'),
+        ('tglobals.py', '/tglobals.py'),
+        ('wsgiapp.py', '/wsgiapp.py')
     ]
-    assert toc._branches.keys() == [u'markdown_ext', u'source']
+    assert list(toc._branches.keys()) == ['markdown_ext', 'source']
 
 
 def test_toc_iter():
     toc = ToC(CLAY_SOURCE_PATH, filter=FILTER)
 
     assert list(toc) == [
-        (u'__init__.py', u'/__init__.py'),
-        (u'helpers.py', u'/helpers.py'),
-        (u'jinja_includewith.py', u'/jinja_includewith.py'),
-        (u'main.py', u'/main.py'),
-        (u'manage.py', u'/manage.py'),
-        (u'server.py', u'/server.py'),
-        (u'static.py', u'/static.py'),
-        (u'tglobals.py', u'/tglobals.py'),
-        (u'wsgiapp.py', u'/wsgiapp.py')
+        ('__init__.py', '/__init__.py'),
+        ('helpers.py', '/helpers.py'),
+        ('jinja_includewith.py', '/jinja_includewith.py'),
+        ('main.py', '/main.py'),
+        ('manage.py', '/manage.py'),
+        ('server.py', '/server.py'),
+        ('static.py', '/static.py'),
+        ('tglobals.py', '/tglobals.py'),
+        ('wsgiapp.py', '/wsgiapp.py')
     ]
     assert list(toc.source) == [
-        (u'_index.html', u'/source/_index.html'),
-        (u'_index.txt', u'/source/_index.txt'),
-        (u'_notfound.html', u'/source/_notfound.html'),
+        ('_index.html', '/source/_index.html'),
+        ('_index.txt', '/source/_index.txt'),
+        ('_notfound.html', '/source/_notfound.html'),
     ]
 
 
@@ -92,7 +89,6 @@ def test_toc_render_maxdepth1():
             <li><a href="/markdown_ext/md_admonition.py">md_admonition.py</a></li>
             <li><a href="/markdown_ext/md_captions.py">md_captions.py</a></li>
             <li><a href="/markdown_ext/md_delinsmark.py">md_delinsmark.py</a></li>
-            <li><a href="/markdown_ext/md_fencedcode.py">md_fencedcode.py</a></li>
             <li><a href="/markdown_ext/md_superscript.py">md_superscript.py</a></li>
             <li><a href="/markdown_ext/render.py">render.py</a></li>
         </ul>
@@ -126,7 +122,6 @@ def test_toc_render_folders_first():
             <li><a href="/markdown_ext/md_admonition.py">md_admonition.py</a></li>
             <li><a href="/markdown_ext/md_captions.py">md_captions.py</a></li>
             <li><a href="/markdown_ext/md_delinsmark.py">md_delinsmark.py</a></li>
-            <li><a href="/markdown_ext/md_fencedcode.py">md_fencedcode.py</a></li>
             <li><a href="/markdown_ext/md_superscript.py">md_superscript.py</a></li>
             <li><a href="/markdown_ext/render.py">render.py</a></li>
         </ul>
