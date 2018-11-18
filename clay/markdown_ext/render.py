@@ -18,8 +18,8 @@ md = m.Markdown(
     extensions=[
         'meta',
         'abbr', 'attr_list', 'def_list',
-        'footnotes', 'smart_strong', 'tables',
-        'headerid', 'nl2br', 'sane_lists',
+        'footnotes', 'tables',
+        'toc', 'nl2br', 'sane_lists',
         AdmonitionExtension(),
         FigcaptionExtension(),
         FencedCodeExtension(),

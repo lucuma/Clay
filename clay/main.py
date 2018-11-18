@@ -11,7 +11,7 @@ import re
 from jinja2.exceptions import TemplateNotFound
 
 from .helpers import (
-    to_unicode, unormalize, fullmatch, make_dirs, create_file,
+    unormalize, fullmatch, make_dirs, create_file,
     copy_if_updated, get_updated_datetime, sort_paths_dirs_last)
 from .server import Server, DEFAULT_HOST, DEFAULT_PORT
 from .static import serve_file
@@ -50,8 +50,8 @@ class Clay(object):
         self.settings = settings
         self.settings_path = join(root, 'settings.py')
         self.load_settings_from_file()
-        self.source_dir = to_unicode(source_dir or join(root, SOURCE_DIRNAME))
-        self.build_dir = to_unicode(build_dir or join(root, BUILD_DIRNAME))
+        self.source_dir = source_dir or join(root, SOURCE_DIRNAME)
+        self.build_dir = build_dir or join(root, BUILD_DIRNAME)
         self.app = self.make_app()
         self.server = Server(self)
 
@@ -150,14 +150,14 @@ class Clay(object):
     def must_be_included(self, path):
         patterns = (self.settings.get('INCLUDE', DEFAULT_INCLUDE)
                     or DEFAULT_INCLUDE)
-        patterns = [unormalize(to_unicode(p)) for p in patterns]
+        patterns = [unormalize(p) for p in patterns]
         return reduce(lambda r, pattern: r or
                       fullmatch(path, pattern), patterns, False)
 
     def must_be_filtered(self, path):
         patterns = (self.settings.get('FILTER', DEFAULT_FILTER)
                     or DEFAULT_FILTER)
-        patterns = [unormalize(to_unicode(p)) for p in patterns]
+        patterns = [unormalize(p) for p in patterns]
         return reduce(lambda r, pattern: r or
                       fullmatch(path, pattern), patterns, False)
 
@@ -169,7 +169,7 @@ class Clay(object):
         if self._cached_pages_list:
             return self._cached_pages_list
         if pattern:
-            pattern = unormalize(to_unicode(pattern))
+            pattern = unormalize(pattern)
         pages = []
         for folder, subs, files in os.walk(self.source_dir):
             rel = self.get_relpath(folder)
@@ -273,10 +273,10 @@ class Clay(object):
         create_file(bp, content)
 
     def print_build_message(self, path):
-        print(' ', to_unicode(self.remove_template_ext(path)))
+        print(' ', self.remove_template_ext(path))
 
     def build_page(self, path):
-        path = to_unicode(path)
+        path = path
         sp = self.get_full_source_path(path)
         bp = self.get_full_build_path(path)
         make_dirs(dirname(bp))

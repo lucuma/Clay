@@ -8,8 +8,6 @@ import re
 
 from flask import request
 
-from .helpers import to_unicode
-
 
 def norm_url(url):
     url = url.strip().rstrip('/')
@@ -107,7 +105,7 @@ class ToC(object):
     def __init__(self, basepath, baseurl='/', filter=('.*', '*.pyc')):
         self._leafs = []
         self._branches = []
-        basepath = abspath(to_unicode(basepath))
+        basepath = abspath(basepath)
         if isdir(basepath):
             self.__buildtree(basepath, baseurl, filter)
 

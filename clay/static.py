@@ -1,5 +1,10 @@
-# coding=utf-8
-from __future__ import print_function
+
+import os
+from zlib import adler32
+
+from cherrypy.lib import httputil, file_generator_limited
+from werkzeug.http import quote_etag
+from werkzeug.exceptions import RequestedRangeNotSatisfiable
 import mimetypes
 mimetypes.init()
 
@@ -21,15 +26,6 @@ NEW_MIMETYPES = {
 }
 for name, value in NEW_MIMETYPES.items():
     mimetypes.types_map[name] = value
-
-import os
-from zlib import adler32
-
-from cherrypy.lib import httputil, file_generator_limited
-from werkzeug.http import quote_etag
-from werkzeug.exceptions import RequestedRangeNotSatisfiable
-
-from .helpers import to_unicode
 
 
 def serve_file(path):
@@ -104,21 +100,19 @@ def serve_fileobj(fileobj, headers, content_length):
 
     def file_ranges():
         for start, stop in r:
-            yield to_unicode("--" + boundary)
-            yield to_unicode("\r\nContent-type: {0}".format(content_type))
-            yield to_unicode(
-                "\r\nContent-range: bytes {0}-{1}/{2}\r\n\r\n".format(
+            yield "--" + boundary
+            yield "\r\nContent-type: {0}".format(content_type)
+            yield "\r\nContent-range: bytes {0}-{1}/{2}\r\n\r\n".format(
                     start, stop - 1, content_length
-                )
-            )
+                  )
             fileobj.seek(start)
 
             gen = file_generator_limited(fileobj, stop - start)
             for chunk in gen:
                 yield chunk
-            yield to_unicode("\r\n")
+            yield "\r\n"
 
-        yield to_unicode("--" + boundary + "--")
+        yield "--" + boundary + "--"
 
     body = file_ranges()
     return body, headers, status_code

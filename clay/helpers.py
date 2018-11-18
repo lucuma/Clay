@@ -6,14 +6,7 @@ import io
 import os
 import shutil
 import unicodedata
-
-
-def to_unicode(txt, encoding='utf8'):
-    if not isinstance(txt, basestring):
-        txt = str(txt)
-    if isinstance(txt, unicode):
-        return txt
-    return unicode(txt, encoding)
+from functools import cmp_to_key
 
 
 def unormalize(text, form='NFD'):
@@ -37,8 +30,6 @@ def make_dirs(*lpath):
 
 
 def create_file(path, content, encoding='utf8'):
-    if not isinstance(content, unicode):
-        content = unicode(content, encoding)
     make_dirs(os.path.dirname(path))
     with io.open(path, 'w+t', encoding=encoding) as f:
         f.write(content)
@@ -59,7 +50,11 @@ def get_updated_datetime(path):
 
 
 def sort_paths_dirs_last(paths):
+    def cmp(a, b):
+        return (a > b) - (a < b)
+
     def dirs_last(a, b):
         return cmp(a[0].count('/'), b[0].count('/')) or cmp(a[0], b[0])
 
-    return sorted(paths, cmp=dirs_last)
+    return sorted(paths, key=cmp_to_key(dirs_last))
+
