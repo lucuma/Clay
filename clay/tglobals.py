@@ -34,7 +34,7 @@ def active(*url_patterns, **kwargs):
     for urlp in url_patterns:
         urlp = norm_url(urlp)
         if fnmatch(path, urlp) or (partial and path.startswith(urlp)):
-            return 'active'
+            return kwargs.get('class_', 'active')
     return u''
 
 
