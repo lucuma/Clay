@@ -15,6 +15,14 @@ def _test_active():
     assert not active('/hello/', '/world/')
 
 
+def _test_active_custom_class():
+    assert not active('/hello/', class_='other-class')
+    assert active(ACTIVE_PATH, class_='other-class') == 'other-class'
+    assert active('/hello/', ACTIVE_PATH[:5], partial=True, class_='other-class') == 'other-class'
+    assert active('/hello/', ACTIVE_PATH, class_='other-class') == 'other-class'
+    assert not active('/hello/', '/world/', class_='other-class')
+
+
 def _test_active_relative():
     assert not active('meh')
     assert active('bar.html') == 'active'
@@ -36,6 +44,7 @@ def _test_active_backward_compatibilty():
 def test_active(c):
     with c.app.test_request_context(ACTIVE_PATH, method='GET'):
         _test_active()
+        _test_active_custom_class()
 
 
 def test_active_index(c):

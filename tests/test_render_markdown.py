@@ -87,12 +87,12 @@ print('hi')
 
     expected = '''
 <p>Plain:</p>
-<pre><code>pip install clay
+<pre><code><span></span>pip install clay
 </code></pre>
 
 
 <p>Highlighted:</p>
-<pre><code class="language-python"><span class="k">print</span><span class="p">(</span><span class="s">&#39;hi&#39;</span><span class="p">)</span>
+<pre><code class="language-python"><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">)</span>
 </code></pre>
 '''  # noqa
 
@@ -112,8 +112,8 @@ def test_protect_jinja_code(t):
 ```
 '''
     expected = (
-        '''\n<pre><code class="language-jinja">'''
-        '''<span class="cp">{{</span> <span class="nv">protect_me</span> '''
+        '''<pre><code class="language-jinja">'''
+        '''<span></span><span class="cp">{{</span> <span class="nv">protect_me</span> '''
         '''<span class="cp">}}</span><span class="x"></span>\n'''
         '''</code></pre>'''
     )
