@@ -8,7 +8,7 @@ from flask import (
 )
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader
 from markupsafe import Markup
-from moar import Thumbnailer, Storage as FileStorage
+from moar import FileStorage, Thumbnailer
 
 from .jinja_includewith import IncludeWith
 from .markdown_ext import MarkdownExtension
