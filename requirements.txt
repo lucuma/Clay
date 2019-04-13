@@ -12,4 +12,4 @@ Moar>=2.1.1
 Pillow
 Pygments>=1.6
 Voodoo>=1.4.1
-Markdown>=2.3.1
+Markdown>=2.3.1,<3
