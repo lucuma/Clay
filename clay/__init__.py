@@ -10,4 +10,4 @@ An amazing prototyping tool
 from .main import Clay  # noqa
 
 
-__version__ = '2.12.7'
+__version__ = '2.12.8'
