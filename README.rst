@@ -2,7 +2,24 @@
 Clay
 ========
 
-**A rapid prototyping tool.**
+Warning
+~~~~~~~~
+
+Sadly, this project:
+
+1. Is currently unmaintained.
+2. Only works in Python 2.7.
+3. Is in dire need of several improvements for its version 3.0:
+
+    - Drop the markdown support
+    - Drop the cherrypy/cheroot dependency and go with gunicorn
+    - Update voodoo to copier.
+    - Replace beaker with pyceo
+    - Drop the support of all Pythons before 3.6.
+
+----
+
+**An amazing prototyping tool.**
 
 With Clay you can forget about making changes to dozens of HTML files
 just because you need to add a link in the footer.
