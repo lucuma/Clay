@@ -1,14 +1,11 @@
-.PHONY: clean-pyc clean-build
+all: PHONY
 
 help:
-	@echo "clean-build - remove build artifacts"
-	@echo "clean-pyc - remove Python file artifacts"
-	@echo "lint - check style with flake8"
-	@echo "test - run tests quickly with the default Python"
-	@echo "testall - run tests on every Python version with tox"
-	@echo "coverage - check code coverage with the default Python"
-	@echo "publish - package and upload a release"
-	@echo "sdist - package"
+	@echo "clean - remove build/python artifacts"
+	@echo "test - run tests"
+	@echo "flake - check style with flake8"
+	@echo "coverage - generate an HTML report of the coverage"
+	@echo "install - install for development"
 
 clean: clean-build clean-pyc
 
@@ -16,30 +13,24 @@ clean-build:
 	rm -rf build/
 	rm -rf dist/
 	rm -rf *.egg-info
+	rm -rf pip-wheel-metadata
+	rm -rf *.egg-info
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -rf {} +
-
-lint:
-	flake8 clay tests
+	find . -name '.pytest_cache' -exec rm -rf {} +
 
 test:
-	find . -name '__pycache__' -exec rm -rf {} +
-	py.test -x tests/
+	pytest -x clay tests
 
-test-all:
-	tox
+flake:
+	flake8 --config=setup.cfg clay tests
 
 coverage:
-	py.test --cov-config .coveragerc --cov-report html --cov clay tests/
-	open htmlcov/index.html
+	pytest --cov-report html --cov clay clay tests
 
-publish: clean
-	python setup.py sdist upload
-
-sdist: clean
-	python setup.py sdist
-	ls -l dist
+install:
+	pip install -e .[dev]

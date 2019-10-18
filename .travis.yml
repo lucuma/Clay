@@ -1,9 +1,16 @@
+---
+dist: bionic
 language: python
 python:
-    - "2.7"
-    - "pypy"
-install:
-    - python setup.py install
-    - pip install -r requirements-tests.txt
-script:
-    py.test -x tests/
+  - '3.6'
+  - '3.7'
+  - '3.8'
+
+# matrix:
+#   allow_failures:
+#     - python: '3.8'
+ 
+before_install: pip install -U pip coveralls
+install: pip install .[testing]
+script: pytest --cov clay clay tests
+after_success: coveralls

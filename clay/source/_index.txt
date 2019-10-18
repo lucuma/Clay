@@ -1,3 +1,0 @@
-{% for path, updated_on in index -%}
-{{ url_for('page', path=path, _external=True) }}
-{% endfor %}
