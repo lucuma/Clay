@@ -19,16 +19,31 @@ pip install clay
 
 ## Quickstart
 
-```
+```python
 clay new myapp
 ```
 
-will generate a new app container with the following structure::
+will generate a new app container with the following structure:
 
-    myapp
-      ├── static/
-      ├── clay.yml
-      └── README.md
+```
+myapp
+  ├── static/
+  ├── clay.yml
+  └── ...other files
+```
+
+You can also use an optional project template path or git URL. For the URLs, "gh:" works as a shortcut of "https://github.com/" and "gl:"  as a shortcut of "https://gitlab.com/". For example:
+
+```python
+# Absolute or relative path.
+clay new myapp /path/to/project/template
+
+# GitHub repo. Note the ".git" postfix.
+clay new myapp https://github.com/lucuma/clay-template.git
+
+# The same GitHub repo with shortcut
+clay new myapp gh:/lucuma/clay-template.git
+```
 
 
 ## Development server
@@ -62,6 +77,27 @@ clay build
 
 and all the templates will be processed and the result stored inside the
 `build` folder.
+
+
+## The clay.yaml file
+
+If a YAML file named `clay.yaml` or `clay.yml` is found in the root of the project, it will be read and used for configuring Clay.
+
+```yaml
+# Shell-style patterns files/folders that must not be rendered.
+exclude:
+  - "_*.*"
+  - "*.txt"
+  - ".git"
+  - ".git/*"
+
+# Shell-style patterns files/folders that *must be* rendered, even if
+# they are in the exclude list
+include:
+  - "robots.txt"
+  - "humans.txt"
+
+```
 
 ----
 
