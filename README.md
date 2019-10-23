@@ -86,10 +86,11 @@ If a YAML file named `clay.yaml` or `clay.yml` is found in the root of the proje
 ```yaml
 # Shell-style patterns files/folders that must not be rendered.
 exclude:
-  - "_*.*"
+  - ".*"
+  - ".*/*"
+  - "_*"
+  - "_*/*"
   - "*.txt"
-  - ".git"
-  - ".git/*"
 
 # Shell-style patterns files/folders that *must be* rendered, even if
 # they are in the exclude list
