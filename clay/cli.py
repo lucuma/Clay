@@ -6,6 +6,7 @@ from pyceo import option
 from pyceo import param
 
 from clay.main import Clay
+from clay.server import make_app
 from clay.version import __version__
 
 
