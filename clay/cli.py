@@ -42,8 +42,8 @@ def new(dest, tmpl=BLUEPRINT, quiet=False):
 
     """
     hecto.copy(tmpl, dest, quiet=quiet)
-    print(f"\n  Done! Now go to the `{dest}` folder")
-    print("  and do `clay run` to start the server.\n")
+    print(f"\n Done! Now go to the `{dest}` folder")
+    print(" and do `clay run` to start the server.\n")
 
 
 @m.command(help="Run Clay’s development server.")
@@ -51,7 +51,9 @@ def new(dest, tmpl=BLUEPRINT, quiet=False):
 @option("port", type=int, help="8080 by default")
 @option("source", help="Where to find the project. By default in the current folder.")
 def run(host="0.0.0.0", port=8080, source="."):
-    pass
+    clay = Clay(source)
+    app = make_app(clay)
+    app.run(host, port)
 
 
 @m.command(help="Generates a static copy of the project in a `build` folder.")
@@ -61,8 +63,8 @@ def run(host="0.0.0.0", port=8080, source="."):
 def build(source=".", folder="build", quiet=False):
     clay = Clay(source)
     clay.build(build_folder=folder, quiet=quiet)
-    print("\n  Done! You'll find a static version of your ")
-    print(f"  project in the `{folder}` folder.\n")
+    print("\n Done! You'll find a static version of your ")
+    print(f" project in the `{folder}` folder.\n")
 
 
 def cli():
