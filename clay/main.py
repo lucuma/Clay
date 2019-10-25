@@ -11,11 +11,6 @@ from .utils import load_config
 from .utils import make_absolute_urls_relative
 
 
-GLOBAL_DEFAULTS = {
-    "exclude": [],
-    "include": [],
-}
-
 MESSAGES = [
     "Post processing",
     "Relativizing URLs",
@@ -74,19 +69,20 @@ class Clay(object):
             print()
         self._post_process(dst_path, quiet=quiet)
 
-    def random_messages(self, num=2):
+    def random_messages(self, num=3):
         return random.sample(MESSAGES, num)
 
     def _load_config(self, options):
+        defaults = {"exclude": [], "include": []}
         try:
             return load_config(
-                GLOBAL_DEFAULTS,
+                defaults,
                 options,
                 [self.source_path / "clay.yaml", self.source_path / "clay.yml"],
             )
         except yaml.YAMLError:
             logging.error("Invalid config file `clay.yaml`.")
-            return GLOBAL_DEFAULTS
+            return defaults
 
     def _print_random_messages(self, num=2, quiet=False):
         if not quiet:
@@ -94,9 +90,8 @@ class Clay(object):
                 print(f" {message}...")
 
     def _post_process(self, dst_path, quiet=False):
-        self._print_random_messages(num=2, quiet=quiet)
+        self._print_random_messages(num=3, quiet=quiet)
         self._relativize_urls(dst_path)
-        self._print_random_messages(num=1, quiet=quiet)
 
     def _relativize_urls(self, dst_path):
         html_files = glob.glob(f"{dst_path}/**/*.html", recursive=True)
