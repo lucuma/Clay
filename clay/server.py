@@ -60,7 +60,7 @@ class WSGIApp(object):
         mime = "text/plain"
         body = f"File {request.path} not found."
         active = make_active_helper(request)
-        for path in ["not-found.html", "_notfound.html"]:
+        for path in ["not-found.html", "_notfound.html", "404.html"]:
             if self.clay.file_exists(path):
                 mime = "text/html"
                 body = self.clay.render_file(path, request=request, active=active)
