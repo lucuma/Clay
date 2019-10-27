@@ -65,6 +65,8 @@ For example, `myapp/page.html` is rendered and shown at `http://0.0.0.0:8080/pag
 
 And `myapp/foo/bar.json` is rendered and shown at `http://0.0.0.0:8080/foo/bar.json` as a JSON document.
 
+Remember to put inside `static` anything you don't want to be rendered.
+
 
 ## Build version
 
@@ -79,9 +81,9 @@ and all the templates will be processed and the result stored inside the
 `build` folder.
 
 
-## The clay.yaml file
+## The `clay.yaml` file
 
-If a YAML file named `clay.yaml` or `clay.yml` is found in the root of the project, it will be read and used for configuring Clay.
+If a YAML file named `clay.yaml` is found in the root of the project, it will be read and used for configuring Clay.
 
 ```yaml
 # Shell-style patterns files/folders that must not be rendered.
@@ -99,6 +101,22 @@ include:
   - "humans.txt"
 
 ```
+
+
+## Template globals
+
+When writing your templates, in addition of what is normally available in [Jinja templates](https://jinja.palletsprojects.com/en/2.10.x/) you have access to some other helper functions:
+
+- The python's functions `dir`, `enumerate`, `map`, `zip`, and `len`.
+- The **`now`** function, as an alias to `datetime.datetime.utcnow`.
+- The **`active`** function, to set an "active" class in navigations/menus when the current page match.
+
+### `active()`
+
+```python
+active(*url_patterns, partial=False, class_name="active")
+```
+
 
 ----
 

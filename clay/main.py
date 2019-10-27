@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 import glob
 import logging
@@ -9,7 +10,7 @@ import yaml
 
 from .utils import load_config
 from .utils import make_absolute_urls_relative
-
+from .utils import JinjaRender
 
 MESSAGES = [
     "Post processing",
@@ -27,14 +28,38 @@ MESSAGES = [
 ]
 
 
+def thumbnail(path, *args, **kwargs):
+    """For backwards compatibility."""
+    return "/" + path.lstrip("/")
+
+
+JINJA_GLOBALS = {
+    "now": datetime.utcnow,
+    "dir": dir,
+    "enumerate": enumerate,
+    "map": map,
+    "zip": zip,
+    "len": len,
+    # backwards compatibility
+    "thumbnail": thumbnail,
+}
+
+
 class Clay(object):
     def __init__(self, source_path, exclude=None, include=None):
         self.source_path = Path(source_path).resolve()
         self.config = self._load_config({"exclude": exclude, "include": include})
+        self.render = JinjaRender(self.source_path, data=JINJA_GLOBALS.copy())
 
     @property
     def static_path(self):
         return self.source_path / "static"
+
+    def file_exists(self, path):
+        return (self.source_path / path).is_file()
+
+    def render_file(self, path, **data):
+        return self.render(path, **data)
 
     def build(self, build_folder="build", quiet=False):
         dst_path = self.source_path / build_folder
@@ -63,7 +88,7 @@ class Clay(object):
             },
             render_as=render_as,
             force=True,
-            quiet=quiet
+            quiet=quiet,
         )
         if not quiet:
             print()

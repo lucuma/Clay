@@ -1,9 +1,15 @@
 from datetime import datetime
+from fnmatch import fnmatch
+from urllib.parse import quote
+import logging
+import mimetypes
+import re
+import sys
+
 from gevent import pywsgi
 from whitenoise import WhiteNoise
 
-import logging
-import sys
+from .request import Request
 
 
 logger = logging.getLogger()
@@ -17,14 +23,23 @@ class WSGIApp(object):
         return self.wsgi(environ, start_response)
 
     def wsgi(self, environ, start_response):
-        status = "200 OK"
-        data = b"Hello, World!\n"
+        request = Request(environ)
+
+        path = request.path
+        if not self.clay.file_exists(path):
+            if path == "favicon.ico":
+                return self.redirect_to("static/" + path, start_response)
+            return self.not_found(request, start_response)
+
+        active = make_active_helper(request)
+        body = self.clay.render_file(path, request=request, active=active)
+        mime = mimetypes.guess_type(path)[0] or "text/plain"
         response_headers = [
-            ("Content-Type", "text/plain"),
-            ("Content-Length", str(len(data))),
+            ("Content-Type", mime),
+            ("Content-Length", str(len(body))),
         ]
-        start_response(status, response_headers)
-        return [data]
+        start_response("200 OK", response_headers)
+        return [body.encode("utf8")]
 
     def run(self, host, port):
         set_logger()
@@ -39,14 +54,48 @@ class WSGIApp(object):
         except KeyboardInterrupt:
             print("\n Goodbye!\n")
 
+    def not_found(self, request, start_response):
+        mime = "text/plain"
+        body = f"File {request.path} not found."
+        for path in ["not-found.html", "_notfound.html"]:
+            if self.clay.file_exists(path):
+                mime = "text/html"
+                body = self.clay.render_file(path, request=request)
+                break
 
-STATUS_REPR = {
-    "200": "✔︎",
-    "404": "𐄂",
-}
+        response_headers = [
+            ("Content-Type", mime),
+            ("Content-Length", str(len(body))),
+        ]
+        start_response("404 Not Found", response_headers)
+        return [body.encode("utf8")]
+
+    def redirect_to(self, path, start_response):
+        response_headers = [
+            ("Location", quote(path.encode("utf8")))
+        ]
+        start_response("302 Found", response_headers)
+        return [""]
+
+
+def make_active_helper(request):
+    def active(*url_patterns, partial=False, class_name="active"):
+        curr_path = re.sub("index.html$", "", request.path.strip("/")).strip("/")
+        # Accept also a list of patterns
+        if len(url_patterns) == 1 and isinstance(url_patterns[0], (list, tuple)):
+            url_patterns = url_patterns[0]
+
+        for urlp in url_patterns:
+            urlp = re.sub("index.html$", "", urlp.strip("/")).strip("/")
+            if fnmatch(curr_path, urlp) or (partial and curr_path.startswith(urlp)):
+                return class_name
+        return ""
+    return active
 
 
 class ClayHandler(pywsgi.WSGIHandler):
+    STATUS_REPR = {"200": " ✔︎ ", "404": " ? ", "304": " = ", "500": "xxx"}
+
     def format_request(self):
         now = datetime.now()
         if isinstance(self.client_address, tuple):
@@ -54,13 +103,13 @@ class ClayHandler(pywsgi.WSGIHandler):
         else:
             client_address = self.client_address
         status = self._orig_status.split()[0]
-        status_repr = STATUS_REPR.get(status, status)
+        status_repr = self.STATUS_REPR.get(status, status)
 
         return " {} {} -> {} {}".format(
             now.strftime("%H:%M:%S"),
             client_address or "?",
-            (self.requestline or "").rsplit(" ", 1)[0],
             status_repr,
+            (self.requestline or "").rsplit(" ", 1)[0],
         )
 
 
