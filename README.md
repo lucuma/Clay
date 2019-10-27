@@ -83,6 +83,28 @@ and all the templates will be processed and the result stored inside the
 `build` folder.
 
 
+
+## Static files
+
+If you have folders in your project, you might be tempted to write internal URLs like this
+
+```html
+<!-- DON'T DO THIS ->
+href="../a.html"
+src="../static/main.js"
+```
+
+**Don't do it**. Is error-prone and could not worl if you do it in a base layout, for example. Always write the internal URLs using their path from the root of the project, like this:
+
+
+```html
+href="/a.html"
+src="/static/main.js"
+```
+
+That'll work on the development server and also when generating a static version of your site, Clay will convert them into relative paths automatically.
+
+
 ## Template globals
 
 When writing your templates, in addition of what is normally available in [Jinja templates](https://jinja.palletsprojects.com/en/2.10.x/) you have access to some other helper functions:
