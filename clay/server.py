@@ -17,63 +17,58 @@ class WSGIApp(object):
     def __init__(self, clay):
         self.clay = clay
 
-    def call(self, environ, start_response):
+    def __call__(self, environ, start_response):
         return self.wsgi(environ, start_response)
 
     def wsgi(self, environ, start_response):
         request = Request(environ)
+        body, status, headers = self.call(request)
+        start_response(status, headers)
+        return [body.encode("utf8")]
 
+    def call(self, request):
         path = request.path
         if not self.clay.file_exists(path):
             if path == "favicon.ico":
-                return self.redirect_to("static/" + path, start_response)
-            return self.not_found(request, start_response)
-
+                return self.redirect_to("static/" + path)
+            else:
+                return self.not_found(request)
         active = make_active_helper(request)
         body = self.clay.render_file(path, request=request, active=active)
         mime = mimetypes.guess_type(path)[0] or "text/plain"
         response_headers = [
             ("Content-Type", mime),
-            ("Content-Length", str(len(body))),
+            ("Content-Length", str(len(body)))
         ]
-        start_response("200 OK", response_headers)
-        return [body.encode("utf8")]
+        return body, "200 OK", response_headers
 
     def run(self, host, port):
         set_logger()
-        server = pywsgi.WSGIServer(
-            (host, port),
-            self.wsgi,
-            handler_class=ClayHandler
-        )
+        server = pywsgi.WSGIServer((host, port), self.wsgi, handler_class=ClayHandler)
         display_running_message(host, port)
         try:
             return server.serve_forever()
         except KeyboardInterrupt:
             print("\n Goodbye!\n")
 
-    def not_found(self, request, start_response):
+    def not_found(self, request):
         mime = "text/plain"
         body = f"File {request.path} not found."
+        active = make_active_helper(request)
         for path in ["not-found.html", "_notfound.html"]:
             if self.clay.file_exists(path):
                 mime = "text/html"
-                body = self.clay.render_file(path, request=request)
+                body = self.clay.render_file(path, request=request, active=active)
                 break
 
         response_headers = [
             ("Content-Type", mime),
-            ("Content-Length", str(len(body))),
+            ("Content-Length", str(len(body)))
         ]
-        start_response("404 Not Found", response_headers)
-        return [body.encode("utf8")]
+        return body, "404 Not Found", response_headers
 
-    def redirect_to(self, path, start_response):
-        response_headers = [
-            ("Location", quote(path.encode("utf8")))
-        ]
-        start_response("302 Found", response_headers)
-        return [""]
+    def redirect_to(self, path):
+        return "", "302 Found", [("Location", quote(path.encode("utf8")))]
 
 
 class ClayHandler(pywsgi.WSGIHandler):

@@ -3,10 +3,10 @@ import multipart
 
 
 class Request(object):
-    def __init__(self, environ=None):
+    def __init__(self, environ=None, path=None):
         environ = environ or {}
         self.environ = environ
-        self.path = self.get_path()
+        self.path = path or self.get_path()
         self.query = self.get_query()
         self.ajax = self.is_xhr
         self.method = environ.get("REQUEST_METHOD", "GET").upper()
