@@ -1,6 +1,8 @@
 
 # Clay
 
+[![Coverage Status](https://coveralls.io/repos/github/lucuma/clay/badge.svg?branch=master)](https://coveralls.io/github/lucuma/clay?branch=master) [![Tests](https://travis-ci.org/lucuma/clay.svg?branch=master)](https://travis-ci.org/lucuma/clay/)
+
 **An amazing prototyping tool.**
 
 With Clay you can forget about making changes to dozens of HTML files
@@ -81,6 +83,21 @@ and all the templates will be processed and the result stored inside the
 `build` folder.
 
 
+## Template globals
+
+When writing your templates, in addition of what is normally available in [Jinja templates](https://jinja.palletsprojects.com/en/2.10.x/) you have access to some other helper functions:
+
+- The python's functions `dir`, `enumerate`, `map`, `zip`, and `len`.
+- The **`now`** function, as an alias to `datetime.datetime.utcnow`.
+- The **`active`** function, to set an "active" class in navigations/menus when the current page match.
+
+### `active()`
+
+```python
+active(*url_patterns, partial=False, class_name="active")
+```
+
+
 ## The `clay.yaml` file
 
 If a YAML file named `clay.yaml` is found in the root of the project, it will be read and used for configuring Clay.
@@ -101,22 +118,6 @@ include:
   - "humans.txt"
 
 ```
-
-
-## Template globals
-
-When writing your templates, in addition of what is normally available in [Jinja templates](https://jinja.palletsprojects.com/en/2.10.x/) you have access to some other helper functions:
-
-- The python's functions `dir`, `enumerate`, `map`, `zip`, and `len`.
-- The **`now`** function, as an alias to `datetime.datetime.utcnow`.
-- The **`active`** function, to set an "active" class in navigations/menus when the current page match.
-
-### `active()`
-
-```python
-active(*url_patterns, partial=False, class_name="active")
-```
-
 
 ----
 
