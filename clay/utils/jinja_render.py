@@ -18,8 +18,7 @@ class JinjaRender(object):
         _envops.update(envops or {})
         _envops.setdefault("loader", jinja2.FileSystemLoader(self.src_path))
         self.env = SandboxedEnvironment(**_envops)
-        if data:
-            self.env.globals.update(**data)
+        self.env.globals.update(**(data or {}))
 
     def __call__(self, fullpath, **data):
         relpath = str(fullpath).replace(self.src_path, "", 1).lstrip(os.path.sep)

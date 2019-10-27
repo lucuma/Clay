@@ -13,6 +13,7 @@ from .utils import JinjaRender
 from .utils import load_config
 from .utils import make_absolute_urls_relative
 from .utils import make_active_helper
+from .utils import make_filter, make_matcher
 
 
 MESSAGES = [
@@ -54,11 +55,17 @@ class Clay(object):
         self.config = self._load_config({"exclude": exclude, "include": include})
         self.render = JinjaRender(self.source_path, data=JINJA_GLOBALS.copy())
 
+        must_exclude = make_matcher(self.config["exclude"])
+        must_include = make_matcher(self.config["include"])
+        self.must_filter = make_filter(must_exclude, must_include)
+
     @property
     def static_path(self):
         return self.source_path / "static"
 
     def file_exists(self, path):
+        if self.must_filter(path):
+            return False
         return (self.source_path / path).is_file()
 
     def render_file(self, path, **data):
@@ -97,7 +104,7 @@ class Clay(object):
         return random.sample(MESSAGES, num)
 
     def _load_config(self, options):
-        defaults = {"exclude": [], "include": []}
+        defaults = {"exclude": [".*", ".*/**/*"], "include": []}
         try:
             return load_config(
                 defaults,

@@ -10,6 +10,7 @@ from whitenoise import WhiteNoise
 from .request import Request
 from .utils import make_active_helper
 
+
 logger = logging.getLogger()
 
 
@@ -33,8 +34,12 @@ class WSGIApp(object):
                 return self.redirect_to("static/" + path)
             else:
                 return self.not_found(request)
+
         active = make_active_helper(request)
-        body = self.clay.render_file(path, request=request, active=active)
+        if request.method == "HEAD":
+            body = ""
+        else:
+            body = self.clay.render_file(path, request=request, active=active)
         mime = mimetypes.guess_type(path)[0] or "text/plain"
         response_headers = [
             ("Content-Type", mime),
@@ -42,7 +47,7 @@ class WSGIApp(object):
         ]
         return body, "200 OK", response_headers
 
-    def run(self, host, port):
+    def run(self, host, port):  # pragma: no cover
         set_logger()
         server = pywsgi.WSGIServer((host, port), self.wsgi, handler_class=ClayHandler)
         display_running_message(host, port)
@@ -71,7 +76,7 @@ class WSGIApp(object):
         return "", "302 Found", [("Location", quote(path.encode("utf8")))]
 
 
-class ClayHandler(pywsgi.WSGIHandler):
+class ClayHandler(pywsgi.WSGIHandler):  # pragma: no cover
     STATUS_REPR = {"200": " ✔︎ ", "404": " ? ", "304": " = ", "500": "xxx"}
 
     def format_request(self):
@@ -91,7 +96,7 @@ class ClayHandler(pywsgi.WSGIHandler):
         )
 
 
-def set_logger():
+def set_logger():  # pragma: no cover
     level = logging.INFO
     logger.setLevel(level)
     handler = logging.StreamHandler(sys.stdout)
@@ -111,7 +116,7 @@ DISPLAY = """
 """
 
 
-def display_running_message(host, port):  # pragma:no cover
+def display_running_message(host, port):  # pragma: no cover
     import socket
 
     local = "{:<29}".format(f"http://{host}:{port}")

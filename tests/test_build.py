@@ -4,7 +4,7 @@ import os
 import clay
 
 
-def test_build_render(dst):
+def test_render(dst):
     (dst / "test.txt").write_text("{{ now() }}")
     clay.cli.build(source=dst)
 
@@ -12,7 +12,7 @@ def test_build_render(dst):
     assert (dst / "build" / "test.txt").read_text().startswith(expected)
 
 
-def test_build_custom_folder(dst):
+def test_custom_folder(dst):
     (dst / "test.txt").write_text("{{ now() }}")
     clay.cli.build(source=dst, folder="out")
 
@@ -20,7 +20,7 @@ def test_build_custom_folder(dst):
     assert (dst / "out" / "test.txt").read_text().startswith(expected)
 
 
-def test_build_do_not_render_static(dst):
+def test_do_not_render_static(dst):
     text = "{{ now() }}"
     os.mkdir(dst / "static")
     (dst / "static" / "test.txt").write_text(text)
@@ -29,7 +29,7 @@ def test_build_do_not_render_static(dst):
     assert (dst / "build" / "static" / "test.txt").read_text() == text
 
 
-def test_build_render_context(dst):
+def test_render_context(dst):
     (dst / "a.html").write_text("{{ request.path }}")
     (dst / "b.html").write_text("{{ request.path }}")
     clay.cli.build(source=dst)
@@ -38,7 +38,7 @@ def test_build_render_context(dst):
     assert (dst / "build" / "b.html").read_text() == "b.html"
 
 
-def test_build_render_active(dst):
+def test_render_active(dst):
     os.mkdir(dst / "a")
     (dst / "a" / "index.html").write_text("{{ active('/') }}")
     (dst / "a" / "partial.html").write_text("{{ active('a', partial=true) }}")

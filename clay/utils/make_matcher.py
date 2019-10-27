@@ -3,7 +3,7 @@ from functools import reduce
 import os
 import unicodedata
 
-__all__ = ("make_path_matcher", "make_path_filter", )
+__all__ = ("make_matcher", "make_filter", )
 
 
 def _normalize_str(text, form="NFD"):
@@ -24,7 +24,7 @@ def _match(path, patterns):
         False)
 
 
-def make_path_matcher(patterns):
+def make_matcher(patterns):
     """Returns a function that evaluates if a file or folder name must be
     filtered out, and another that evaluates if a file must be skipped.
     The compared paths are first converted to unicode and decomposed.
@@ -41,7 +41,7 @@ def make_path_matcher(patterns):
     return path_match
 
 
-def make_path_filter(must_exclude, must_include):
+def make_filter(must_exclude, must_include):
 
     def must_filter(path):
         return must_exclude(path) and not must_include(path)
