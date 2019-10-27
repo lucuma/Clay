@@ -1,16 +1,14 @@
 from datetime import datetime
-from fnmatch import fnmatch
 from urllib.parse import quote
 import logging
 import mimetypes
-import re
 import sys
 
 from gevent import pywsgi
 from whitenoise import WhiteNoise
 
 from .request import Request
-
+from .utils import make_active_helper
 
 logger = logging.getLogger()
 
@@ -76,21 +74,6 @@ class WSGIApp(object):
         ]
         start_response("302 Found", response_headers)
         return [""]
-
-
-def make_active_helper(request):
-    def active(*url_patterns, partial=False, class_name="active"):
-        curr_path = re.sub("index.html$", "", request.path.strip("/")).strip("/")
-        # Accept also a list of patterns
-        if len(url_patterns) == 1 and isinstance(url_patterns[0], (list, tuple)):
-            url_patterns = url_patterns[0]
-
-        for urlp in url_patterns:
-            urlp = re.sub("index.html$", "", urlp.strip("/")).strip("/")
-            if fnmatch(curr_path, urlp) or (partial and curr_path.startswith(urlp)):
-                return class_name
-        return ""
-    return active
 
 
 class ClayHandler(pywsgi.WSGIHandler):

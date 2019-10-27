@@ -3,13 +3,14 @@ import multipart
 
 
 class Request(object):
-    def __init__(self, environ):
+    def __init__(self, environ=None):
+        environ = environ or {}
         self.environ = environ
         self.path = self.get_path()
         self.query = self.get_query()
         self.ajax = self.is_xhr
-        self.method = environ["REQUEST_METHOD"].upper()
-        self.remote_addr = self.environ["REMOTE_ADDR"]
+        self.method = environ.get("REQUEST_METHOD", "GET").upper()
+        self.remote_addr = environ.get("REMOTE_ADDR", "127.0.0.1")
 
     @property
     def is_xhr(self):
@@ -18,7 +19,9 @@ class Request(object):
         return False
 
     def get_path(self):
-        path_info = self.environ.get("PATH_INFO", "")
+        path_info = self.environ.get("PATH_INFO")
+        if not path_info:
+            return ""
         path = path_info.encode("iso-8859-1", "replace").decode("utf-8", "replace")
         return path[1:] + "index.html" if path.endswith("/") else path[1:]
 

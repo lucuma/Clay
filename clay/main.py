@@ -8,9 +8,12 @@ import os
 import hecto
 import yaml
 
+from .request import Request
+from .utils import JinjaRender
 from .utils import load_config
 from .utils import make_absolute_urls_relative
-from .utils import JinjaRender
+from .utils import make_active_helper
+
 
 MESSAGES = [
     "Post processing",
@@ -70,11 +73,6 @@ class Clay(object):
             f"{build_folder}/*",
         ]
 
-        def render_as(src_path, dst_path):
-            if str(dst_path).startswith("static/"):
-                return None
-            return dst_path
-
         hecto.copy(
             self.source_path,
             dst_path,
@@ -87,6 +85,7 @@ class Clay(object):
                 "variable_end_string": "}}",
             },
             render_as=render_as,
+            get_context=get_context,
             force=True,
             quiet=quiet,
         )
@@ -109,14 +108,14 @@ class Clay(object):
             logging.error("Invalid config file `clay.yaml`.")
             return defaults
 
+    def _post_process(self, dst_path, quiet=False):
+        self._print_random_messages(num=3, quiet=quiet)
+        self._relativize_urls(dst_path)
+
     def _print_random_messages(self, num=2, quiet=False):
         if not quiet:
             for message in self.random_messages(num):
                 print(f" {message}...")
-
-    def _post_process(self, dst_path, quiet=False):
-        self._print_random_messages(num=3, quiet=quiet)
-        self._relativize_urls(dst_path)
 
     def _relativize_urls(self, dst_path):
         html_files = glob.glob(f"{dst_path}/**/*.html", recursive=True)
@@ -126,3 +125,16 @@ class Clay(object):
             content = html_file.read_text()
             new_content = make_absolute_urls_relative(dst_path, relpath, content)
             html_file.write_text(new_content)
+
+
+def render_as(src_path, dst_path):
+    if str(dst_path).startswith("static/"):
+        return None
+    return dst_path
+
+
+def get_context(path):
+    request = Request()
+    request.path = str(path).replace("\\", "/").strip("/")
+    active = make_active_helper(request)
+    return {"request": request, "active": active}
