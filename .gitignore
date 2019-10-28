@@ -1,0 +1,8 @@
+.*
+.*/**/*
+__pycache__
+build
+clay
+*.egg-info
+dist
+tests

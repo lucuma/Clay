@@ -1,6 +1,3 @@
-@import url(//fonts.googleapis.com/css?family=Pacifico);
-/* Foundation
-///////////// */
 * {
   margin: 0;
   padding: 0;
@@ -34,8 +31,6 @@ img, object, embed {
   max-width: 100%;
 }
 
-/* Helpers
-////////// */
 .clear:before,
 .clear:after { 
   content: "\0020"; 
@@ -71,8 +66,6 @@ img, object, embed {
   width: 100%;
 }
 
-/* Project CSS
-////////////// */
 body {
     width: 850px;
     margin: auto;
@@ -82,7 +75,7 @@ body {
     background: #fefefe;
 }
 h1 {
-    font: normal 90px/1 'Pacifico', Georgia, serif;
+    font: normal 90px/1 "Pacifico", cursive;
     color: #a3312d;
     letter-spacing: -1px;
     line-height: 1;
