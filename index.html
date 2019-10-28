@@ -1,93 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Clay — A Rapid Prototyping Tool</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<!--[if lt IE 9]>
-<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-<link href="clay.css" rel="stylesheet" />
+  <meta charset="utf-8">
+  <title>Clay — A Rapid Prototyping Tool</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="monokai.css" rel="stylesheet">
+  <link href="clay.css" rel="stylesheet">
 </head>
 <body>
-<header class="l-header">
-<hgroup>
-<h1>Clay</h1>
-<h2>A Rapid Prototyping Tool</h2>
-</hgroup>
+<header>
+  <hgroup>
+    <h1>Clay</h1>
+    <h2>A Rapid Prototyping Tool</h2>
+  </hgroup>
 </header>
-<section class="l-main">
-<p>With Clay you can forget about making changes to dozens of HTML files just because you need to add a link in the footer. You can also use it to prototype your AJAX-driven application or the responses of sending forms, because it acts like a real server.</p>
 
-<h3>Instructions</h3>
-<p>Run the development server with</p>
+<p>With Clay you can forget about making changes to dozens of HTML files just because you need to add a link in the footer.</p>
 
-<pre>$ clay run</pre>
+<p>You can also use it to prototype your AJAX-driven application or the responses of sending forms, because it acts like a real server.</p>
 
-<p>or generate a static version of the site</p>
+<h2 id="install">Install <a class="headerlink" href="#install" title="Permanent link">¶</a></h2>
 
-<pre>$ clay build</pre>
+<div class="codehilite">
+  <pre>pip install clay
+</pre>
+</div>
 
-<h3>Quickstart</h3>
-<pre>$ clay new myappname</pre>
+<p>Clay version 3.x only works with Python 3.6, 3.7, and 3.8.</p>
+
+
+<h2 id="quickstart">Quickstart <a class="headerlink" href="#quickstart" title="Permanent link">¶</a></h2>
+
+<div class="codehilite">
+  <pre><span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span>
+</pre>
+</div>
 
 <p>will generate a new app container with the following structure:</p>
 
-<pre>myappname
-  ├── source/
-  ├─────── static/
-  ├── README.md
-  └── settings.yml
+<div class="codehilite">
+  <pre>myapp
+├── static/
+├── clay.yaml
+└── ...other files
 </pre>
+</div>
 
+<p>You can also use an optional project template path or git URL. For the URLs, &ldquo;gh:&rdquo; works as a shortcut of &ldquo;<a href="https://github.com/">https://github.com/</a>&rdquo; and &ldquo;gl:&rdquo; as a shortcut of &ldquo;<a href="https://gitlab.com/">https://gitlab.com/</a>&rdquo;. For example:</p>
+
+<div class="codehilite">
+  <pre><span class="c1"># Absolute or relative path.</span>
+<span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">template</span>
+
+<span class="c1"># GitHub repo. Note the &quot;.git&quot; postfix.</span>
+<span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">lucuma</span><span class="o">/</span><span class="n">clay</span><span class="o">-</span><span class="n">template</span><span class="o">.</span><span class="n">git</span>
+
+<span class="c1"># The same GitHub repo with shortcut</span>
+<span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span> <span class="n">gh</span><span class="p">:</span><span class="o">/</span><span class="n">lucuma</span><span class="o">/</span><span class="n">clay</span><span class="o">-</span><span class="n">template</span><span class="o">.</span><span class="n">git</span>
+</pre>
+</div>
+
+
+<h2 id="development-server">Development server <a class="headerlink" href="#development-server" title="Permanent link">¶</a></h2>
 <p>Inside that folder, run the development server with:</p>
 
-<pre>$ clay run</pre>
+<div class="codehilite">
+  <pre>clay run
+</pre>
+</div>
 
-<p>and your site'll be available at <code>http://0.0.0.0:8080/</code>.</p>
+<p>and your site&rsquo;ll be available at <code>http://0.0.0.0:8080/</code>.</p>
 
-<p>Anything you put under <em>source</em> will be render as a page. For instance <code>source/page.html</code> will be visible at <code>http://0.0.0.0:8080/page.html</code>, and <code>source/foo/bar.json</code> at <code>http://0.0.0.0:8080/foo/bar.json</code>.</p>
+<p>Anything inside the <code>static</code> folder is served as-is under the <code>/static/</code> path. For example you can see <code>myapp/static/image.png</code> at the <code>http://0.0.0.0:8080/static/image.png</code> URL.</p>
 
-<p>To generate a static version of your site, stop the server (with <kbd>Control + C</kbd>) and run:</p>
+<p>Any file outside the <code>static</code> folder, is rendered as a page.</p>
 
-<pre>$ clay build</pre>
-<p>and all the templates will be processed and the result stored inside the build folder.</p>
+<p>For example, <code>myapp/page.html</code> is rendered and shown at <code>http://0.0.0.0:8080/page.html</code>, as an HTML page.</p>
 
-<h3>Not just for HTML</h3>
-<p>Clay can automatically compile Markdown, Sass, Less and CoffeeScript files directly from your static dir.
+<p>And <code>myapp/foo/bar.json</code> is rendered and shown at <code>http://0.0.0.0:8080/foo/bar.json</code> as a JSON document.</p>
 
-<h3>Requirements</h3>
-<p>Clay works (for now) only with Python 2.7</p>
-<p>Sass support needs <a href="https://github.com/Kronuz/pyScss" target="_blank">pyScss</a>, Markdown needs the <a href="http://pypi.python.org/pypi/Markdown" target="_blank">Markdown</a> package, and Less and CoffeeScript has to be installed in Node first.</p>
+<p>Remember to put inside <code>static</code> anything you don&rsquo;t want to be rendered.</p>
 
-<h3>How to install</h3>
-<p>Just run</p>
-<pre>sudo pip install clay</pre>
-<p>and you're ready to go.</p>
 
-<h3>Templates</h3>
-<p>The real power of Clay comes by using the <a href="http://jinja.pocoo.org/2/" target="_blank">Jinja2</a> template syntax.</p>
+<h2 id="build-version">Build version <a class="headerlink" href="#build-version" title="Permanent link">¶</a></h2>
+<p>To generate a static version of your site, first, stop the server with
+  <code>Control + C</code>, and then run:</p>
 
-<p>You can make a single file, (for instance, your header) and included it many times using:</p>
-    
-<pre>{% include "header.html "%}</pre>
+<div class="codehilite">
+  <pre>clay build
+</pre>
+</div>
 
-<p>You can also use a powerful feature called <em>template inheritance</em>:</p>
+<p>and all the templates will be processed and the result stored inside the
+  <code>build</code> folder.</p>
 
-<p>Inside the source folder you'll find a file called base.html. This is a page skeleton shared among the rest of HTML templates. You put in there anything you want to be repeated in every page, like the doctype declaration or maybe navigation links and a footer. You change something there and the rest of the pages will be automatically updated. Much more easy than manually search and replace a bunch of files!</p>
 
-<p>The rest of the files, like <code>index.html</code>, are composed of blocks, like</p>
+<h2 id="static-files">Static files <a class="headerlink" href="#static-files" title="Permanent link">¶</a></h2>
+<p>If you have folders in your project, you might be tempted to write internal URLs like this</p>
 
-<pre>{% block title %}Welcome to Clay{% endblock %}</pre>
-<p>Any content you put inside those blocks will be used to fill the same-named blocks in base.html. In this case to fill the title tag.</p>
+<div class="codehilite">
+  <pre><span class="c">&lt;!-- DON&#39;T DO THIS -&gt;</span>
+<span class="c">href=&quot;../a.html&quot;</span>
+<span class="c">src=&quot;../static/main.js&quot;</span>
+</pre>
+</div>
 
-<p>You can create new blocks for your templates. You can even create new base files, just change in your templates the base that they will use, by updating the line that says:</p>
+<p><strong>Don&rsquo;t do it</strong>. Is error-prone and could not worl if you do it in a base layout, for example. Always write the internal URLs using their path from the root of the project, like this:</p>
 
-<pre>{% extends "base.html" %}</pre>
-<p>You can use more than just HTML: JSON, csv, plain text, etc. Any text-based format will be ok.</p>
+<div class="codehilite">
+  <pre>href=&quot;/a.html&quot;
+src=&quot;/static/main.js&quot;
+</pre>
+</div>
 
-<p><a href="http://jinja.pocoo.org/2/" target="_blank">Jinja2</a> templates are much more than just template inheritance. For more advaced features check the official documentation.</p>
-</section>
+<p>That&rsquo;ll work on the development server and also when generating a static version of your site, Clay will convert them into relative paths automatically.</p>
+
+
+<h2 id="template-globals">Template globals <a class="headerlink" href="#template-globals" title="Permanent link">¶</a></h2>
+<p>When writing your templates, in addition of what is normally available in <a href="https://jinja.palletsprojects.com/en/2.10.x/">Jinja templates</a> you have access to some other helper functions:</p>
+<ul>
+  <li>The python&rsquo;s functions <code>dir</code>, <code>enumerate</code>, <code>map</code>, <code>zip</code>, and <code>len</code>.</li>
+  <li>The <strong><code>now</code></strong> function, as an alias to <code>datetime.datetime.utcnow</code>.</li>
+  <li>The <strong><code>active</code></strong> function, to set an &ldquo;active&rdquo; class in navigations/menus when the current page match.</li>
+</ul>
+
+<h3 id="active"><code>active()</code> <a class="headerlink" href="#active" title="Permanent link">¶</a></h3>
+
+<div class="codehilite">
+  <pre><span class="n">active</span><span class="p">(</span><span class="o">*</span><span class="n">url_patterns</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s">&quot;active&quot;</span><span class="p">)</span>
+</pre>
+</div>
+
+<p>TODO.</p>
+
+<h2 id="the-clayyaml-file">The <code>clay.yaml</code> file <a class="headerlink" href="#the-clayyaml-file" title="Permanent link">¶</a></h2>
+<p>If a YAML file named <code>clay.yaml</code> is found in the root of the project, it will be read and used for configuring Clay.</p>
+
+<div class="codehilite">
+  <pre><span class="c1"># Shell-style patterns files/folders that must not be rendered.</span>
+<span class="l l-Scalar l-Scalar-Plain">exclude</span><span class="p p-Indicator">:</span>
+<span class="p p-Indicator">-</span> <span class="s">&quot;.*&quot;</span>
+<span class="p p-Indicator">-</span> <span class="s">&quot;.*/*&quot;</span>
+<span class="p p-Indicator">-</span> <span class="s">&quot;_*&quot;</span>
+<span class="p p-Indicator">-</span> <span class="s">&quot;_*/*&quot;</span>
+<span class="p p-Indicator">-</span> <span class="s">&quot;*.txt&quot;</span>
+
+<span class="c1"># Shell-style patterns files/folders that *must be* rendered, even if</span>
+<span class="c1"># they are in the exclude list</span>
+<span class="l l-Scalar l-Scalar-Plain">include</span><span class="p p-Indicator">:</span>
+<span class="p p-Indicator">-</span> <span class="s">&quot;robots.txt&quot;</span>
+<span class="p p-Indicator">-</span> <span class="s">&quot;humans.txt&quot;</span>
+</pre>
+</div>
+
+<h2 id="update-from-v2-to-v3">Update from v2 to v3+ <a class="headerlink" href="#update-from-v2-to-v3" title="Permanent link">¶</a></h2>
+<p>Before v3, previous versions of Clay did work with having all source files in a <code>source</code> subfolder. However, this is no longer the case, and the recommended setup is to have them in the parent folder instead.</p>
+<p>The old project with a <code>source</code> folder still works, but it might change in future versions.</p>
+
+<hr />
+<p>Happy coding!</p>
+
 <a id="github" href="http://github.com/lucuma/clay"><img src="./forkme-right.png" alt="Fork me on GitHub"></a>
 </body>
 </html>
