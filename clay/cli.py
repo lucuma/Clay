@@ -5,9 +5,9 @@ from pyceo import Manager
 from pyceo import option
 from pyceo import param
 
-from clay.main import Clay
-from clay.server import make_app
-from clay.version import __version__
+from .main import Clay
+from .server import make_app
+from .version import __version__
 
 
 BLUEPRINT = Path(__file__).resolve().parent.parent / "blueprint"
@@ -68,9 +68,5 @@ def build(source=".", folder="build", quiet=False):
     print(f" project in the `{folder}` folder.\n")
 
 
-def cli():  # pragma: no cover
+def run():  # pragma: no cover
     m.run()
-
-
-if __name__ == "__main__":
-    cli()

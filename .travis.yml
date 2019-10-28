@@ -11,8 +11,6 @@ python:
 #     - python: '3.8'
 
 before_install: pip install -U pip coveralls
-install:
-  - pip install .
-  - pip install .[testing]
+install: pip install -e .[testing]
 script: pytest --cov clay clay tests
 after_success: coveralls
