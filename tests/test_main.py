@@ -56,3 +56,11 @@ def test_render_active(dst):
     assert (dst / "build" / "a" / "name.html").read_text() == ""
     assert (dst / "build" / "a" / "exact.html").read_text() == "active"
     assert (dst / "build" / "a" / "custom.html").read_text() == "yeah"
+
+
+def test_backwards_compatibility(dst):
+    os.mkdir(dst / "source")
+    (dst / "source" / "index.html").write_text("{{ 'foo' + 'bar' }}")
+    clay.cli.build(source=dst)
+
+    assert (dst / "source" / "build" / "index.html").read_text() == "foobar"

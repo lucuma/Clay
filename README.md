@@ -30,7 +30,7 @@ will generate a new app container with the following structure:
 ```
 myapp
   ├── static/
-  ├── clay.yml
+  ├── clay.yaml
   └── ...other files
 ```
 
@@ -140,6 +140,15 @@ include:
   - "humans.txt"
 
 ```
+
+## Update from v2 to v3+
+
+Before v3, previous versions of Clay did work with having all source files in a `source` subfolder. However, this is no longer the case, and the recommended setup is to have them in the parent folder instead.
+
+The old project with a `source` folder still works, but it might change in future versions.
+
+In those old projects, Clay will create the `build` folder inside `source` instead of at the parent folder, like before.
+
 
 ----
 

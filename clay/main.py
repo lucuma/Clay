@@ -51,7 +51,9 @@ JINJA_GLOBALS = {
 
 class Clay(object):
     def __init__(self, source_path, exclude=None, include=None):
-        self.source_path = Path(source_path).resolve()
+        source_path = Path(source_path).resolve()
+        source_path = self._update_for_backwards_compatibility(source_path)
+        self.source_path = source_path
         self.config = self._load_config({"exclude": exclude, "include": include})
         self.render = JinjaRender(self.source_path, data=JINJA_GLOBALS.copy())
 
@@ -102,6 +104,11 @@ class Clay(object):
 
     def random_messages(self, num=3):
         return random.sample(MESSAGES, num)
+
+    def _update_for_backwards_compatibility(self, source_path):
+        if (source_path / "source").is_dir() and not (source_path / "index").exists():
+            return source_path / "source"
+        return source_path
 
     def _load_config(self, options):
         defaults = {"exclude": [".*", ".*/**/*"], "include": []}
