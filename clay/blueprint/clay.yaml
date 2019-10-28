@@ -1,13 +1,16 @@
+---
 # Shell-style patterns files/folders that must not be rendered.
 exclude:
   - ".*"
+  - ".*/*"
   - ".*/**/*"
   - "~*"
+  - "~*/*"
   - "~*/**/*"
   - "_*"
+  - "_*/*"
   - "_*/**/*"
 
 # Shell-style patterns files/folders that *must be* rendered, even if
 # they are in the exclude list
 include:
-  - .gitignore
