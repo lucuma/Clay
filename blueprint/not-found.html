@@ -1,0 +1,16 @@
+{% extends "_layout.html" %}
+
+{% block title %}Not Found{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/not-found.css?v=1.0">
+{%- endblock %}
+
+{% block content %}
+<main>
+  <p>File <code>{{ request.path }}</code> not found.</p>
+</main>
+{%- endblock %}
+
+{% block scripts %}
+{%- endblock %}

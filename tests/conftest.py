@@ -1,39 +1,26 @@
-# coding=utf-8
-"""
-Directory-specific fixtures, hooks, etc. for py.test
-"""
+from pathlib import Path
+from tempfile import mkdtemp
 import shutil
 
-from clay import Clay
+from webtest import TestApp
 import pytest
 
-from .helpers import TESTS, SOURCE_DIR, BUILD_DIR
-
-
-def setup_function(function):
-    """ Invoked for every test function in the module.
-    """
-    pass
-
-
-def teardown_function(function):
-    """ Invoked for every test function in the module.
-    """
-    try:
-        shutil.rmtree(SOURCE_DIR)
-    except OSError:
-        pass
-    try:
-        shutil.rmtree(BUILD_DIR)
-    except OSError:
-        pass
+from clay.main import Clay
+from clay.server import make_app
 
 
 @pytest.fixture()
-def c():
-    return Clay(TESTS, {'foo': 'bar'})
+def dst(request):
+    """Return a real temporary folder path which is unique to each test
+    function invocation. This folder is deleted after the test has finished.
+    """
+    dst = Path(mkdtemp()).resolve()
+    request.addfinalizer(lambda: shutil.rmtree(str(dst), ignore_errors=True))
+    return dst
 
 
 @pytest.fixture()
-def t(c):
-    return c.get_test_client()
+def server(dst):
+    clay = Clay(dst)
+    app = make_app(clay)
+    return TestApp(app)

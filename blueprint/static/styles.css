@@ -1,0 +1,23 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 26px;
+  line-height: 1.5;
+  color: #333;
+  background: #fefefe;
+  text-align: center;
+}
+main {
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 640px;
+}
+h1 {
+  font-family: "Pacifico", cursive;
+  font-size: 72px;
+  font-weight: bold;
+  color: #a3312d;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin: 110px 0 50px;
+  border: 20px;
+}

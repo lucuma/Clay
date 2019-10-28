@@ -1,114 +1,138 @@
-# coding=utf-8
-from __future__ import print_function
-
 from datetime import datetime
-import socket
+from urllib.parse import quote
+import logging
+import mimetypes
 import sys
 
-from cheroot.wsgi import WSGIPathInfoDispatcher, WSGIServer
+from gevent import pywsgi
+from whitenoise import WhiteNoise
+
+from .request import Request
+from .utils import make_active_helper
 
 
-ALL_HOSTS = '0.0.0.0'
-DEFAULT_HOST = ALL_HOSTS
-DEFAULT_PORT = 8080
-MAX_PORT_DELTA = 10
-
-WELCOME = u' # Clay (by Lucuma labs)\n'
-ADDRINUSE = u' ---- Address already in use. Trying another port...'
-RUNNING_ON = u' * Running on http://%s:%s'
-HOW_TO_QUIT = u' -- Quit the server with Ctrl+C --\n'
-
-HTTPMSG = '500 Internal Error'
+logger = logging.getLogger()
 
 
-class Server(object):
-
+class WSGIApp(object):
     def __init__(self, clay):
         self.clay = clay
-        app = RequestLogger(clay.app)
-        self.dispatcher = WSGIPathInfoDispatcher({'/': app})
-
-    def run(self, host=DEFAULT_HOST, port=DEFAULT_PORT):
-        port = port or self.clay.settings.get('port', DEFAULT_PORT)
-        host = host or self.clay.settings.get('host', DEFAULT_HOST)
-        max_port = port + MAX_PORT_DELTA
-        print(WELCOME)
-        return self._testrun(host, port, max_port)
-
-    def _testrun(self, host, current_port, max_port):
-        self.print_help_msg(host, current_port)
-        try:
-            self._run_wsgi_server(host, current_port)
-        except socket.error:
-            current_port += 1
-            if current_port > max_port:
-                return
-            print(ADDRINUSE)
-            self._testrun(host, current_port, max_port)
-        except KeyboardInterrupt:
-            self.stop()
-        return host, current_port
-
-    def _run_wsgi_server(self, host, port):
-        self.server = self._get_wsgi_server(host, port)
-        self.start()
-
-    def _get_wsgi_server(self, host, port):
-        return WSGIServer(
-            (host, port),
-            wsgi_app=self.dispatcher
-        )
-
-    def start(self):
-        self.server.start()
-
-    def stop(self):
-        self.server.stop()
-
-    def print_help_msg(self, host, port):
-        if host == ALL_HOSTS:
-            print(RUNNING_ON % ('localhost', port))
-            local_ip = get_local_ip()
-            if local_ip:
-                print(RUNNING_ON % (local_ip, port))
-        print(HOW_TO_QUIT)
-
-
-class RequestLogger(object):
-
-    def __init__(self, application, **kw):
-        self.application = application
-
-    def log_request(self, environ, now=None):
-        now = now or datetime.now()
-        msg = [
-            ' ',
-            now.strftime('%H:%M:%S'), ' | ',
-            environ.get('REMOTE_ADDR', '?'), '  ',
-            environ.get('REQUEST_URI', ''), '  ',
-            '(', environ.get('REQUEST_METHOD', ''), ')',
-        ]
-        msg = ''.join(msg)
-        print(msg)
 
     def __call__(self, environ, start_response):
-        self.log_request(environ)
+        return self.wsgi(environ, start_response)
+
+    def wsgi(self, environ, start_response):
+        request = Request(environ)
+        body, status, headers = self.call(request)
+        start_response(status, headers)
+        return [body.encode("utf8")]
+
+    def call(self, request):
+        path = request.path
+        if not self.clay.file_exists(path):
+            if path == "favicon.ico":
+                return self.redirect_to("static/" + path)
+            else:
+                return self.not_found(request)
+
+        active = make_active_helper(request)
+        if request.method == "HEAD":
+            body = ""
+        else:
+            body = self.clay.render_file(path, request=request, active=active)
+        mime = mimetypes.guess_type(path)[0] or "text/plain"
+        response_headers = [
+            ("Content-Type", mime),
+            ("Content-Length", str(len(body)))
+        ]
+        return body, "200 OK", response_headers
+
+    def run(self, host, port):  # pragma: no cover
+        set_logger()
+        server = pywsgi.WSGIServer((host, port), self.wsgi, handler_class=ClayHandler)
+        display_running_message(host, port)
         try:
-            return self.application(environ, start_response)
-        except Exception:
-            start_response(
-                HTTPMSG,
-                [('Content-type', 'text/plain')],
-                sys.exc_info()
-            )
-            raise
+            return server.serve_forever()
+        except KeyboardInterrupt:
+            print("\n Goodbye!\n")
+
+    def not_found(self, request):
+        mime = "text/plain"
+        body = f"File {request.path} not found."
+        active = make_active_helper(request)
+        for path in ["not-found.html", "_notfound.html", "404.html"]:
+            if self.clay.file_exists(path):
+                mime = "text/html"
+                body = self.clay.render_file(path, request=request, active=active)
+                break
+
+        response_headers = [
+            ("Content-Type", mime),
+            ("Content-Length", str(len(body)))
+        ]
+        return body, "404 Not Found", response_headers
+
+    def redirect_to(self, path):
+        return "", "302 Found", [("Location", quote(path.encode("utf8")))]
 
 
-def get_local_ip():
-    try:
-        interfaces = socket.gethostbyname_ex(socket.gethostname())[-1]
-    except socket.gaierror:
-        return
-    for ip in interfaces:
-        if ip.startswith('192.'):
-            return ip
+class ClayHandler(pywsgi.WSGIHandler):  # pragma: no cover
+    STATUS_REPR = {"200": " ✔︎ ", "404": " ? ", "304": " = ", "500": "xxx"}
+
+    def format_request(self):
+        now = datetime.now()
+        if isinstance(self.client_address, tuple):
+            client_address = self.client_address[0]
+        else:
+            client_address = self.client_address
+        status = self._orig_status.split()[0]
+        status_repr = self.STATUS_REPR.get(status, status)
+
+        return " {} {} -> {} {}".format(
+            now.strftime("%H:%M:%S"),
+            client_address or "?",
+            status_repr,
+            (self.requestline or "").rsplit(" ", 1)[0],
+        )
+
+
+def set_logger():  # pragma: no cover
+    level = logging.INFO
+    logger.setLevel(level)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(level)
+    logger.addHandler(handler)
+
+
+DISPLAY = """
+ ┌─────────────────────────────────────────────────┐
+ │   Clay is running                               │
+ │                                                 │
+ │   - Your machine:  {local}│
+ │   - Your network:  {network}│
+ │                                                 │
+ │   Press `ctrl+c` to quit.                       │
+ └─────────────────────────────────────────────────┘
+"""
+
+
+def display_running_message(host, port):  # pragma: no cover
+    import socket
+
+    local = "{:<29}".format(f"http://{host}:{port}")
+    local_ip = socket.gethostbyname(socket.gethostname())
+    network = "{:<29}".format(f"http://{local_ip}:{port}")
+
+    print(DISPLAY.format(local=local, network=network))
+
+
+def make_app(clay):
+    app = WSGIApp(clay)
+    app.wsgi = WhiteNoise(
+        app.wsgi,
+        root=clay.static_path,
+        prefix="static/",
+        index_file=True,
+        autorefresh=True,
+    )
+    return app
