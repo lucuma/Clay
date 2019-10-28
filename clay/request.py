@@ -1,5 +1,6 @@
-from multidict import MultiDict
 import multipart
+
+from .utils import MultiDict
 
 
 class Request(object):
