@@ -1,7 +1,7 @@
 
 # Clay
 
-[![Coverage Status](https://coveralls.io/repos/github/lucuma/clay/badge.svg?branch=master)](https://coveralls.io/github/lucuma/clay?branch=master) [![Tests](https://travis-ci.org/lucuma/clay.svg?branch=master)](https://travis-ci.org/lucuma/clay/)
+[![Coverage Status](https://coveralls.io/repos/github/lucuma/Clay/badge.svg?branch=clay3)](https://coveralls.io/github/lucuma/Clay?branch=clay3) [![Tests](https://travis-ci.org/lucuma/Clay.svg?branch=master)](https://travis-ci.org/lucuma/Clay/)
 
 **An amazing prototyping tool.**
 
