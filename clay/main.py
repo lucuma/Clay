@@ -10,6 +10,7 @@ import yaml
 
 from .request import Request
 from .utils import JinjaRender
+from .utils import IncludeWith
 from .utils import load_config
 from .utils import make_absolute_urls_relative
 from .utils import make_active_helper
@@ -108,6 +109,7 @@ class Clay(object):
                 "block_end_string": "%}",
                 "variable_start_string": "{{",
                 "variable_end_string": "}}",
+                'extensions': ["jinja2.ext.with_", IncludeWith],
             },
             render_as=render_as,
             get_context=get_context,

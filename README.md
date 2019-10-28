@@ -18,6 +18,8 @@ responses of sending forms, because it acts like a real server.
 pip install clay
 ```
 
+Clay version 3.x only works with Python 3.6, 3.7, and 3.8.
+
 
 ## Quickstart
 

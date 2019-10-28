@@ -3,10 +3,16 @@ import os
 import jinja2
 from jinja2.sandbox import SandboxedEnvironment
 
+from .jinja_includewith import IncludeWith
+
 
 __all__ = ("ENVOPS_DEFAULT", "JinjaRender")
 
-ENVOPS_DEFAULT = {"autoescape": False, "keep_trailing_newline": True}
+ENVOPS_DEFAULT = {
+    "autoescape": False,
+    "keep_trailing_newline": True,
+    'extensions': ["jinja2.ext.with_", IncludeWith],
+}
 
 
 class JinjaRender(object):
