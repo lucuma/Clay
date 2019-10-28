@@ -4,6 +4,7 @@ import glob
 import logging
 import random
 import os
+import shutil
 
 import hecto
 import yaml
@@ -16,6 +17,8 @@ from .utils import make_absolute_urls_relative
 from .utils import make_active_helper
 from .utils import make_filter, make_matcher
 
+
+BLUEPRINT = Path(__file__).resolve().parent.parent / "blueprint"
 
 MESSAGES = [
     "Post processing",
@@ -56,6 +59,7 @@ class Clay(object):
         if self.is_classic_style(source_path):
             self.classic_style = True
             source_path = source_path / "source"
+            self.create_yaml_if_dont_exists(source_path)
         else:
             self.classic_style = False
 
@@ -76,6 +80,11 @@ class Clay(object):
             (source_path / "source").is_dir()
             and not (source_path / "index").exists()
         )
+
+    def create_yaml_if_dont_exists(self, source_path):
+        path = source_path / "clay.yaml"
+        if not path.exists():
+            shutil.copy2(str(BLUEPRINT / "clay.yaml"), str(path))
 
     def file_exists(self, path):
         if self.must_filter(path):

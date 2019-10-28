@@ -1,16 +1,12 @@
-from pathlib import Path
-
 import hecto
 from pyceo import Manager
 from pyceo import option
 from pyceo import param
 
-from .main import Clay
+from .main import Clay, BLUEPRINT
 from .server import make_app
 from .version import __version__
 
-
-BLUEPRINT = Path(__file__).resolve().parent.parent / "blueprint"
 
 m = Manager(f"<b>Clay v{__version__}")
 
