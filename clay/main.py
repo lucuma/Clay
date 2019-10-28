@@ -18,7 +18,7 @@ from .utils import make_active_helper
 from .utils import make_filter, make_matcher
 
 
-BLUEPRINT = Path(__file__).resolve().parent.parent / "blueprint"
+BLUEPRINT = Path(__file__).resolve().parent / "blueprint"
 
 MESSAGES = [
     "Post processing",
