@@ -147,8 +147,6 @@ Before v3, previous versions of Clay did work with having all source files in a 
 
 The old project with a `source` folder still works, but it might change in future versions.
 
-In those old projects, Clay will create the `build` folder inside `source` instead of at the parent folder, like before.
-
 
 ----
 

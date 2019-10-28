@@ -63,4 +63,4 @@ def test_backwards_compatibility(dst):
     (dst / "source" / "index.html").write_text("{{ 'foo' + 'bar' }}")
     clay.cli.build(source=dst)
 
-    assert (dst / "source" / "build" / "index.html").read_text() == "foobar"
+    assert (dst / "build" / "index.html").read_text() == "foobar"
