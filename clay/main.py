@@ -71,7 +71,10 @@ class Clay(object):
         return self.source_path / "static"
 
     def is_classic_style(self, source_path):
-        return (source_path / "source").is_dir() and not (source_path / "index").exists()
+        return (
+            (source_path / "source").is_dir()
+            and not (source_path / "index").exists()
+        )
 
     def file_exists(self, path):
         if self.must_filter(path):
@@ -97,6 +100,7 @@ class Clay(object):
         hecto.copy(
             self.source_path,
             dst_path,
+            data=JINJA_GLOBALS.copy(),
             exclude=exclude,
             include=self.config["include"],
             envops={
