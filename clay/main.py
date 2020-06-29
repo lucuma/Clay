@@ -1,22 +1,24 @@
-from datetime import datetime
-from pathlib import Path
 import glob
 import logging
-import random
 import os
+import random
 import shutil
+from datetime import datetime, timezone
+from pathlib import Path
 
 import hecto
 import yaml
 
 from .request import Request
-from .utils import JinjaRender
-from .utils import IncludeWith
-from .utils import load_config
-from .utils import make_absolute_urls_relative
-from .utils import make_active_helper
-from .utils import make_filter, make_matcher
-
+from .utils import (
+    IncludeWith,
+    JinjaRender,
+    load_config,
+    make_absolute_urls_relative,
+    make_active_helper,
+    make_filter,
+    make_matcher,
+)
 
 BLUEPRINT = Path(__file__).resolve().parent / "blueprint"
 
@@ -31,9 +33,13 @@ MESSAGES = [
     "Optimizing for happiness",
     "Swapping time and space",
     "Reversing the polarity",
-    "Self affirming",
+    "Self-affirming",
     "Extracting meaning",
 ]
+
+
+def utcnow():
+    return datetime.now(tz=timezone.utc)
 
 
 def thumbnail(path, *args, **kwargs):
@@ -42,7 +48,7 @@ def thumbnail(path, *args, **kwargs):
 
 
 JINJA_GLOBALS = {
-    "now": datetime.utcnow,
+    "now": utcnow,
     "dir": dir,
     "enumerate": enumerate,
     "map": map,
@@ -51,6 +57,8 @@ JINJA_GLOBALS = {
     # backwards compatibility
     "thumbnail": thumbnail,
 }
+
+JINJA_EXTENSIONS = ("jinja2.ext.with_", IncludeWith)
 
 
 class Clay(object):
@@ -64,8 +72,17 @@ class Clay(object):
             self.classic_style = False
 
         self.source_path = source_path
-        self.config = self._load_config({"exclude": exclude, "include": include})
-        self.render = JinjaRender(self.source_path, data=JINJA_GLOBALS.copy())
+        self.config = self._load_config({
+            "exclude": exclude,
+            "include": include,
+        })
+        extensions = tuple(self.config["jinja_extensions"])
+        self.jinja_extensions = JINJA_EXTENSIONS + extensions
+        self.render = JinjaRender(
+            self.source_path,
+            data=JINJA_GLOBALS.copy(),
+            extensions=self.jinja_extensions
+        )
 
         must_exclude = make_matcher(self.config["exclude"])
         must_include = make_matcher(self.config["include"])
@@ -118,7 +135,7 @@ class Clay(object):
                 "block_end_string": "%}",
                 "variable_start_string": "{{",
                 "variable_end_string": "}}",
-                'extensions': ["jinja2.ext.with_", IncludeWith],
+                'extensions': self.jinja_extensions,
             },
             render_as=render_as,
             get_context=get_context,
@@ -133,7 +150,11 @@ class Clay(object):
         return random.sample(MESSAGES, num)
 
     def _load_config(self, options):
-        defaults = {"exclude": [".*", ".*/**/*"], "include": []}
+        defaults = {
+            "exclude": [".*", ".*/**/*"],
+            "include": [],
+            "jinja_extensions": [],
+        }
         try:
             return load_config(
                 defaults,

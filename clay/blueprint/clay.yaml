@@ -14,3 +14,7 @@ exclude:
 # Shell-style patterns files/folders that *must be* rendered, even if
 # they are in the exclude list
 include:
+
+# Jinja extensions to use eg: `jinja2.ext.with_`
+jinja_extensions:
+  - jinja2.ext.with_
