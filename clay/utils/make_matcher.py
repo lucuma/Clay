@@ -3,6 +3,7 @@ from functools import reduce
 import os
 import unicodedata
 
+
 __all__ = ("make_matcher", "make_filter", )
 
 
@@ -25,13 +26,12 @@ def _match(path, patterns):
 
 
 def make_matcher(patterns):
-    """Returns a function that evaluates if a file or folder name must be
-    filtered out, and another that evaluates if a file must be skipped.
+    """Returns a function that evaluates if a path match one of the patterns.
+
     The compared paths are first converted to unicode and decomposed.
-    This is neccesary because the way PY2.* `os.walk` read unicode
-    paths in different filesystems. For instance, in OSX, it returns a
-    decomposed unicode string. In those systems, u'ñ' is read as `\u0303`
-    instead of `\xf1`.
+    This is neccesary because the way `os.walk` read unicode paths could vary.
+    For instance, it might returns a decomposed unicode string reading
+    the character "ñ" as `\u0303` instead of `\xf1`.
     """
     patterns = [_normalize_str(pattern) for pattern in patterns]
 
@@ -42,6 +42,9 @@ def make_matcher(patterns):
 
 
 def make_filter(must_exclude, must_include):
+    """Returns a function that evaluates if a path name must be
+    excluded or not.
+    """
 
     def must_filter(path):
         return must_exclude(path) and not must_include(path)

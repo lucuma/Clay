@@ -126,7 +126,6 @@ class Clay(object):
             build_folder,
             f"{build_folder}/*",
         ]
-
         hecto.copy(
             self.source_path,
             dst_path,
@@ -140,8 +139,8 @@ class Clay(object):
                 "variable_end_string": "}}",
                 'extensions': self.jinja_extensions,
             },
-            render_as=render_as,
-            get_context=get_context,
+            render_as=self._render_as,
+            get_context=self._get_context,
             force=True,
             quiet=quiet,
         )
@@ -154,7 +153,7 @@ class Clay(object):
 
     def _load_config(self, options):
         defaults = {
-            "exclude": [".*", ".*/**/*"],
+            "exclude": [".*", ],
             "include": [],
             "jinja_extensions": [],
             "binaries": [],
@@ -187,17 +186,14 @@ class Clay(object):
             new_content = make_absolute_urls_relative(dst_path, relpath, content)
             html_file.write_text(new_content)
 
+    def _render_as(self, src_path, dst_path):
+        dst = str(dst_path)
+        if dst.startswith("static/") or self.is_binary(dst):
+            return None
+        return dst_path
 
-def render_as(src_path, dst_path):
-    if str(dst_path).startswith("static/"):
-        return None
-    if str(dst_path) == "favicon.ico":
-        return None
-    return dst_path
-
-
-def get_context(path):
-    request = Request()
-    request.path = str(path).replace("\\", "/").strip("/")
-    active = make_active_helper(request)
-    return {"request": request, "active": active}
+    def _get_context(self, path):
+        request = Request()
+        request.path = str(path).replace("\\", "/").strip("/")
+        active = make_active_helper(request)
+        return {"request": request, "active": active}

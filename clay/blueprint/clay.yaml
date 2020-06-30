@@ -1,23 +1,29 @@
 ---
-# Shell-style patterns files/folders that must not be rendered.
+# Shell-style patterns files/folders that must not be copied.
+# Use quotes.
 exclude:
-  - "./**/*"
+  - ".*"
+  - ".*/*"
   - "~*"
   - "~*/*"
-  - "~*/**/*"
   - "_*"
   - "_*/*"
-  - "_*/**/*"
+  - "node_modules"
+  - "node_modules/*"
+  - "package.json"
+  - "package-lock.json"
 
-# Shell-style patterns files/folders that *must be* rendered, even if
-# they are in the exclude list
+# Shell-style patterns files/folders that *must be* copied, even if
+# they are in the exclude list.
+# Use quotes.
 include:
 
 # Jinja extensions to use eg: `jinja2.ext.with_`
 jinja_extensions:
   - jinja2.ext.with_
 
-# Shell-style patterns of files outside `static/` that
-# are binary and thus should not be interpreted as Jinja templates
+# Shell-style patterns of files outside `static/` that must be copied
+# as-is instead of trying to interpret them as Jinja templates.
+# Use quotes.
 binaries:
-  - favicon.ico
+  - "favicon.ico"
