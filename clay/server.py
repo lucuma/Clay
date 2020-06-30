@@ -2,6 +2,7 @@ from datetime import datetime
 from urllib.parse import quote
 import logging
 import mimetypes
+import socket
 import sys
 
 from gevent import pywsgi
@@ -116,13 +117,27 @@ DISPLAY = """
 
 
 def display_running_message(host, port):  # pragma: no cover
-    import socket
-
     local = "{:<29}".format(f"http://{host}:{port}")
-    local_ip = socket.gethostbyname(socket.gethostname())
+    local_ip = get_local_ip()
     network = "{:<29}".format(f"http://{local_ip}:{port}")
 
     print(DISPLAY.format(local=local, network=network))
+
+
+def get_local_ip():
+    ip = socket.gethostbyname(socket.gethostname())
+    if not ip.startswith("127."):
+        return ip
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even has to be reachable
+        sock.connect(("8.8.8.8", 1))
+        ip = sock.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        sock.close()
+    return ip
 
 
 def make_app(clay):
