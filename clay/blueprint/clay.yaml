@@ -1,9 +1,7 @@
 ---
 # Shell-style patterns files/folders that must not be rendered.
 exclude:
-  - ".*"
-  - ".*/*"
-  - ".*/**/*"
+  - "./**/*"
   - "~*"
   - "~*/*"
   - "~*/**/*"

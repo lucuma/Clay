@@ -1,0 +1,11 @@
+{
+    "name": "Clay",
+    "short_name": "clay",
+    "icons": [{
+        "src": "google-touch-icon.png",
+        "sizes": "512x512"
+    }],
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "display": "fullscreen"
+}
