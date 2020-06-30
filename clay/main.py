@@ -87,6 +87,7 @@ class Clay(object):
         must_exclude = make_matcher(self.config["exclude"])
         must_include = make_matcher(self.config["include"])
         self.must_filter = make_filter(must_exclude, must_include)
+        self.is_binary = make_matcher(self.config["binaries"])
 
     @property
     def static_path(self):
@@ -109,6 +110,8 @@ class Clay(object):
         return (self.source_path / path).is_file()
 
     def render_file(self, path, **data):
+        if self.is_binary(path):
+            return (self.source_path / path).read_bytes()
         return self.render(path, **data)
 
     def build(self, build_folder="build", quiet=False):
@@ -154,6 +157,7 @@ class Clay(object):
             "exclude": [".*", ".*/**/*"],
             "include": [],
             "jinja_extensions": [],
+            "binaries": [],
         }
         try:
             return load_config(
@@ -186,6 +190,8 @@ class Clay(object):
 
 def render_as(src_path, dst_path):
     if str(dst_path).startswith("static/"):
+        return None
+    if str(dst_path) == "favicon.ico":
         return None
     return dst_path
 

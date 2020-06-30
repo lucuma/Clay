@@ -25,15 +25,14 @@ class WSGIApp(object):
         request = Request(environ)
         body, status, headers = self.call(request)
         start_response(status, headers)
-        return [body.encode("utf8")]
+        if hasattr(body, "encode"):
+            body = body.encode("utf8")
+        return [body]
 
     def call(self, request):
         path = request.path
         if not self.clay.file_exists(path):
-            if path == "favicon.ico":
-                return self.redirect_to("static/" + path)
-            else:
-                return self.not_found(request)
+            return self.not_found(request)
 
         active = make_active_helper(request)
         if request.method == "HEAD":

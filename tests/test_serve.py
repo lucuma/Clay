@@ -46,13 +46,6 @@ def test_custom_not_found(dst, server):
     assert resp.text == "Custom not found"
 
 
-def test_redirect_for_favicon_if_not_found(dst, server):
-    resp = server.get("/favicon.ico")
-
-    assert resp.status == "302 Found"
-    assert resp.headers["Location"] == "static/favicon.ico"
-
-
 def test_do_not_render_static(dst, server):
     text = "{{ now() }}"
     os.mkdir(dst / "static")
