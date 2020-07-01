@@ -54,6 +54,7 @@ JINJA_GLOBALS = {
     "map": map,
     "zip": zip,
     "len": len,
+    "datetime": datetime,
     # backwards compatibility
     "thumbnail": thumbnail,
 }
