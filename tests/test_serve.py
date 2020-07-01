@@ -102,3 +102,12 @@ def test_old_thumbnailer(dst, server):
     resp = server.get("/foobar", xhr=True)
 
     assert resp.text == "/image.png"
+
+
+def test_folder_with_index_pattern(dst, server):
+    (dst / "hello").mkdir()
+    (dst / "hello" / "index.html").write_text("hello world")
+
+    resp = server.get("/hello")
+    assert resp.status == "200 OK"
+    assert resp.text == "hello world"

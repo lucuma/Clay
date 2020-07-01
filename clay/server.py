@@ -33,7 +33,9 @@ class WSGIApp(object):
     def call(self, request):
         path = request.path
         if not self.clay.file_exists(path):
-            return self.not_found(request)
+            path += "/index.html"
+            if not self.clay.file_exists(path):
+                return self.not_found(request)
 
         active = make_active_helper(request)
         if request.method == "HEAD":
