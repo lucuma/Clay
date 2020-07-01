@@ -1,6 +1,11 @@
+import re
+
 import multipart
 
 from .utils import MultiDict
+
+
+RX_INDEX = re.compile("/index\.html$")
 
 
 class Request(object):
@@ -18,6 +23,10 @@ class Request(object):
         if "HTTP_X_REQUESTED_WITH" in self.environ:
             return self.environ["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
         return False
+
+    @property
+    def parent_path(self):
+        return re.sub(RX_INDEX, "", self.path)
 
     def get_path(self):
         path_info = self.environ.get("PATH_INFO")
