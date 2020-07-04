@@ -9,6 +9,15 @@ def test_render(dst, server):
     assert resp.text == "hello world"
 
 
+def test_render_unicode(dst, server):
+    text = "[✓] It works! 😅 ç ¡yay!"
+    (dst / "hello").write_text(text)
+
+    resp = server.get("/hello")
+    assert resp.status == "200 OK"
+    assert resp.text == text
+
+
 def test_head(dst, server):
     (dst / "hello").write_text("{{ 'hello ' + 'world' }}")
 
