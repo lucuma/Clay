@@ -25,9 +25,11 @@ class WSGIApp(object):
     def wsgi(self, environ, start_response):
         request = Request(environ)
         body, status, headers = self.call(request)
-        start_response(status, headers)
         if hasattr(body, "encode"):
             body = body.encode("utf8")
+
+        headers.append(("Content-Length", str(len(body))))
+        start_response(status, headers)
         return [body]
 
     def call(self, request):
@@ -43,10 +45,7 @@ class WSGIApp(object):
         else:
             body = self.clay.render_file(path, request=request, active=active)
         mime = mimetypes.guess_type(path)[0] or "text/plain"
-        response_headers = [
-            ("Content-Type", mime),
-            ("Content-Length", str(len(body)))
-        ]
+        response_headers = [("Content-Type", mime)]
         return body, "200 OK", response_headers
 
     def run(self, host, port):  # pragma: no cover
