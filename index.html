@@ -15,41 +15,28 @@
   </hgroup>
 </header>
 
-<p>With Clay you can forget about making changes to dozens of HTML files just because you need to add a link in the footer.</p>
-
-<p>You can also use it to prototype your AJAX-driven application or the responses of sending forms, because it acts like a real server.</p>
-
-<h2 id="install">Install <a class="headerlink" href="#install" title="Permanent link">¶</a></h2>
-
-<div class="codehilite">
-  <pre>pip install clay
-</pre>
-</div>
+<p>With Clay you can forget about making changes to dozens of HTML files
+just because you need to add a link in the footer.</p>
+<p>You can also use it to prototype your AJAX-driven application or the
+responses of sending forms, because it acts like a real server.</p>
+<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link"></a></h2>
+<div class="codehilite"><pre>pip install clay
+</pre></div>
 
 <p>Clay version 3.x only works with Python 3.6, 3.7, and 3.8.</p>
-
-
-<h2 id="quickstart">Quickstart <a class="headerlink" href="#quickstart" title="Permanent link">¶</a></h2>
-
-<div class="codehilite">
-  <pre><span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span>
-</pre>
-</div>
+<h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link"></a></h2>
+<div class="codehilite"><pre><span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span>
+</pre></div>
 
 <p>will generate a new app container with the following structure:</p>
+<div class="codehilite"><pre>myapp
+    ├── static/
+    ├── clay.yaml
+    └── ...other files
+</pre></div>
 
-<div class="codehilite">
-  <pre>myapp
-├── static/
-├── clay.yaml
-└── ...other files
-</pre>
-</div>
-
-<p>You can also use an optional project template path or git URL. For the URLs, &ldquo;gh:&rdquo; works as a shortcut of &ldquo;<a href="https://github.com/">https://github.com/</a>&rdquo; and &ldquo;gl:&rdquo; as a shortcut of &ldquo;<a href="https://gitlab.com/">https://gitlab.com/</a>&rdquo;. For example:</p>
-
-<div class="codehilite">
-  <pre><span class="c1"># Absolute or relative path.</span>
+<p>You can also use an optional project template path or git URL. For the URLs, &ldquo;gh:&rdquo; works as a shortcut of &ldquo;<a href="https://github.com/">https://github.com/</a>&rdquo; and &ldquo;gl:&rdquo;  as a shortcut of &ldquo;<a href="https://gitlab.com/">https://gitlab.com/</a>&rdquo;. For example:</p>
+<div class="codehilite"><pre><span class="c1"># Absolute or relative path.</span>
 <span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">template</span>
 
 <span class="c1"># GitHub repo. Note the &quot;.git&quot; postfix.</span>
@@ -57,106 +44,88 @@
 
 <span class="c1"># The same GitHub repo with shortcut</span>
 <span class="n">clay</span> <span class="n">new</span> <span class="n">myapp</span> <span class="n">gh</span><span class="p">:</span><span class="o">/</span><span class="n">lucuma</span><span class="o">/</span><span class="n">clay</span><span class="o">-</span><span class="n">template</span><span class="o">.</span><span class="n">git</span>
-</pre>
-</div>
+</pre></div>
 
-
-<h2 id="development-server">Development server <a class="headerlink" href="#development-server" title="Permanent link">¶</a></h2>
+<h2 id="development-server">Development server<a class="headerlink" href="#development-server" title="Permanent link"></a></h2>
 <p>Inside that folder, run the development server with:</p>
-
-<div class="codehilite">
-  <pre>clay run
-</pre>
-</div>
+<div class="codehilite"><pre>clay run
+</pre></div>
 
 <p>and your site&rsquo;ll be available at <code>http://0.0.0.0:8080/</code>.</p>
-
-<p>Anything inside the <code>static</code> folder is served as-is under the <code>/static/</code> path. For example you can see <code>myapp/static/image.png</code> at the <code>http://0.0.0.0:8080/static/image.png</code> URL.</p>
-
-<p>Any file outside the <code>static</code> folder, is rendered as a page.</p>
-
+<p>Anything inside the <code>static</code> folder is served as-is under the <code>/static/</code> path.
+For example you can see <code>myapp/static/image.png</code> at the <code>http://0.0.0.0:8080/static/image.png</code> URL.</p>
+<p>Any file outside the  <code>static</code> folder, is rendered as a page.</p>
 <p>For example, <code>myapp/page.html</code> is rendered and shown at <code>http://0.0.0.0:8080/page.html</code>, as an HTML page.</p>
-
 <p>And <code>myapp/foo/bar.json</code> is rendered and shown at <code>http://0.0.0.0:8080/foo/bar.json</code> as a JSON document.</p>
-
 <p>Remember to put inside <code>static</code> anything you don&rsquo;t want to be rendered.</p>
-
-
-<h2 id="build-version">Build version <a class="headerlink" href="#build-version" title="Permanent link">¶</a></h2>
+<h2 id="build-version">Build version<a class="headerlink" href="#build-version" title="Permanent link"></a></h2>
 <p>To generate a static version of your site, first, stop the server with
-  <code>Control + C</code>, and then run:</p>
-
-<div class="codehilite">
-  <pre>clay build
-</pre>
-</div>
+<code>Control + C</code>, and then run:</p>
+<div class="codehilite"><pre>clay build
+</pre></div>
 
 <p>and all the templates will be processed and the result stored inside the
-  <code>build</code> folder.</p>
-
-
-<h2 id="static-files">Static files <a class="headerlink" href="#static-files" title="Permanent link">¶</a></h2>
+<code>build</code> folder.</p>
+<h2 id="static-files">Static files<a class="headerlink" href="#static-files" title="Permanent link"></a></h2>
 <p>If you have folders in your project, you might be tempted to write internal URLs like this</p>
-
-<div class="codehilite">
-  <pre><span class="c">&lt;!-- DON&#39;T DO THIS -&gt;</span>
+<div class="codehilite"><pre><span class="c">&lt;!-- DON&#39;T DO THIS -&gt;</span>
 <span class="c">href=&quot;../a.html&quot;</span>
 <span class="c">src=&quot;../static/main.js&quot;</span>
-</pre>
-</div>
+</pre></div>
 
-<p><strong>Don&rsquo;t do it</strong>. Is error-prone and could not worl if you do it in a base layout, for example. Always write the internal URLs using their path from the root of the project, like this:</p>
-
-<div class="codehilite">
-  <pre>href=&quot;/a.html&quot;
+<p><strong>Don&rsquo;t do it</strong>. Is error-prone and could not work as expected if you do it in a base layout, for example. Always write the internal URLs using their path from the root of the project, like this:</p>
+<div class="codehilite"><pre>href=&quot;/a.html&quot;
 src=&quot;/static/main.js&quot;
-</pre>
-</div>
+</pre></div>
 
 <p>That&rsquo;ll work on the development server and also when generating a static version of your site, Clay will convert them into relative paths automatically.</p>
-
-
-<h2 id="template-globals">Template globals <a class="headerlink" href="#template-globals" title="Permanent link">¶</a></h2>
+<h2 id="template-globals">Template globals<a class="headerlink" href="#template-globals" title="Permanent link"></a></h2>
 <p>When writing your templates, in addition of what is normally available in <a href="https://jinja.palletsprojects.com/en/2.10.x/">Jinja templates</a> you have access to some other helper functions:</p>
 <ul>
-  <li>The python&rsquo;s functions <code>dir</code>, <code>enumerate</code>, <code>map</code>, <code>zip</code>, and <code>len</code>.</li>
-  <li>The <strong><code>now</code></strong> function, as an alias to <code>datetime.datetime.utcnow</code>.</li>
-  <li>The <strong><code>active</code></strong> function, to set an &ldquo;active&rdquo; class in navigations/menus when the current page match.</li>
+<li>The python&rsquo;s functions <code>dir</code>, <code>enumerate</code>, <code>map</code>, <code>zip</code>, and <code>len</code>.</li>
+<li>The <strong><code>now</code></strong> function, as an alias to <code>datetime.datetime.utcnow</code>.</li>
+<li>The <strong><code>active</code></strong> function, to set an &ldquo;active&rdquo; class in navigations/menus when the current page match.</li>
 </ul>
+<h3 id="active"><code>active()</code><a class="headerlink" href="#active" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span class="n">active</span><span class="p">(</span><span class="o">*</span><span class="n">url_patterns</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s">&quot;active&quot;</span><span class="p">)</span>
+</pre></div>
 
-<h3 id="active"><code>active()</code> <a class="headerlink" href="#active" title="Permanent link">¶</a></h3>
-
-<div class="codehilite">
-  <pre><span class="n">active</span><span class="p">(</span><span class="o">*</span><span class="n">url_patterns</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s">&quot;active&quot;</span><span class="p">)</span>
-</pre>
-</div>
-
-<p>TODO.</p>
-
-<h2 id="the-clayyaml-file">The <code>clay.yaml</code> file <a class="headerlink" href="#the-clayyaml-file" title="Permanent link">¶</a></h2>
+<p>TODO</p>
+<h2 id="the-clayyaml-file">The <code>clay.yaml</code> file<a class="headerlink" href="#the-clayyaml-file" title="Permanent link"></a></h2>
 <p>If a YAML file named <code>clay.yaml</code> is found in the root of the project, it will be read and used for configuring Clay.</p>
-
-<div class="codehilite">
-  <pre><span class="c1"># Shell-style patterns files/folders that must not be rendered.</span>
+<div class="codehilite"><pre><span class="nn">---</span>
+<span class="c1"># Shell-style patterns files/folders that must not be copied.</span>
+<span class="c1"># Use quotes.</span>
 <span class="l l-Scalar l-Scalar-Plain">exclude</span><span class="p p-Indicator">:</span>
-<span class="p p-Indicator">-</span> <span class="s">&quot;.*&quot;</span>
-<span class="p p-Indicator">-</span> <span class="s">&quot;.*/*&quot;</span>
-<span class="p p-Indicator">-</span> <span class="s">&quot;_*&quot;</span>
-<span class="p p-Indicator">-</span> <span class="s">&quot;_*/*&quot;</span>
-<span class="p p-Indicator">-</span> <span class="s">&quot;*.txt&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;.*&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;.*/*&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;~*&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;~*/*&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;_*&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;_*/*&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;*.txt&quot;</span>
 
-<span class="c1"># Shell-style patterns files/folders that *must be* rendered, even if</span>
-<span class="c1"># they are in the exclude list</span>
+<span class="c1"># Shell-style patterns files/folders that *must be* copied, even if</span>
+<span class="c1"># they are in the exclude list.</span>
+<span class="c1"># Use quotes.</span>
 <span class="l l-Scalar l-Scalar-Plain">include</span><span class="p p-Indicator">:</span>
-<span class="p p-Indicator">-</span> <span class="s">&quot;robots.txt&quot;</span>
-<span class="p p-Indicator">-</span> <span class="s">&quot;humans.txt&quot;</span>
-</pre>
-</div>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;robots.txt&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;humans.txt&quot;</span>
 
-<h2 id="update-from-v2-to-v3">Update from v2 to v3+ <a class="headerlink" href="#update-from-v2-to-v3" title="Permanent link">¶</a></h2>
+<span class="c1"># Jinja extensions to use eg: `jinja2.ext.with_`</span>
+<span class="l l-Scalar l-Scalar-Plain">jinja_extensions</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">jinja2.ext.with_</span>
+
+<span class="c1"># Shell-style patterns of files outside `static/` that must be copied</span>
+<span class="c1"># as-is instead of trying to interpret them as Jinja templates.</span>
+<span class="c1"># Use quotes.</span>
+<span class="l l-Scalar l-Scalar-Plain">binaries</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;favicon.ico&quot;</span>
+</pre></div>
+
+<h2 id="update-from-v2-to-v3">Update from v2 to v3+<a class="headerlink" href="#update-from-v2-to-v3" title="Permanent link"></a></h2>
 <p>Before v3, previous versions of Clay did work with having all source files in a <code>source</code> subfolder. However, this is no longer the case, and the recommended setup is to have them in the parent folder instead.</p>
 <p>The old project with a <code>source</code> folder still works, but it might change in future versions.</p>
-
 <hr />
 <p>Happy coding!</p>
 
