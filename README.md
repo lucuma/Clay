@@ -96,7 +96,7 @@ href="../a.html"
 src="../static/main.js"
 ```
 
-**Don't do it**. Is error-prone and could not worl if you do it in a base layout, for example. Always write the internal URLs using their path from the root of the project, like this:
+**Don't do it**. Is error-prone and could not work as expected if you do it in a base layout, for example. Always write the internal URLs using their path from the root of the project, like this:
 
 
 ```html
@@ -129,21 +129,36 @@ TODO
 If a YAML file named `clay.yaml` is found in the root of the project, it will be read and used for configuring Clay.
 
 ```yaml
-# Shell-style patterns files/folders that must not be rendered.
+---
+# Shell-style patterns files/folders that must not be copied.
+# Use quotes.
 exclude:
   - ".*"
   - ".*/*"
+  - "~*"
+  - "~*/*"
   - "_*"
   - "_*/*"
   - "*.txt"
 
-# Shell-style patterns files/folders that *must be* rendered, even if
-# they are in the exclude list
+# Shell-style patterns files/folders that *must be* copied, even if
+# they are in the exclude list.
+# Use quotes.
 include:
   - "robots.txt"
   - "humans.txt"
 
+# Jinja extensions to use eg: `jinja2.ext.with_`
+jinja_extensions:
+  - jinja2.ext.with_
+
+# Shell-style patterns of files outside `static/` that must be copied
+# as-is instead of trying to interpret them as Jinja templates.
+# Use quotes.
+binaries:
+  - "favicon.ico"
 ```
+
 
 ## Update from v2 to v3+
 
