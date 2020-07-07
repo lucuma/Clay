@@ -8,7 +8,7 @@ from .server import make_app
 from .version import __version__
 
 
-m = Manager(f"<b>Clay v{__version__}")
+m = Manager(f"<b>Clay v{__version__}", catch_errors=False)
 
 
 @m.command(help="Creates a new Clay project at `dest`.")

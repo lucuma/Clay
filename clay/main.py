@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import hecto
+import jinja2
 import yaml
 
 from .request import Request
@@ -47,6 +48,13 @@ def thumbnail(path, *args, **kwargs):
     return "/" + path.lstrip("/")
 
 
+@jinja2.contextfilter
+def shuffle(context, value):
+    iter = value[:]
+    random.shuffle(iter)
+    return iter
+
+
 JINJA_GLOBALS = {
     "now": utcnow,
     "dir": dir,
@@ -57,6 +65,10 @@ JINJA_GLOBALS = {
     "datetime": datetime,
     # backwards compatibility
     "thumbnail": thumbnail,
+}
+
+JINJA_FILTERS = {
+    "shuffle": shuffle,
 }
 
 JINJA_EXTENSIONS = ("jinja2.ext.with_", IncludeWith)
@@ -82,7 +94,8 @@ class Clay(object):
         self.render = JinjaRender(
             self.source_path,
             data=JINJA_GLOBALS.copy(),
-            extensions=self.jinja_extensions
+            filters_=JINJA_FILTERS,
+            extensions=self.jinja_extensions,
         )
 
         must_exclude = make_matcher(self.config["exclude"])
@@ -138,8 +151,9 @@ class Clay(object):
                 "block_end_string": "%}",
                 "variable_start_string": "{{",
                 "variable_end_string": "}}",
-                'extensions': self.jinja_extensions,
+                "extensions": self.jinja_extensions,
             },
+            jinja_filters=JINJA_FILTERS,
             render_as=self._render_as,
             get_context=self._get_context,
             force=True,

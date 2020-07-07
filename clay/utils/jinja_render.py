@@ -13,13 +13,13 @@ ENVOPS_DEFAULT = {
 
 
 class JinjaRender(object):
-    def __init__(self, src_path, data=None, extensions=None, envops=None):
+    def __init__(self, src_path, data=None, filters_=None, **envops):
         self.src_path = str(src_path)
         _envops = ENVOPS_DEFAULT.copy()
         _envops.update(envops or {})
         _envops.setdefault("loader", jinja2.FileSystemLoader(self.src_path))
-        _envops["extensions"] = extensions or []
         self.env = SandboxedEnvironment(**_envops)
+        self.env.filters.update(filters_ or {})
         self.env.globals.update(**(data or {}))
 
     def __call__(self, fullpath, **data):
