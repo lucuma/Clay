@@ -5,10 +5,10 @@ import multipart
 from .utils import MultiDict
 
 
-RX_INDEX = re.compile("/index\.html$")
+RX_INDEX = re.compile(r"/index\.html$")
 
 
-class Request(object):
+class Request:
     def __init__(self, environ=None, path=None):
         environ = environ or {}
         self.environ = environ

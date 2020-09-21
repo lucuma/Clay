@@ -7,7 +7,7 @@ import re
 from jinja2.ext import Extension
 
 
-__all__ = ("IncludeWith", )
+__all__ = ("IncludeWith",)
 
 
 class IncludeWith(Extension):
@@ -21,9 +21,10 @@ class IncludeWith(Extension):
     """
 
     rx = re.compile(
-        r'\{\%-?[\s\n]*include[\s\n]+(?P<tmpl>[^\s\n]+)[\s\n]+with[\s\n]+'
-        '(?P<context>.*?)[\s\n]*-?\%\}',
-        re.IGNORECASE)
+        r"\{\%-?[\s\n]*include[\s\n]+(?P<tmpl>[^\s\n]+)[\s\n]+with[\s\n]+"
+        r"(?P<context>.*?)[\s\n]*-?\%\}",
+        re.IGNORECASE,
+    )
 
     def preprocess(self, source, name, filename=None):
         lastpos = 0
@@ -34,16 +35,22 @@ class IncludeWith(Extension):
 
             lastpos = m.end()
             d = m.groupdict()
-            context = d['context'].strip()
-            if context == 'context':
+            context = d["context"].strip()
+            if context == "context":
                 continue
 
-            source = ''.join([
-                source[:m.start()],
-                '{% with ', context, ' %}',
-                '{% include ', d['tmpl'].strip(), ' %}',
-                '{% endwith %}',
-                source[m.end():]
-            ])
+            source = "".join(
+                [
+                    source[: m.start()],
+                    "{% with ",
+                    context,
+                    " %}",
+                    "{% include ",
+                    d["tmpl"].strip(),
+                    " %}",
+                    "{% endwith %}",
+                    source[m.end() :],
+                ]
+            )
 
         return source

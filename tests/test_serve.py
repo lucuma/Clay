@@ -73,7 +73,7 @@ def test_ajax(dst, server):
 
 def test_query(dst, server):
     (dst / "foobar").write_text(
-        "{% for key, value in request.query.items() %}{{ key }}:{{ value }}/{% endfor %}")
+        "{% for key, value in request.query.items() %}{{ key }}:{{ value }}/{% endfor %}")  # noqa
     resp = server.get("/foobar?a=1&b=2&b=3", xhr=True)
 
     assert resp.text == "a:['1']/b:['2', '3']/"

@@ -1,21 +1,72 @@
-from datetime import datetime
-from urllib.parse import quote
-import logging
 import mimetypes
 import socket
-import sys
+from urllib.parse import quote
 
-from gevent import pywsgi
+import gunicorn.app.base
 from whitenoise import WhiteNoise
 
 from .request import Request
 from .utils import make_active_helper
 
 
-logger = logging.getLogger()
+def _get_local_ip():
+    ip = socket.gethostbyname(socket.gethostname())
+    if not ip.startswith("127."):
+        return ip
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        sock.connect(("8.8.8.8", 1))
+        ip = sock.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        sock.close()
+    return ip
 
 
-class WSGIApp(object):
+DISPLAY = """
+ ┌─────────────────────────────────────────────────┐
+ │   Clay is running                               │
+ │                                                 │
+ │   - Your machine:  {local}│
+ │   - Your network:  {network}│
+ │                                                 │
+ │   Press `ctrl+c` to quit.                       │
+ └─────────────────────────────────────────────────┘
+"""
+
+
+def _display_running_message(host, port):  # pragma: no cover
+    local = "{:<29}".format(f"http://{host}:{port}")
+    network = "{:<29}".format(f"http://{_get_local_ip()}:{port}")
+
+    print(DISPLAY.format(local=local, network=network))
+
+
+def on_starting(server):
+    """Gunicorn hook"""
+    _display_running_message(*server.address[0])
+
+
+class GunicornMiddleware(gunicorn.app.base.BaseApplication):
+
+    def __init__(self, app, **options):
+        self.app = app
+        self.options = options
+        super().__init__()
+
+    def load_config(self):
+        config = {key: value for key, value in self.options.items()
+                  if key in self.cfg.settings and value is not None}
+        for key, value in config.items():
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        return self.app
+
+
+class WSGIApp:
     def __init__(self, clay):
         self.clay = clay
 
@@ -48,15 +99,6 @@ class WSGIApp(object):
         response_headers = [("Content-Type", mime)]
         return body, "200 OK", response_headers
 
-    def run(self, host, port):  # pragma: no cover
-        set_logger()
-        server = pywsgi.WSGIServer((host, port), self.wsgi, handler_class=ClayHandler)
-        display_running_message(host, port)
-        try:
-            return server.serve_forever()
-        except KeyboardInterrupt:
-            print("\n Goodbye!\n")
-
     def not_found(self, request):
         mime = "text/plain"
         body = f"File {request.path} not found."
@@ -76,69 +118,16 @@ class WSGIApp(object):
     def redirect_to(self, path):
         return "", "302 Found", [("Location", quote(path.encode("utf8")))]
 
-
-class ClayHandler(pywsgi.WSGIHandler):  # pragma: no cover
-    STATUS_REPR = {"200": " ✔︎ ", "404": " ? ", "304": " = ", "500": "xxx"}
-
-    def format_request(self):
-        now = datetime.now()
-        if isinstance(self.client_address, tuple):
-            client_address = self.client_address[0]
-        else:
-            client_address = self.client_address
-        status = self._orig_status.split()[0]
-        status_repr = self.STATUS_REPR.get(status, status)
-
-        return " {} {} -> {} {}".format(
-            now.strftime("%H:%M:%S"),
-            client_address or "?",
-            status_repr,
-            (self.requestline or "").rsplit(" ", 1)[0],
+    def run(self, host, port):  # pragma: no cover
+        server = GunicornMiddleware(
+            self,
+            bind=f"{host}:{port}",
+            worker_class="eventlet",
+            accesslog="-",
+            access_log_format="%(h)s %(m)s %(U)s -> HTTP %(s)s",
+            on_starting=on_starting
         )
-
-
-def set_logger():  # pragma: no cover
-    level = logging.INFO
-    logger.setLevel(level)
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(level)
-    logger.addHandler(handler)
-
-
-DISPLAY = """
- ┌─────────────────────────────────────────────────┐
- │   Clay is running                               │
- │                                                 │
- │   - Your machine:  {local}│
- │   - Your network:  {network}│
- │                                                 │
- │   Press `ctrl+c` to quit.                       │
- └─────────────────────────────────────────────────┘
-"""
-
-
-def display_running_message(host, port):  # pragma: no cover
-    local = "{:<29}".format(f"http://{host}:{port}")
-    local_ip = get_local_ip()
-    network = "{:<29}".format(f"http://{local_ip}:{port}")
-
-    print(DISPLAY.format(local=local, network=network))
-
-
-def get_local_ip():
-    ip = socket.gethostbyname(socket.gethostname())
-    if not ip.startswith("127."):
-        return ip
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        # doesn't even has to be reachable
-        sock.connect(("8.8.8.8", 1))
-        ip = sock.getsockname()[0]
-    except Exception:
-        ip = "127.0.0.1"
-    finally:
-        sock.close()
-    return ip
+        server.run()
 
 
 def make_app(clay):

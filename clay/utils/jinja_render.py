@@ -12,7 +12,7 @@ ENVOPS_DEFAULT = {
 }
 
 
-class JinjaRender(object):
+class JinjaRender:
     def __init__(self, src_path, data=None, filters_=None, **envops):
         self.src_path = str(src_path)
         _envops = ENVOPS_DEFAULT.copy()

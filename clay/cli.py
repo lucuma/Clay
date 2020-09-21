@@ -8,10 +8,10 @@ from .server import make_app
 from .version import __version__
 
 
-m = Manager(f"<b>Clay v{__version__}", catch_errors=False)
+cli = Manager(f"<b>Clay v{__version__}", catch_errors=False)
 
 
-@m.command(help="Creates a new Clay project at `dest`.")
+@cli.command(help="Creates a new Clay project at `dest`.")
 @param("dest", help="Where to create the new project.")
 @option("tmpl", help="Optional template to use to create the project.")
 @option("quiet", help="Supress the status output.")
@@ -43,7 +43,7 @@ def new(dest, tmpl=BLUEPRINT, quiet=False):
     print(" and do `clay run` to start the server.\n")
 
 
-@m.command(help="Run Clay’s development server.")
+@cli.command(help="Run Clay’s development server.")
 @option("host", help="0.0.0.0 by default")
 @option("port", type=int, help="8080 by default")
 @option("source", help="Where to find the project. By default in the current folder.")
@@ -53,7 +53,7 @@ def run(host="0.0.0.0", port=8080, source="."):  # pragma: no cover
     app.run(host, port)
 
 
-@m.command(help="Generates a static copy of the project in a `build` folder.")
+@cli.command(help="Generates a static copy of the project in a `build` folder.")
 @option("source", help="Where to find the project. By default in the current folder.")
 @option("folder", help="Overwrite the name of the build folder.")
 @option("quiet", help="Supress the status output.")
@@ -64,5 +64,5 @@ def build(source=".", folder="build", quiet=False):
     print(f" project in the `{folder}` folder.\n")
 
 
-def run():  # pragma: no cover
-    m.run()
+def run_cli():  # pragma: no cover
+    cli.run()

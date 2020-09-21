@@ -74,7 +74,7 @@ JINJA_FILTERS = {
 JINJA_EXTENSIONS = ("jinja2.ext.with_", IncludeWith)
 
 
-class Clay(object):
+class Clay:
     def __init__(self, source_path, exclude=None, include=None):
         source_path = Path(source_path).resolve()
         if self.is_classic_style(source_path):
