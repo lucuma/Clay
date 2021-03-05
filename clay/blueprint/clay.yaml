@@ -17,6 +17,7 @@ exclude:
 # they are in the exclude list.
 # Use quotes.
 include:
+  - "_index.html"
 
 # Jinja extensions to use eg: `jinja2.ext.with_`
 jinja_extensions:

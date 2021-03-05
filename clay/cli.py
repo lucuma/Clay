@@ -55,13 +55,22 @@ def run(host="0.0.0.0", port=8080, source="."):  # pragma: no cover
 
 @cli.command(help="Generates a static copy of the project in a `build` folder.")
 @option("source", help="Where to find the project. By default in the current folder.")
-@option("folder", help="Overwrite the name of the build folder.")
 @option("quiet", help="Supress the status output.")
-def build(source=".", folder="build", quiet=False):
+def build(source=".", quiet=False):
     clay = Clay(source)
-    clay.build(build_folder=folder, quiet=quiet)
+    clay.build(quiet=quiet)
     print("\n Done! You'll find a static version of your ")
-    print(f" project in the `{folder}` folder.\n")
+    print(f" project in the `build` folder.\n")
+
+
+
+@cli.command(help="Return a list of the available pages")
+@option("source", help="Where to find the project. By default in the current folder.")
+def pages(source="."):
+    clay = Clay(source)
+    pages = clay.list_pages()
+    for page in pages:
+        print(page)
 
 
 def run_cli():  # pragma: no cover

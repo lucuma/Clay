@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pages index</title>
+  <style>
+    main { padding: 0 15px; line-height: 1.5; }
+    a { text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Index</h1>
+  <ul>
+      {#
+        `list_pages()`
+            to show ALL pages outside the `static/` folder
+        `list_pages(folder)`
+            to show the pages only inside that folder and subfolders
+        `list_pages(sub=False)` or `list_pages(folder, sub=False)`
+            to show the pages only inside the root or folder but not inside subfolders
+      #}
+      {%- for page in list_pages() %}
+      <li><a href="/{{ page }}" target="_blank">{{ page }}</a></li>
+      {%- endfor %}
+  </ul>
+</main>
+</body>
+</html>

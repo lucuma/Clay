@@ -85,7 +85,9 @@ class WSGIApp:
 
     def call(self, request):
         path = request.path
+        print(path)
         if not self.clay.file_exists(path):
+            print("file doesnt exists", path)
             path += "/index.html"
             if not self.clay.file_exists(path):
                 return self.not_found(request)
@@ -94,6 +96,7 @@ class WSGIApp:
         if request.method == "HEAD":
             body = ""
         else:
+            print("rendering file", path)
             body = self.clay.render_file(path, request=request, active=active)
         mime = mimetypes.guess_type(path)[0] or "text/plain"
         response_headers = [("Content-Type", mime)]
@@ -103,6 +106,7 @@ class WSGIApp:
         mime = "text/plain"
         body = f"File {request.path} not found."
         active = make_active_helper(request)
+
         for path in ["not-found.html", "_notfound.html", "404.html"]:
             if self.clay.file_exists(path):
                 mime = "text/html"

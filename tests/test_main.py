@@ -12,14 +12,6 @@ def test_render(dst):
     assert (dst / "build" / "test.txt").read_text().startswith(expected)
 
 
-def test_custom_folder(dst):
-    (dst / "test.txt").write_text("{{ now() }}")
-    clay.cli.build(source=dst, folder="out")
-
-    expected = str(datetime.utcnow())[:-10]
-    assert (dst / "out" / "test.txt").read_text().startswith(expected)
-
-
 def test_do_not_render_static(dst):
     text = "{{ now() }}"
     os.mkdir(dst / "static")

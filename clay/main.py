@@ -9,6 +9,7 @@ from pathlib import Path
 import hecto
 import jinja2
 import yaml
+from hecto.utils import make_matcher
 
 from .request import Request
 from .utils import (
@@ -20,6 +21,7 @@ from .utils import (
     make_filter,
     make_matcher,
 )
+
 
 BLUEPRINT = Path(__file__).resolve().parent / "blueprint"
 
@@ -66,34 +68,35 @@ JINJA_GLOBALS = {
     # backwards compatibility
     "thumbnail": thumbnail,
 }
-
-JINJA_FILTERS = {
-    "shuffle": shuffle,
-}
-
+JINJA_FILTERS = {"shuffle": shuffle}
 JINJA_EXTENSIONS = ("jinja2.ext.with_", IncludeWith)
+
+STATIC_FOLDER = "static"
+BUILD_FOLDER = "build"
 
 
 class Clay:
     def __init__(self, source_path, exclude=None, include=None):
         source_path = Path(source_path).resolve()
-        if self.is_classic_style(source_path):
+        if self._is_classic_style(source_path):
             self.classic_style = True
             source_path = source_path / "source"
-            self.create_yaml_if_dont_exists(source_path)
+            self._create_yaml_if_dont_exists(source_path)
         else:
             self.classic_style = False
 
         self.source_path = source_path
-        self.config = self._load_config({
-            "exclude": exclude,
-            "include": include,
-        })
+        self.config = self._load_config(
+            {
+                "exclude": exclude,
+                "include": include,
+            }
+        )
         extensions = tuple(self.config["jinja_extensions"])
         self.jinja_extensions = JINJA_EXTENSIONS + extensions
         self.render = JinjaRender(
             self.source_path,
-            data=JINJA_GLOBALS.copy(),
+            data=self.jinja_globals,
             filters_=JINJA_FILTERS,
             extensions=self.jinja_extensions,
         )
@@ -104,19 +107,29 @@ class Clay:
         self.is_binary = make_matcher(self.config["binaries"])
 
     @property
+    def jinja_globals(self):
+        jg = JINJA_GLOBALS.copy()
+        jg.update({"list_pages": self.list_pages})
+        return jg
+
+    @property
     def static_path(self):
-        return self.source_path / "static"
+        return self.source_path / STATIC_FOLDER
 
-    def is_classic_style(self, source_path):
-        return (
-            (source_path / "source").is_dir()
-            and not (source_path / "index").exists()
-        )
+    @property
+    def build_path(self):
+        if self.classic_style:
+            return self.source_path / ".." / BUILD_FOLDER
+        return self.source_path / BUILD_FOLDER
 
-    def create_yaml_if_dont_exists(self, source_path):
-        path = source_path / "clay.yaml"
-        if not path.exists():
-            shutil.copy2(str(BLUEPRINT / "clay.yaml"), str(path))
+    @property
+    def exclude_patterns(self):
+        return self.config["exclude"] + [
+            "clay.yaml",
+            "clay.yml",
+            BUILD_FOLDER,
+            f"{BUILD_FOLDER}/*",
+        ]
 
     def file_exists(self, path):
         if self.must_filter(path):
@@ -128,23 +141,12 @@ class Clay:
             return (self.source_path / path).read_bytes()
         return self.render(path, **data)
 
-    def build(self, build_folder="build", quiet=False):
-        if self.classic_style:
-            dst_path = self.source_path / ".." / build_folder
-        else:
-            dst_path = self.source_path / build_folder
-
-        exclude = self.config["exclude"] + [
-            "clay.yaml",
-            "clay.yml",
-            build_folder,
-            f"{build_folder}/*",
-        ]
+    def build(self, quiet=False):
         hecto.copy(
             self.source_path,
-            dst_path,
-            data=JINJA_GLOBALS.copy(),
-            exclude=exclude,
+            self.build_path,
+            data=self.jinja_globals,
+            exclude=self.exclude_patterns,
             include=self.config["include"],
             envops={
                 "block_start_string": "{%",
@@ -161,14 +163,56 @@ class Clay:
         )
         if not quiet:
             print()
-        self._post_process(dst_path, quiet=quiet)
+        self._post_process(self.build_path, quiet=quiet)
 
-    def random_messages(self, num=3):
-        return random.sample(MESSAGES, num)
+    def list_pages(self, folder=".", sub=True):
+        """List all the available pages outside the static and build folders.
+
+        If `folder` is not None, it list only the pages inside that folder.
+        Use `folder="."` to show the pages of the root folder but not those in subfolders
+        """
+        exclude = make_matcher(
+            self.exclude_patterns + [STATIC_FOLDER, f"{STATIC_FOLDER}/*"]
+        )
+        source_path = self.source_path / folder.replace("..", "")
+
+        pages = []
+        for root, _, files in os.walk(source_path):
+            relpath = str(Path(root).relative_to(source_path))
+            if relpath == ".":
+                relpath = ""
+
+            if relpath and not sub:
+                break
+
+            if exclude(relpath):
+                continue
+
+            for file in sorted(files):
+                page = os.path.join(relpath, file)
+                if exclude(page):
+                    continue
+                pages.append(page)
+
+        return pages
+
+    # Private
+
+    def _is_classic_style(self, source_path):
+        return (source_path / "source").is_dir() and not (
+            source_path / "index"
+        ).exists()
+
+    def _create_yaml_if_dont_exists(self, source_path):
+        path = source_path / "clay.yaml"
+        if not path.exists():
+            shutil.copy2(str(BLUEPRINT / "clay.yaml"), str(path))
 
     def _load_config(self, options):
         defaults = {
-            "exclude": [".*", ],
+            "exclude": [
+                ".*",
+            ],
             "include": [],
             "jinja_extensions": [],
             "binaries": [],
@@ -189,8 +233,11 @@ class Clay:
 
     def _print_random_messages(self, num=2, quiet=False):
         if not quiet:
-            for message in self.random_messages(num):
+            for message in self._random_messages(num):
                 print(f" {message}...")
+
+    def _random_messages(self, num=3):
+        return random.sample(MESSAGES, num)
 
     def _relativize_urls(self, dst_path):
         html_files = glob.glob(f"{dst_path}/**/*.html", recursive=True)
