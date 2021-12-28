@@ -1,9 +1,5 @@
-"""
-TODO(jps): fix or remove.
-I don't like this, is hacky and it still breaks with line jumps, but it's needed
-for bacwards compatibility.
-"""
 import re
+
 from jinja2.ext import Extension
 
 
@@ -16,14 +12,12 @@ class IncludeWith(Extension):
 
         {% include "something.html" with foo=bar %}
         {% include "something.html" with a=3, b=2+2, c='yes' %}
-
-    You **must** also include 'jinja2.ext.with_' in the extensions list.
     """
 
     rx = re.compile(
         r"\{\%-?[\s\n]*include[\s\n]+(?P<tmpl>[^\s\n]+)[\s\n]+with[\s\n]+"
         r"(?P<context>.*?)[\s\n]*-?\%\}",
-        re.IGNORECASE,
+        re.IGNORECASE | re.DOTALL,
     )
 
     def preprocess(self, source, name, filename=None):
@@ -35,7 +29,7 @@ class IncludeWith(Extension):
 
             lastpos = m.end()
             d = m.groupdict()
-            context = d["context"].strip()
+            context = d["context"].replace("\n", " ").strip()
             if context == "context":
                 continue
 

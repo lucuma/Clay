@@ -9,7 +9,6 @@ from pathlib import Path
 import hecto
 import jinja2
 import yaml
-from hecto.utils import make_matcher
 
 from .request import Request
 from .utils import (
@@ -69,7 +68,7 @@ JINJA_GLOBALS = {
     "thumbnail": thumbnail,
 }
 JINJA_FILTERS = {"shuffle": shuffle}
-JINJA_EXTENSIONS = ("jinja2.ext.with_", IncludeWith)
+JINJA_EXTENSIONS = (IncludeWith, )
 
 STATIC_FOLDER = "static"
 BUILD_FOLDER = "build"

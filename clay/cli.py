@@ -1,14 +1,11 @@
 import hecto
-from pyceo import Manager
-from pyceo import option
-from pyceo import param
+from pyceo import Manager, option, param
 
-from .main import Clay, BLUEPRINT
+from .main import BLUEPRINT, Clay
 from .server import make_app
-from .version import __version__
 
 
-cli = Manager(f"<b>Clay v{__version__}", catch_errors=False)
+cli = Manager("<b>Clay v4", catch_errors=False)
 
 
 @cli.command(help="Creates a new Clay project at `dest`.")
@@ -60,8 +57,7 @@ def build(source=".", quiet=False):
     clay = Clay(source)
     clay.build(quiet=quiet)
     print("\n Done! You'll find a static version of your ")
-    print(f" project in the `build` folder.\n")
-
+    print(" project in the `build` folder.\n")
 
 
 @cli.command(help="Return a list of the available pages")
@@ -71,7 +67,3 @@ def pages(source="."):
     pages = clay.list_pages()
     for page in pages:
         print(page)
-
-
-def run_cli():  # pragma: no cover
-    cli.run()

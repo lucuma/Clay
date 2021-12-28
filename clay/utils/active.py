@@ -1,5 +1,5 @@
-from fnmatch import fnmatch
 import re
+from fnmatch import fnmatch
 
 
 __all__ = ("make_active_helper", )

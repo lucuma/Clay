@@ -18,21 +18,20 @@ responses of sending forms, because it acts like a real server.
 pip install clay
 ```
 
-Clay version 3.x only works with Python 3.6, 3.7, and 3.8.
-
 
 ## Quickstart
 
 ```python
-clay new myapp
+clay new mysite
 ```
 
 will generate a new app container with the following structure:
 
 ```
-myapp
+mysite
   ├── static/
   ├── clay.yaml
+  ├── index.html
   └── ...other files
 ```
 
@@ -148,9 +147,8 @@ include:
   - "robots.txt"
   - "humans.txt"
 
-# Jinja extensions to use eg: `jinja2.ext.with_`
+# Jinja extensions to use
 jinja_extensions:
-  - jinja2.ext.with_
 
 # Shell-style patterns of files outside `static/` that must be copied
 # as-is instead of trying to interpret them as Jinja templates.
@@ -158,14 +156,6 @@ jinja_extensions:
 binaries:
   - "favicon.ico"
 ```
-
-
-## Update from v2 to v3+
-
-Before v3, previous versions of Clay did work with having all source files in a `source` subfolder. However, this is no longer the case, and the recommended setup is to have them in the parent folder instead.
-
-The old project with a `source` folder still works, but it might change in future versions.
-
 
 ----
 

@@ -1,7 +1,7 @@
-from fnmatch import fnmatch
-from functools import reduce
 import os
 import unicodedata
+from fnmatch import fnmatch
+from functools import reduce
 
 
 __all__ = ("make_matcher", "make_filter", )
