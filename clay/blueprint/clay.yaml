@@ -19,11 +19,11 @@ exclude:
 include:
   - "_index.html"
 
-# Jinja extensions to use
-jinja_extensions:
-
 # Shell-style patterns of files outside `static/` that must be copied
 # as-is instead of trying to interpret them as Jinja templates.
 # Use quotes.
 binaries:
   - "favicon.ico"
+
+# Jinja extensions to use
+jinja_extensions:

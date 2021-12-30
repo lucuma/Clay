@@ -5,7 +5,7 @@ __all__ = ("MultiDict", )
 
 
 class MultiDict(defaultdict):
-    """A :class:`MultiDict` is a defaultdict subclass customized to deal with
+    """A `MultiDict` is a defaultdict subclass customized to deal with
     multiple values for the same key.
     """
 

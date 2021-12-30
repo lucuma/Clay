@@ -106,13 +106,6 @@ def test_render_active(dst, server):
     assert server.get("/a/custom.html").text == "yeah"
 
 
-def test_old_thumbnailer(dst, server):
-    (dst / "foobar").write_text("{{ thumbnail('image.png', [200, 100], foo='bar') }}")
-    resp = server.get("/foobar", xhr=True)
-
-    assert resp.text == "/image.png"
-
-
 def test_folder_with_index_pattern(dst, server):
     (dst / "hello").mkdir()
     (dst / "hello" / "index.html").write_text("hello world")

@@ -2,7 +2,7 @@ import re
 
 import multipart
 
-from .utils import MultiDict
+from .multidict import MultiDict
 
 
 RX_INDEX = re.compile(r"/index\.html$")

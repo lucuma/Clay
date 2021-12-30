@@ -5,8 +5,8 @@ from urllib.parse import quote
 import gunicorn.app.base
 from whitenoise import WhiteNoise
 
-from .request import Request
-from .utils import make_active_helper
+from .utils.active import make_active_helper
+from .utils.request import Request
 
 
 def _get_local_ip():
@@ -126,7 +126,6 @@ class WSGIApp:
         server = GunicornMiddleware(
             self,
             bind=f"{host}:{port}",
-            worker_class="eventlet",
             accesslog="-",
             access_log_format="%(h)s %(m)s %(U)s -> HTTP %(s)s",
             on_starting=on_starting

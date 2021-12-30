@@ -1,4 +1,4 @@
-#  [[ folder_name ]]
+#  [[ name ]]
 
 ## Instructions
 

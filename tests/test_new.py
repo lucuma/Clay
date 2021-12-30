@@ -1,8 +1,8 @@
-import clay
+from clay.cli import cli
 
 
 def test_new_cwd(dst):
     dest = dst / "demo"
-    clay.cli.new(dest)
+    cli.new(dest)
     assert (dest / "static").is_dir()
     assert (dest / "clay.yaml").is_file()

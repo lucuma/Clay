@@ -4,7 +4,7 @@ from fnmatch import fnmatch
 from functools import reduce
 
 
-__all__ = ("make_matcher", "make_filter", )
+__all__ = ("make_matcher", "make_filter", "no_filter")
 
 
 def _normalize_str(text, form="NFD"):
@@ -50,3 +50,7 @@ def make_filter(must_exclude, must_include):
         return must_exclude(path) and not must_include(path)
 
     return must_filter
+
+
+def no_filter(_):
+    return False
