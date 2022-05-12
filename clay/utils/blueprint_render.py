@@ -11,7 +11,7 @@ from .request import Request
 from .urls import make_absolute_urls_relative
 
 
-__all__ = ("STATIC_FOLDER", "BlueprintRender", "printf")
+__all__ = ("BlueprintRender", "printf")
 
 
 def get_context(path=""):
