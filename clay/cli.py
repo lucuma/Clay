@@ -1,3 +1,6 @@
+import time
+from pathlib import Path
+
 import proper_cli
 
 from .main import BLUEPRINT, STATIC_FOLDER, Clay
@@ -5,12 +8,13 @@ from .server import make_app
 from .utils import vcs
 from .utils.blueprint_render import BlueprintRender
 from .utils.make_matcher import make_matcher, no_filter
+from .utils.name_generator import get_random_name
 
 
 class ClayCLI(proper_cli.Cli):
     """Welcome to Clay"""
 
-    def new(self, dest: str, tmpl: str = BLUEPRINT) -> None:
+    def new(self, dest: str = "", tmpl: str = BLUEPRINT) -> None:
         """Creates a new Clay project at `dest`
 
         The `clay new` command creates a new Clay project with a default
@@ -26,22 +30,25 @@ class ClayCLI(proper_cli.Cli):
 
         Examples:
 
-            # Render a default project to the "myapp/" folder
-            clay new myapp
+            # Render a default project to the "mysite/" folder
+            clay new mysite
 
             # Custom template from an absolute or relative path.
-            clay new myapp /path/to/project/template
+            clay new mysite /path/to/project/template
 
             # Custom template from GitHub repo. Note the ".git" postfix.
-            clay new myapp https://github.com/lucuma/clay-template.git
+            clay new mysite https://github.com/lucuma/clay-template.git
 
             # Custom template from the same GitHub repo with shortcut
-            clay new myapp gh:/lucuma/clay-template.git
+            clay new mysite gh:/lucuma/clay-template.git
 
         """
         repo_url = vcs.get_repo(tmpl)
         if repo_url:
             tmpl = vcs.clone(repo_url)
+
+        if not dest:
+            dest = get_free_name()
 
         render = BlueprintRender(
             tmpl,
@@ -97,3 +104,17 @@ class ClayCLI(proper_cli.Cli):
 
 
 cli = ClayCLI()
+
+
+def get_free_name():
+    print("\n Using a random name...")
+    while True:
+        time.sleep(0.3)  # dramatic pause
+        dest = get_random_name()
+        if Path(dest).exists():
+            print(f' ... "{dest}" is taken')
+        else:
+            break
+
+    print(f' ... "{dest}"\n')
+    return dest
