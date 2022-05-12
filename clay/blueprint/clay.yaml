@@ -12,6 +12,7 @@ exclude:
   - "node_modules/*"
   - "package.json"
   - "package-lock.json"
+  - "README.md"
 
 # Shell-style patterns files/folders that *must be* copied, even if
 # they are in the exclude list.

@@ -35,7 +35,7 @@ class BlueprintRender:
         filters_=None,
         **envops
     ):
-        self.src = str(src)
+        self.src = Path(src)
         self.dst = Path(dst)
         self.force = force
         self.must_filter = must_filter
@@ -45,13 +45,15 @@ class BlueprintRender:
         self.render = JinjaRender(src, globals_=globals_, filters_=filters_, **envops)
 
     def __call__(self, **data):
-        for folder, _, files in os.walk(self.src):
+        src = str(self.src)
+        for folder, _, files in os.walk(src):
             self.render_folder(Path(folder), files, **data)
 
     def render_folder(self, folder, files, **data):
         if self.must_filter(folder):
             return
-        src_relfolder = str(folder).replace(self.src, "", 1).lstrip(os.path.sep)
+        src = str(self.src)
+        src_relfolder = str(folder).replace(src, "", 1).lstrip(os.path.sep)
         dst_relfolder = self.render.string(src_relfolder, **data)
         is_static = src_relfolder == self.static_folder
 
@@ -75,7 +77,7 @@ class BlueprintRender:
 
     def render_content(self, src_relpath, **data):
         if self.is_binary(src_relpath):
-            return (self.source_path / src_relpath).read_bytes()
+            return (self.src / src_relpath).read_bytes()
         return self.render(src_relpath, **data)
 
     def render_file(self, src_relpath, dst_relpath, **data):

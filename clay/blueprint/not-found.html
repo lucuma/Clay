@@ -8,7 +8,17 @@
 
 {% block content %}
 <main>
-  <p>File <code>{{ request.path }}</code> not found.</p>
+  {% if request.path == "not-found.html" -%}
+  <dialog class="notice" open>
+    This is how the "<code>not-found.html</code>" file
+    looks right now.
+    <form method="dialog">
+      <button class="closebtn">&times;</button>
+    </form>
+  </dialog>
+  {% endif -%}
+
+  <p>File "<code>{{ request.path }}</code>" not found.</p>
 </main>
 {%- endblock %}
 

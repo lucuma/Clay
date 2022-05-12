@@ -11,3 +11,37 @@ main {
   margin: 0 auto;
   max-width: 640px;
 }
+.notice {
+  color: #842029;
+  background-color: #f8d7da;
+  border: 2px solid #f5c2c7;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-size: 18px;
+  padding: 15px 50px 15px 15px;
+  text-align: left;
+  position: relative;
+}
+.notice .closebtn {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: none;
+  border: 0;
+  opacity: 0.5;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #842029;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+.notice .closebtn:hover {
+  color: #000;
+  opacity: 1;
+}
