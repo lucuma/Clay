@@ -6,6 +6,7 @@ from pathlib import Path
 import jinja2
 import yaml
 
+from .utils.binaries import KNOWN_BINARIES
 from .utils.blueprint_render import BlueprintRender
 from .utils.jinja_includewith import IncludeWith
 from .utils.load_config import load_config
@@ -69,7 +70,7 @@ DEFAULT_CONFIG = {
     ),
     "include": ("favicon.ico"),
     "jinja_extensions": (IncludeWith,),
-    "binaries": ("*.ico",),
+    "binaries": [],
 }
 EXCLUDE_PAGE_PATTERNS = (
     "clay.yaml",
@@ -87,6 +88,7 @@ class Clay:
         self.build_path = self.source_path / BUILD_FOLDER
         self.static_path = self.source_path / STATIC_FOLDER
         self.config = config = self.load_config()
+        print(self.config)
 
         must_exclude = make_matcher(config["exclude"])
         must_include = make_matcher(config["include"])
@@ -161,7 +163,9 @@ class Clay:
             print("ERROR: Invalid config file `clay.yaml`.")
             return DEFAULT_CONFIG
 
-        for key in "exclude,include,jinja_extensions,binaries".split(","):
+        config["binaries"] = tuple(set(config["binaries"] + KNOWN_BINARIES))
+
+        for key in "exclude,include,jinja_extensions".split(","):
             config[key] = tuple(config[key])
         return config
 

@@ -16,9 +16,18 @@ def test_do_not_render_static(dst):
     text = "{{ now() }}"
     os.mkdir(dst / "static")
     (dst / "static" / "test.txt").write_text(text)
+    (dst / "static" / "test.png").write_bytes(b"\x89PNG\r\n\x1a\n")
     cli.build(source=dst)
 
     assert (dst / "build" / "static" / "test.txt").read_text() == text
+    assert (dst / "build" / "static" / "test.png").is_file()
+
+
+def test_do_not_render_binary_with_known_extendions(dst):
+    (dst / "test.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    cli.build(source=dst)
+
+    assert (dst / "build" / "test.png").is_file()
 
 
 def test_render_context(dst):
