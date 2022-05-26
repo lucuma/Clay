@@ -55,7 +55,7 @@ class BlueprintRender:
         src = str(self.src)
         src_relfolder = str(folder).replace(src, "", 1).lstrip(os.path.sep)
         dst_relfolder = self.render.string(src_relfolder, **data)
-        is_static = src_relfolder == self.static_folder
+        is_static = src_relfolder.startswith(self.static_folder)
 
         src_relfolder = Path(src_relfolder)
         dst_relfolder = Path(dst_relfolder)

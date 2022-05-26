@@ -88,7 +88,6 @@ class Clay:
         self.build_path = self.source_path / BUILD_FOLDER
         self.static_path = self.source_path / STATIC_FOLDER
         self.config = config = self.load_config()
-        print(self.config)
 
         must_exclude = make_matcher(config["exclude"])
         must_include = make_matcher(config["include"])

@@ -23,6 +23,17 @@ def test_do_not_render_static(dst):
     assert (dst / "build" / "static" / "test.png").is_file()
 
 
+def test_do_not_render_static_subfolders(dst):
+    text = "{{ now() }}"
+    folder = dst / "static" / "meh"
+    folder.mkdir(parents=True, exist_ok=True)
+    (dst / "static" / "meh" / "test.txt").write_text(text)
+    (dst / "static" / "meh" / "test.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    cli.build(source=dst)
+    assert (dst / "build" / "static" / "meh" / "test.txt").read_text() == text
+    assert (dst / "build" / "static" / "meh" / "test.png").is_file()
+
+
 def test_do_not_render_binary_with_known_extendions(dst):
     (dst / "test.png").write_bytes(b"\x89PNG\r\n\x1a\n")
     cli.build(source=dst)
