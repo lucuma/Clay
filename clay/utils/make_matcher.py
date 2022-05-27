@@ -30,8 +30,8 @@ def make_matcher(patterns):
 
     The compared paths are first converted to unicode and decomposed.
     This is neccesary because the way `os.walk` read unicode paths could vary.
-    For instance, it might returns a decomposed unicode string reading
-    the character "ñ" as `\u0303` instead of `\xf1`.
+    For instance, it might returns a decomposed unicode string reading,
+    for example, the character "ñ" as `\u0303` instead of `\xf1`.
     """
     patterns = [_normalize_str(pattern) for pattern in patterns]
 

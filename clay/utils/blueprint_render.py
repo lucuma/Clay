@@ -50,23 +50,21 @@ class BlueprintRender:
             self.render_folder(Path(folder), files, **data)
 
     def render_folder(self, folder, files, **data):
-        if self.must_filter(folder):
-            return
-        src = str(self.src)
-        src_relfolder = str(folder).replace(src, "", 1).lstrip(os.path.sep)
+        src_relfolder = str(folder) \
+            .replace(str(self.src), "", 1) \
+            .lstrip(os.path.sep)
         dst_relfolder = self.render.string(src_relfolder, **data)
         is_static = src_relfolder.startswith(self.static_folder)
 
         src_relfolder = Path(src_relfolder)
         dst_relfolder = Path(dst_relfolder)
-        self._make_folder(dst_relfolder)
 
         for name in files:
             src_path = folder / name
             src_relpath = src_relfolder / name
             if self.must_filter(src_relpath):
                 continue
-
+            self._make_folder(dst_relfolder)
             name = self.render.string(name, **data)
             dst_relpath = dst_relfolder / name
 
@@ -126,7 +124,7 @@ class BlueprintRender:
 
         rel_folder = str(rel_folder).rstrip(".")
         display = f"{rel_folder}{os.path.sep}"
-        path.mkdir(parents=False, exist_ok=False)
+        path.mkdir(parents=True, exist_ok=False)
         if rel_folder:
             printf("created", display, color="green")
 
