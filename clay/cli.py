@@ -80,13 +80,15 @@ class ClayCLI(proper_cli.Cli):
         app = make_app(clay)
         app.run(host, port)
 
-    def build(self, source: str = ".") -> None:
+    def build(self, source: str = ".", force: bool = False) -> None:
         """Generates a static copy of the project in a `build` folder.
 
         Arguments:
         - source: Where to find the project. By default in the current folder.
+        - force: set to True to overwrite conflicting files.
         """
-        clay = Clay(source)
+
+        clay = Clay(source, force)
         clay.build()
         print("\n Done! You'll find a static version of your ")
         print(" project in the `build` folder.\n")

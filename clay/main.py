@@ -83,10 +83,11 @@ EXCLUDE_PAGE_PATTERNS = (
 
 
 class Clay:
-    def __init__(self, source_path):
+    def __init__(self, source_path, force = False):
         self.source_path = Path(source_path).resolve()
         self.build_path = self.source_path / BUILD_FOLDER
         self.static_path = self.source_path / STATIC_FOLDER
+        self.force = force
         self.config = config = self.load_config()
 
         must_exclude = make_matcher(config["exclude"])
@@ -105,6 +106,7 @@ class Clay:
             dst=self.build_path,
             must_filter=self.must_filter,
             is_binary=self.is_binary,
+            force=self.force,
             static_folder=STATIC_FOLDER,
             globals_=globals_,
             filters_=JINJA_FILTERS,
