@@ -19,6 +19,15 @@ def test_render(dst):
     assert (dst / "build" / "test.txt").read_text().startswith(expected)
 
 
+def test_render_with_force_overwrite(dst):
+    (dst / "test.txt").write_text("test")
+    cli.build(source=dst)
+
+    (dst / "test.txt").write_text("meh")
+    cli.build(source=dst, force=True)
+
+    assert (dst / "build" / "test.txt").read_text() == "meh"
+
 def test_do_not_render_static(dst):
     text = "{{ now() }}"
     os.mkdir(dst / "static")
