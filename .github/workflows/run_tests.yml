@@ -11,21 +11,9 @@ jobs:
     name: tests
     strategy:
       matrix:
-        python: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
       fail-fast: false
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: dbtest
-        ports:
-          - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v7
@@ -35,5 +23,5 @@ jobs:
           version: "0.11.28"
           python-version: ${{ matrix.python }}
           enable-cache: true
-      - run: uv sync --locked
-      - run: uv run --locked pytest -x clay tests
+      - run: make install
+      - run: make test
