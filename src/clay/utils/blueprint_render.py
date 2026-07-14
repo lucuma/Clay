@@ -33,6 +33,7 @@ class BlueprintRender:
         force=False,
         globals_=None,
         filters_=None,
+        relativize_urls=True,
         **envops
     ):
         self.src = Path(src)
@@ -41,6 +42,7 @@ class BlueprintRender:
         self.must_filter = must_filter
         self.is_binary = is_binary
         self.static_folder = static_folder
+        self.relativize_urls = relativize_urls
 
         self.render = JinjaRender(src, globals_=globals_, filters_=filters_, **envops)
 
@@ -82,7 +84,10 @@ class BlueprintRender:
         context = get_context(dst_relpath)
         context.update(data)
         content = self.render(src_relpath, **context)
-        new_content = make_absolute_urls_relative(self.dst, dst_relpath, content)
+        if self.relativize_urls:
+            new_content = make_absolute_urls_relative(self.dst, dst_relpath, content)
+        else:
+            new_content = content
         self.save_file(new_content, dst_relpath)
 
     def save_file(self, content, dst_relpath):

@@ -15,7 +15,6 @@ from .utils.make_matcher import make_filter, make_matcher
 
 MESSAGES = [
     "Post processing",
-    "Relativizing URLs",
     "Distilling enjoyment",
     "Adding emotional depth",
     "Filtering the ozone",
@@ -83,7 +82,7 @@ EXCLUDE_PAGE_PATTERNS = (
 
 
 class Clay:
-    def __init__(self, source_path):
+    def __init__(self, source_path: str | Path, *, relativize_urls: bool = True):
         self.source_path = Path(source_path).resolve()
         self.build_path = self.source_path / BUILD_FOLDER
         self.static_path = self.source_path / STATIC_FOLDER
@@ -109,6 +108,7 @@ class Clay:
             globals_=globals_,
             filters_=JINJA_FILTERS,
             extensions=config["jinja_extensions"],
+            relativize_urls=relativize_urls,
         )
         self.exclude_page = make_matcher(self.config["exclude"] + EXCLUDE_PAGE_PATTERNS)
 

@@ -80,13 +80,14 @@ class ClayCLI(proper_cli.Cli):
         app = make_app(clay)
         app.run(host, port)
 
-    def build(self, source: str = ".") -> None:
+    def build(self, source: str = ".", raw: bool = False) -> None:
         """Generates a static copy of the project in a `build` folder.
 
         Arguments:
         - source: Where to find the project. By default in the current folder.
+        - raw: Do not relativize URLs. `False` by default.
         """
-        clay = Clay(source)
+        clay = Clay(source, relativize_urls=not raw)
         clay.build()
         print("\n Done! You'll find a static version of your ")
         print(" project in the `build` folder.\n")

@@ -19,6 +19,22 @@ def test_render(dst):
     assert (dst / "build" / "test.txt").read_text().startswith(expected)
 
 
+def test_build_raw_controls_url_relativization(dst):
+    template = '<a href="/lorem/">'
+    regular = dst / "regular"
+    raw = dst / "raw"
+
+    for source in (regular, raw):
+        source.mkdir()
+        (source / "index.html").write_text(template)
+
+    cli.build(source=regular)
+    cli.build(source=raw, raw=True)
+
+    assert (regular / "build" / "index.html").read_text() == '<a href="lorem/">'
+    assert (raw / "build" / "index.html").read_text() == template
+
+
 def test_do_not_render_static(dst):
     text = "{{ now() }}"
     os.mkdir(dst / "static")

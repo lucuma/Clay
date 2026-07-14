@@ -15,7 +15,7 @@ def get_relative_url(base_path, relpath, currurl):
 
     if not url:
         return "index.html"
-    if (base_path / relpath).is_dir() or url.endswith("/"):
+    if (base_path / relpath).is_dir():
         return url.rstrip("/") + "/index.html"
 
     return url
