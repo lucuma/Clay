@@ -14,7 +14,7 @@ from .utils.name_generator import get_random_name
 class ClayCLI(proper_cli.Cli):
     """Welcome to Clay"""
 
-    def new(self, dest: str = "", tmpl: str = BLUEPRINT) -> None:
+    def new(self, dest: str = "", tmpl: str | Path = BLUEPRINT) -> None:
         """Creates a new Clay project at `dest`
 
         The `clay new` command creates a new Clay project with a default

@@ -1,17 +1,20 @@
+.PHONY: install
+install:
+	uv sync --all-groups
+
 .PHONY: test
 test:
-	pytest -x clay tests
+	uv run pytest -x src/clay tests
 
 .PHONY: lint
 lint:
-	flake8 --config=setup.cfg clay tests
+	uv run ruff check src/clay tests
+	uv run ty check src/clay
+
+.PHONY: lintfix
+lintfix:
+	uv run ruff check src/clay tests --fix
 
 .PHONY: coverage
 coverage:
-	pytest --cov-config=.coveragerc --cov-report html --cov clay clay tests
-
-.PHONY: install
-install:
-	pip install -e .[test,dev]
-	# pip install -r docs/requirements.txt
-	# pre-commit install
+	uv run pytest --cov-config=pyproject.toml --cov-report html --cov src/clay tests

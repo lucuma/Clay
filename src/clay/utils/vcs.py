@@ -15,7 +15,7 @@ RE_GITHUB = re.compile(r"^gh:/?")
 RE_GITLAB = re.compile(r"^gl:/?")
 
 
-def get_repo(url: str) -> str:
+def get_repo(url: str | Path) -> str | None:
     url = str(url)  # In case we have got a `pathlib.Path`
     if not (url.endswith(GIT_POSTFIX) or url.startswith(GIT_PREFIX)):
         return None

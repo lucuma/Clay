@@ -1,9 +1,9 @@
+import shutil
 from pathlib import Path
 from tempfile import mkdtemp
-import shutil
 
-from webtest import TestApp
 import pytest
+from webtest import TestApp
 
 from clay.main import Clay
 from clay.server import make_app

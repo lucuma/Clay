@@ -11,22 +11,20 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v7
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
-          python-version: 3.9
+          version: "0.11.28"
+          python-version: "3.11"
 
-      - name: "Installs dependencies"
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install setuptools wheel build twine
+      - name: Build distributions
+        run: uv build --no-sources
 
-      - name: "Builds and uploads to PyPI"
-        run: |
-          python3 -m build
-          python3 -m twine check dist/*
-          python3 -m twine upload dist/*
-          
+      - name: Check distributions
+        run: uvx twine check dist/*
+
+      - name: Upload distributions to PyPI
+        run: uv publish
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.TWINE_TOKEN }}

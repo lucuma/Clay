@@ -1,6 +1,202 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "clay"
+version = "4.7.0"
+description = "An amazing web prototyping tool"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "MIT-LICENSE" }
+authors = [
+    { name = "Juan-Pablo Scaletti", email = "juanpablo@jpscaletti.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "gunicorn",
+    "jinja2~=3.0",
+    "multipart>=0.2.4",
+    "proper-cli~=1.0",
+    "pyyaml-pure>=0.1.0",
+    "webtest>=3.0.7",
+    "whitenoise~=4.1",
+]
+
+[project.urls]
+Documentation = "http://lucuma.github.io/clay/"
+"Issue tracker" = "https://github.com/lucuma/clay/issues"
+
+[project.scripts]
+clay = "clay.cli:cli"
+
+[dependency-groups]
+dev = [
+    "ipdb >= 0.13",
+    "pytest",
+    "pytest-cov>=7.1.0",
+    "ruff >= 0.2.0",
+    "tox-uv>=1.33.1",
+    "ty>=0.0.1a24",
+    "webtest",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+clay = [
+    "blueprint/**/*",
+]
+[tool.setuptools.exclude-package-data]
+"*" = [
+    "**/__pycache__",
+    "*.pyc",
+    "*.pyo",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "TYPE_CHECKING",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "except ImportError:",
+]
+omit = [
+    "src/clay/blueprint/*",
+]
+[tool.coverage.html]
+directory = "covreport"
+
+[tool.ty.src]
+exclude = [
+    "**/tests/",
+    ".*",
+    "_build",
+    "build",
+    "covreport",
+    "dist",
+    "src/clay/blueprint",
+]
+
+
+[tool.pytest.ini_options]
+importmode = "importlib"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "--doctest-modules --ignore=src/clay/blueprint"
+filterwarnings = [
+]
+testpaths = "tests"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+env_list =
+    3.10
+    3.11
+    3.12
+    3.13
+    3.14
+    3.14t
+    3.15
+
+[testenv]
+runner = uv-venv-lock-runner
+dependency_groups =
+    dev
+commands =
+    pytest -x src/clay tests
+"""
+
+[tool.ruff]
+line-length = 90
+indent-width = 4
+target-version = "py313"
+exclude = [
+    ".*",
+    "_build",
+    "build",
+    "covreport",
+    "dist",
+    "src/clay/blueprint",
+]
+include = ["*.py"]
+
+[tool.ruff.format]
+# Use double quotes for strings.
+quote-style = "double"
+# Indent with spaces, rather than tabs.
+indent-style = "space"
+# Respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Automatically detect the appropriate line ending.
+line-ending = "auto"
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+ignore = [
+	# x is too complex
+	"C901",
+	# whitespace before ':'
+	"E203",
+	"E501",
+	# x defined from star imports
+	"F405",
+	# line break before binary operator
+	"W505",
+	"W605",
+]
+select = [
+	# bugbear
+	"B",
+	# mccabe"", comprehensions, commas
+	"C",
+	# pycodestyle errors
+	"E",
+	# pyflakes
+	"F",
+	# logging format
+	"G",
+	# imports
+	"I",
+	# quotes
+	"Q",
+	# pycodestyle warnings
+	"W",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["clay"]
+known-local-folder = ["src/clay"]
+no-lines-before = ["local-folder"]
+relative-imports-order = "furthest-to-closest"
+# Use two line after imports.
+lines-after-imports = 2

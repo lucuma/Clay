@@ -14,8 +14,8 @@ responses of sending forms, because it acts like a real server.
 
 ## Install
 
-```
-pip install clay
+```console
+uv tool install clay
 ```
 
 
@@ -161,3 +161,18 @@ binaries:
 
 Happy coding!
 
+
+## Development
+
+Create the project environment and install all development dependencies:
+
+```console
+uv sync
+```
+
+Run the test and lint suites through the locked project environment:
+
+```console
+uv run pytest -x clay tests
+uv run flake8 --config=setup.cfg clay tests
+```

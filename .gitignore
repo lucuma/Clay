@@ -85,6 +85,7 @@ ipython_config.py
 
 # pyenv
 .python-version
+!.python-version
 
 # PEP 582
 __pypackages__/

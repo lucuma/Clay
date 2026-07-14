@@ -57,10 +57,13 @@ class GunicornMiddleware(gunicorn.app.base.BaseApplication):
         super().__init__()
 
     def load_config(self):
-        config = {key: value for key, value in self.options.items()
-                  if key in self.cfg.settings and value is not None}
+        settings = self.cfg.settings if self.cfg else {}
+        config = {
+            key: value for key, value in self.options.items()
+            if key in settings and value is not None
+        }
         for key, value in config.items():
-            self.cfg.set(key.lower(), value)
+            self.cfg.set(key.lower(), value)  # type: ignore
 
     def load(self):
         return self.app
@@ -135,11 +138,12 @@ class WSGIApp:
 
 def make_app(clay):
     app = WSGIApp(clay)
-    app.wsgi = WhiteNoise(
+    wn = WhiteNoise(
         app.wsgi,
         root=clay.static_path,
         prefix="static/",
         index_file=True,
         autorefresh=True,
     )
+    app.wsgi = wn  # type: ignore
     return app
